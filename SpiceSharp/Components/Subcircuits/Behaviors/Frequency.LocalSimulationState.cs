@@ -39,7 +39,10 @@ namespace SpiceSharp.Components.Subcircuits
             }
 
             /// <inheritdoc/>
-            public override bool Apply() => base.Apply();
+            public override bool Apply()
+            {
+                return base.Apply();
+            }
         }
     }
 }

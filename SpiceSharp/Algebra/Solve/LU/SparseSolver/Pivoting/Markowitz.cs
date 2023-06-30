@@ -1,7 +1,7 @@
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.ObjectModel;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -32,7 +32,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <exception cref="IndexOutOfRangeException">
         /// Thrown if <paramref name="row"/> is negative or greater than the number of Markowitz rows.
         /// </exception>
-        public int RowCount(int row) => _markowitzRow[row];
+        public int RowCount(int row)
+        {
+            return _markowitzRow[row];
+        }
 
         /// <summary>
         /// Gets the Markowitz column counts.
@@ -40,7 +43,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <exception cref="IndexOutOfRangeException">
         /// Thrown if <paramref name="column"/> is negative or greater than the number of Markowitz columns.
         /// </exception>
-        public int ColumnCount(int column) => _markowitzColumn[column];
+        public int ColumnCount(int column)
+        {
+            return _markowitzColumn[column];
+        }
 
         /// <summary>
         /// Gets the Markowitz products.
@@ -48,7 +54,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <exception cref="IndexOutOfRangeException">
         /// Thrown if <paramref name="index"/> is negative or greater than the number of Markowitz size.
         /// </exception>
-        public int Product(int index) => _markowitzProduct[index];
+        public int Product(int index)
+        {
+            return _markowitzProduct[index];
+        }
 
         /// <summary>
         /// Gets the magnitude.
@@ -137,7 +146,7 @@ namespace SpiceSharp.Algebra.Solve
             var magnitude = Magnitude(pivot.Value);
 
             // Search for the largest element below the pivot
-            var element = pivot.Below;
+            ISparseMatrixElement<T> element = pivot.Below;
             var largest = 0.0;
             while (element != null && element.Row <= max)
             {
@@ -181,7 +190,7 @@ namespace SpiceSharp.Algebra.Solve
             ISparseMatrixElement<T> element;
 
             // Get the first element in the vector
-            var rhsElement = rhs.GetFirstInVector();
+            ISparseVectorElement<T> rhsElement = rhs.GetFirstInVector();
 
             // Generate Markowitz row count
             for (var i = max; i >= step; i--)
@@ -368,7 +377,7 @@ namespace SpiceSharp.Algebra.Solve
                 return;
 
             // Go through all elements below the pivot. If they exist, then we can subtract 1 from the Markowitz row vector!
-            for (var column = pivot.Below; column != null && column.Row <= limit; column = column.Below)
+            for (ISparseMatrixElement<T> column = pivot.Below; column != null && column.Row <= limit; column = column.Below)
             {
                 var row = column.Row;
 
@@ -382,7 +391,7 @@ namespace SpiceSharp.Algebra.Solve
             }
 
             // go through all elements right of the pivot. For every element, we can subtract 1 from the Markowitz column vector!
-            for (var row = pivot.Right; row != null && row.Column <= limit; row = row.Right)
+            for (ISparseMatrixElement<T> row = pivot.Right; row != null && row.Column <= limit; row = row.Right)
             {
                 var column = row.Column;
 
@@ -414,7 +423,7 @@ namespace SpiceSharp.Algebra.Solve
                 return;
 
             // Update the markowitz row count
-            int index = fillin.Row;
+            var index = fillin.Row;
             _markowitzRow[index]++;
             _markowitzProduct[index] =
                 Math.Min(_markowitzRow[index] * _markowitzColumn[index], _maxMarkowitzCount);
@@ -458,9 +467,9 @@ namespace SpiceSharp.Algebra.Solve
                 return Pivot<ISparseMatrixElement<T>>.Empty;
 
             // Fix the search limit to allow our strategies to work
-            foreach (var strategy in Strategies)
+            foreach (MarkowitzSearchStrategy<T> strategy in Strategies)
             {
-                var chosen = strategy.FindPivot(this, matrix, eliminationStep, max);
+                Pivot<ISparseMatrixElement<T>> chosen = strategy.FindPivot(this, matrix, eliminationStep, max);
                 if (chosen.Info != PivotInfo.None)
                     return chosen;
             }
@@ -470,15 +479,17 @@ namespace SpiceSharp.Algebra.Solve
         /// <inheritdoc/>
         public Markowitz<T> Clone()
         {
-            var clone = new Markowitz<T>();
-            clone.Magnitude = Magnitude;
-            clone._absolutePivotThreshold = _absolutePivotThreshold;
-            clone._relativePivotThreshold = _relativePivotThreshold;
-            clone.Singletons = Singletons;
-            clone._markowitzRow = (int[])_markowitzRow.Clone();
-            clone._markowitzColumn = (int[])_markowitzColumn.Clone();
-            clone._markowitzProduct = (int[])_markowitzProduct.Clone();
-            foreach (var strategy in Strategies)
+            var clone = new Markowitz<T>
+            {
+                Magnitude = Magnitude,
+                _absolutePivotThreshold = _absolutePivotThreshold,
+                _relativePivotThreshold = _relativePivotThreshold,
+                Singletons = Singletons,
+                _markowitzRow = (int[])_markowitzRow.Clone(),
+                _markowitzColumn = (int[])_markowitzColumn.Clone(),
+                _markowitzProduct = (int[])_markowitzProduct.Clone()
+            };
+            foreach (MarkowitzSearchStrategy<T> strategy in Strategies)
                 clone.Strategies.Add(strategy);
             return clone;
         }

@@ -98,7 +98,7 @@ namespace SpiceSharpTest.Models
                 f =>
                 {
                     var s = new Complex(0.0, 2.0 * Math.PI * f);
-                    var denom = (a * s + b) * s + c;
+                    Complex denom = (a * s + b) * s + c;
                     return num * s / denom;
                 }
             };

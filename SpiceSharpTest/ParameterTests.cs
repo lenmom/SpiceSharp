@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using SpiceSharp;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharpTest.Parameters
 {
@@ -24,10 +24,16 @@ namespace SpiceSharpTest.Parameters
         public int Property2 { get; set; }
 
         [ParameterName("method1")]
-        public void SetMethod1(double value) => Property1 = value;
+        public void SetMethod1(double value)
+        {
+            Property1 = value;
+        }
 
         [ParameterName("method2")]
-        public double GetMethod() => 1.0;
+        public double GetMethod()
+        {
+            return 1.0;
+        }
 
         [ParameterName("parameter1")]
         public GivenParameter<double> Parameter1 { get; set; }

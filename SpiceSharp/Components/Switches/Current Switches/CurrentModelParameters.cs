@@ -1,5 +1,4 @@
-﻿using SpiceSharp.ParameterSets;
-using SpiceSharp.Attributes;
+﻿using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Switches
 {
@@ -44,6 +43,8 @@ namespace SpiceSharp.Components.Switches
 
         /// <inheritdoc/>
         CurrentModelParameters ICloneable<CurrentModelParameters>.Clone()
-            => (CurrentModelParameters)Clone();
+        {
+            return (CurrentModelParameters)Clone();
+        }
     }
 }

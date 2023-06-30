@@ -107,7 +107,7 @@ namespace SpiceSharp.Algebra
             if (location.Row == location.Column && _diagonal[location.Row] != null)
                 return _diagonal[location.Row];
 
-            if (!_rows[location.Row].CreateOrGetElement(location, out var element))
+            if (!_rows[location.Row].CreateOrGetElement(location, out Element element))
             {
                 ElementCount++;
                 _columns[location.Column].Insert(element);
@@ -140,7 +140,7 @@ namespace SpiceSharp.Algebra
             }
 
             // General case
-            var elt = _rows[location.Row].Find(location.Column);
+            Element elt = _rows[location.Row].Find(location.Column);
             if (elt == null)
                 return false;
             _rows[location.Row].Remove(elt);
@@ -171,19 +171,27 @@ namespace SpiceSharp.Algebra
 
         /// <inheritdoc/>
         public ISparseMatrixElement<T> GetFirstInRow(int row)
-            => row.GreaterThanOrEquals(nameof(row), 0) > Size ? null : _rows[row].FirstInRow;
+        {
+            return row.GreaterThanOrEquals(nameof(row), 0) > Size ? null : _rows[row].FirstInRow;
+        }
 
         /// <inheritdoc/>
         public ISparseMatrixElement<T> GetLastInRow(int row)
-            => row.GreaterThanOrEquals(nameof(row), 0) > Size ? null : _rows[row].LastInRow;
+        {
+            return row.GreaterThanOrEquals(nameof(row), 0) > Size ? null : _rows[row].LastInRow;
+        }
 
         /// <inheritdoc/>
         public ISparseMatrixElement<T> GetFirstInColumn(int column)
-            => column.GreaterThanOrEquals(nameof(column), 0) > Size ? null : _columns[column].FirstInColumn;
+        {
+            return column.GreaterThanOrEquals(nameof(column), 0) > Size ? null : _columns[column].FirstInColumn;
+        }
 
         /// <inheritdoc/>
         public ISparseMatrixElement<T> GetLastInColumn(int column)
-            => column.GreaterThanOrEquals(nameof(column), 0) > Size ? null : _columns[column].LastInColumn;
+        {
+            return column.GreaterThanOrEquals(nameof(column), 0) > Size ? null : _columns[column].LastInColumn;
+        }
 
         /// <inheritdoc/>
         public void SwapRows(int row1, int row2)
@@ -204,11 +212,11 @@ namespace SpiceSharp.Algebra
                 Expand(row2);
 
             // Get the two elements
-            var row1Element = _rows[row1].FirstInRow;
-            var row2Element = _rows[row2].FirstInRow;
+            Element row1Element = _rows[row1].FirstInRow;
+            Element row2Element = _rows[row2].FirstInRow;
 
             // Swap the two rows
-            var tmpRow = _rows[row1];
+            Row tmpRow = _rows[row1];
             _rows[row1] = _rows[row2];
             _rows[row2] = tmpRow;
 
@@ -282,11 +290,11 @@ namespace SpiceSharp.Algebra
                 Expand(column2);
 
             // Get the two elements
-            var column1Element = _columns[column1].FirstInColumn;
-            var column2Element = _columns[column2].FirstInColumn;
+            Element column1Element = _columns[column1].FirstInColumn;
+            Element column2Element = _columns[column2].FirstInColumn;
 
             // Swap the two rows
-            var tmpColumn = _columns[column1];
+            Column tmpColumn = _columns[column1];
             _columns[column1] = _columns[column2];
             _columns[column2] = tmpColumn;
 
@@ -347,7 +355,7 @@ namespace SpiceSharp.Algebra
             _trashCan.Value = default;
             for (var r = 1; r <= Size; r++)
             {
-                var elt = GetFirstInRow(r);
+                ISparseMatrixElement<T> elt = GetFirstInRow(r);
                 while (elt != null)
                 {
                     elt.Value = default;
@@ -380,11 +388,14 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "Sparse matrix ({0}x{0})".FormatString(Size);
+        public override string ToString()
+        {
+            return "Sparse matrix ({0}x{0})".FormatString(Size);
+        }
 
         private T GetMatrixValue(MatrixLocation location)
         {
-            var element = FindElement(location);
+            Element<T> element = FindElement(location);
             if (element == null)
                 return default;
             return element.Value;
@@ -394,14 +405,14 @@ namespace SpiceSharp.Algebra
             if (value.Equals(default))
             {
                 // We don't need to create a new element unnecessarily
-                var element = FindElement(location);
+                Element<T> element = FindElement(location);
                 if (element != null)
                     element.Value = default;
             }
             else
             {
                 // We have to create an element if it doesn't exist yet
-                var element = GetElement(location);
+                Element<T> element = GetElement(location);
                 element.Value = value;
             }
         }

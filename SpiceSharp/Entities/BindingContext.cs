@@ -1,9 +1,9 @@
-﻿using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 using System.Collections.Generic;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Entities
 {
@@ -40,20 +40,32 @@ namespace SpiceSharp.Entities
         public IBehaviorContainer Behaviors { get; }
 
         /// <inheritdoc/>
-        public S GetState<S>() where S : ISimulationState => Simulation.GetState<S>();
+        public S GetState<S>() where S : ISimulationState
+        {
+            return Simulation.GetState<S>();
+        }
 
         /// <inheritdoc/>
-        public bool TryGetState<S>(out S state) where S : ISimulationState => Simulation.TryGetState(out state);
+        public bool TryGetState<S>(out S state) where S : ISimulationState
+        {
+            return Simulation.TryGetState(out state);
+        }
 
         /// <inheritdoc/>
-        public bool UsesState<S>() where S : ISimulationState => Simulation.UsesState<S>();
+        public bool UsesState<S>() where S : ISimulationState
+        {
+            return Simulation.UsesState<S>();
+        }
 
         /// <summary>
         /// Gets a simulation parameter set of the specified type.
         /// </summary>
         /// <typeparam name="P">The parameter set type.</typeparam>
         /// <returns>The parameter set.</returns>
-        public P GetSimulationParameterSet<P>() where P : IParameterSet, ICloneable<P> => Simulation.GetParameterSet<P>();
+        public P GetSimulationParameterSet<P>() where P : IParameterSet, ICloneable<P>
+        {
+            return Simulation.GetParameterSet<P>();
+        }
 
         /// <summary>
         /// Tries to get a simulation parameter set of the specified type.
@@ -61,7 +73,10 @@ namespace SpiceSharp.Entities
         /// <typeparam name="P">The parameter set type.</typeparam>
         /// <param name="value">The value.</param>
         /// <returns>The parameter set.</returns>
-        public bool TryGetSimulationParameterSet<P>(out P value) where P : IParameterSet, ICloneable<P> => Simulation.TryGetParameterSet(out value);
+        public bool TryGetSimulationParameterSet<P>(out P value) where P : IParameterSet, ICloneable<P>
+        {
+            return Simulation.TryGetParameterSet(out value);
+        }
 
         /// <summary>
         /// Gets the parameter set of the specified type.
@@ -72,12 +87,12 @@ namespace SpiceSharp.Entities
         /// </returns>
         public P GetParameterSet<P>() where P : IParameterSet, ICloneable<P>
         {
-            var value = Entity.GetParameterSet<P>();
+            P value = Entity.GetParameterSet<P>();
 
             // Are we using cloned parameter sets?
             if (_cloned != null)
             {
-                if (!_cloned.TryGetValue(value, out var result))
+                if (!_cloned.TryGetValue(value, out IParameterSet result))
                 {
                     result = (IParameterSet)value.Clone();
                     _cloned.Add(value, result);
@@ -104,7 +119,7 @@ namespace SpiceSharp.Entities
                 // Are we using cloned parameter sets?
                 if (_cloned != null)
                 {
-                    if (!_cloned.TryGetValue(value, out var result))
+                    if (!_cloned.TryGetValue(value, out IParameterSet result))
                     {
                         result = (IParameterSet)value.Clone();
                         _cloned.Add(value, result);

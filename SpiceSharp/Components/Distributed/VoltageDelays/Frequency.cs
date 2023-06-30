@@ -1,10 +1,10 @@
 ﻿using SpiceSharp.Algebra;
-using SpiceSharp.Behaviors;
-using SpiceSharp.Simulations;
-using System.Numerics;
-using System;
 using SpiceSharp.Attributes;
+using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
+using SpiceSharp.Simulations;
+using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.VoltageDelays
 {
@@ -50,12 +50,12 @@ namespace SpiceSharp.Components.VoltageDelays
             _complex = context.GetState<IComplexSimulationState>();
 
             _variables = new TwoPort<Complex>(_complex, context);
-            int posNode = _complex.Map[_variables.Right.Positive];
-            int negNode = _complex.Map[_variables.Right.Negative];
-            int contPosNode = _complex.Map[_variables.Left.Positive];
-            int contNegNode = _complex.Map[_variables.Left.Negative];
+            var posNode = _complex.Map[_variables.Right.Positive];
+            var negNode = _complex.Map[_variables.Right.Negative];
+            var contPosNode = _complex.Map[_variables.Left.Positive];
+            var contNegNode = _complex.Map[_variables.Left.Negative];
             Branch = _complex.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            int branchEq = _complex.Map[Branch];
+            var branchEq = _complex.Map[Branch];
 
             _elements = new ElementSet<Complex>(_complex.Solver, new[] {
                         new MatrixLocation(posNode, branchEq),
@@ -75,8 +75,8 @@ namespace SpiceSharp.Components.VoltageDelays
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var laplace = _complex.Laplace;
-            var factor = Complex.Exp(-laplace * Parameters.Delay);
+            Complex laplace = _complex.Laplace;
+            Complex factor = Complex.Exp(-laplace * Parameters.Delay);
 
             // Load the Y-matrix and RHS-vector
             _elements.Add(1, -1, 1, -1, -factor, factor);

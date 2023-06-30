@@ -75,7 +75,7 @@ namespace SpiceSharp.Algebra
             var offset2 = (row2 - 1) * _allocatedSize;
             for (var i = 0; i < Size; i++)
             {
-                var tmp = _array[offset1 + i];
+                T tmp = _array[offset1 + i];
                 _array[offset1 + i] = _array[offset2 + i];
                 _array[offset2 + i] = tmp;
             }
@@ -98,7 +98,7 @@ namespace SpiceSharp.Algebra
             column2--;
             for (var i = 0; i < _allocatedSize * _allocatedSize; i += _allocatedSize)
             {
-                var tmp = _array[column1 + i];
+                T tmp = _array[column1 + i];
                 _array[column1 + i] = _array[column2 + i];
                 _array[column2 + i] = tmp;
             }
@@ -126,7 +126,10 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "DenseMatrix ({0}x{0})".FormatString(Size);
+        public override string ToString()
+        {
+            return "DenseMatrix ({0}x{0})".FormatString(Size);
+        }
 
         private T GetMatrixValue(MatrixLocation location)
         {

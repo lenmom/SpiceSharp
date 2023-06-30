@@ -26,7 +26,7 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                var result = _map.FirstOrDefault(p => p.Value == index);
+                KeyValuePair<IVariable, int> result = _map.FirstOrDefault(p => p.Value == index);
                 if (result.Equals(default(IVariable)))
                     throw new ArgumentException(Properties.Resources.VariableNotFound.FormatString(index));
                 return result.Key;
@@ -43,7 +43,10 @@ namespace SpiceSharp.Simulations
         }
 
         /// <inheritdoc/>
-        public bool Contains(IVariable variable) => _map.ContainsKey(variable);
+        public bool Contains(IVariable variable)
+        {
+            return _map.ContainsKey(variable);
+        }
 
         /// <summary>
         /// Adds the specified variable.
@@ -69,7 +72,10 @@ namespace SpiceSharp.Simulations
         /// <summary>
         /// Clears the map.
         /// </summary>
-        public void Clear() => _map.Clear();
+        public void Clear()
+        {
+            _map.Clear();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -77,7 +83,10 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<IVariable, int>> GetEnumerator() => _map.GetEnumerator();
+        public IEnumerator<KeyValuePair<IVariable, int>> GetEnumerator()
+        {
+            return _map.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -85,6 +94,9 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

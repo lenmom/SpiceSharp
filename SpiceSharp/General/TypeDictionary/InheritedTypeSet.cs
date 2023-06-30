@@ -38,12 +38,18 @@ namespace SpiceSharp.General
         /// Adds the specified value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public void Add(V value) => _dictionary.Add(value.GetType(), value);
+        public void Add(V value)
+        {
+            _dictionary.Add(value.GetType(), value);
+        }
 
         /// <summary>
         /// Removes all items from the set.
         /// </summary>
-        public void Clear() => _dictionary.Clear();
+        public void Clear()
+        {
+            _dictionary.Clear();
+        }
 
         /// <summary>
         /// Determines whether this instance contains the object.
@@ -52,13 +58,22 @@ namespace SpiceSharp.General
         /// <returns>
         /// true if <paramref name="item" /> is found in the set; otherwise, false.
         /// </returns>
-        public bool Contains(V item) => _dictionary.Contains(item);
+        public bool Contains(V item)
+        {
+            return _dictionary.Contains(item);
+        }
 
         /// <inheritdoc/>
-        public bool ContainsType<TResult>() where TResult : V => _dictionary.ContainsKey(typeof(TResult));
+        public bool ContainsType<TResult>() where TResult : V
+        {
+            return _dictionary.ContainsKey(typeof(TResult));
+        }
 
         /// <inheritdoc/>
-        public bool ContainsType(Type key) => _dictionary.ContainsKey(key.ThrowIfNull(nameof(key)));
+        public bool ContainsType(Type key)
+        {
+            return _dictionary.ContainsKey(key.ThrowIfNull(nameof(key)));
+        }
 
         /// <summary>
         /// Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="System.Array" />, starting at a particular <see cref="System.Array" /> index.
@@ -67,7 +82,7 @@ namespace SpiceSharp.General
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
         public void CopyTo(V[] array, int arrayIndex)
         {
-            var arr = _dictionary.Values.ToArray();
+            V[] arr = _dictionary.Values.ToArray();
             for (var i = 0; i < arr.Length; i++)
                 array[i + arrayIndex] = arr[i];
         }
@@ -102,12 +117,15 @@ namespace SpiceSharp.General
         /// <returns>
         /// true if <paramref name="item" /> was successfully removed from the set; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original set.
         /// </returns>
-        public bool Remove(V item) => _dictionary.Remove(item.GetType(), item);
+        public bool Remove(V item)
+        {
+            return _dictionary.Remove(item.GetType(), item);
+        }
 
         /// <inheritdoc/>
         public bool TryGetValue<TResult>(out TResult value) where TResult : V
         {
-            if (_dictionary.TryGetValue(typeof(TResult), out var result))
+            if (_dictionary.TryGetValue(typeof(TResult), out V result))
             {
                 value = (TResult)result;
                 return true;
@@ -122,7 +140,10 @@ namespace SpiceSharp.General
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<V> GetEnumerator() => _dictionary.Values.GetEnumerator();
+        public IEnumerator<V> GetEnumerator()
+        {
+            return _dictionary.Values.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -130,6 +151,9 @@ namespace SpiceSharp.General
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => _dictionary.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _dictionary.Values.GetEnumerator();
+        }
     }
 }

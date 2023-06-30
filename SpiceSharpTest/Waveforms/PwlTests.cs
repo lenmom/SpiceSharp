@@ -125,7 +125,7 @@ namespace SpiceSharpTest.Waveforms
             var tran = new Transient("Tran 1", 1e-2, n - 1);
             tran.ExportSimulationData += (sender, args) =>
             {
-                int integer = (int)args.Time;
+                var integer = (int)args.Time;
 
                 if (args.Time == integer)
                 {

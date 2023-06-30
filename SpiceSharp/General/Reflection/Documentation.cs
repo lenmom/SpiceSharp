@@ -23,10 +23,10 @@ namespace SpiceSharp.Documentation
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is <c>null</c>.</exception>
         public static IEnumerable<MemberDocumentation> GetMembers(Type type)
         {
-            var info = type.ThrowIfNull(nameof(type)).GetTypeInfo();
-            foreach (var member in info.GetMembers(BindingFlags.Instance | BindingFlags.Public))
+            TypeInfo info = type.ThrowIfNull(nameof(type)).GetTypeInfo();
+            foreach (MemberInfo member in info.GetMembers(BindingFlags.Instance | BindingFlags.Public))
             {
-                var mt = member.MemberType;
+                MemberTypes mt = member.MemberType;
 
                 // Filter by type
                 if (mt != MemberTypes.Property &&
@@ -52,9 +52,9 @@ namespace SpiceSharp.Documentation
         public static IReadOnlyList<string> Pins(Type type)
         {
             type.ThrowIfNull(nameof(type));
-            var pinAttributes = type.GetCustomAttributes<PinAttribute>().ToArray();
+            PinAttribute[] pinAttributes = type.GetCustomAttributes<PinAttribute>().ToArray();
             var pins = new string[pinAttributes.Length];
-            foreach (var attribute in pinAttributes)
+            foreach (PinAttribute attribute in pinAttributes)
                 pins[attribute.Index] = attribute.Name;
             return pins;
         }
@@ -66,7 +66,9 @@ namespace SpiceSharp.Documentation
         /// <returns>The pin names.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="component"/> is <c>null</c>.</exception>
         public static IEnumerable<string> Pins(this IComponent component)
-            => Pins(component?.GetType());
+        {
+            return Pins(component?.GetType());
+        }
 
         /// <summary>
         /// Enumerates all the named members.
@@ -77,17 +79,17 @@ namespace SpiceSharp.Documentation
         /// </returns>
         public static IEnumerable<MemberDocumentation> Parameters(this IParameterSetCollection parameterized)
         {
-            foreach (var ps in parameterized.ParameterSets)
+            foreach (IParameterSet ps in parameterized.ParameterSets)
             {
                 // Allow recursive parameterized objects
                 if (ps is IParameterSetCollection child)
                 {
-                    foreach (var md in Parameters(child))
+                    foreach (MemberDocumentation md in Parameters(child))
                         yield return md;
                 }
 
                 // Show the parameters in the parameter set
-                foreach (var md in Parameters(ps))
+                foreach (MemberDocumentation md in Parameters(ps))
                     yield return md;
             }
         }
@@ -101,7 +103,9 @@ namespace SpiceSharp.Documentation
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="parameters"/> is <c>null</c>.</exception>
         public static IEnumerable<MemberDocumentation> Parameters(this IParameterSet parameters)
-            => GetMembers(parameters?.GetType());
+        {
+            return GetMembers(parameters?.GetType());
+        }
 
         /// <summary>
         /// Creates a dictionary of all properties and their values on a parameter set.
@@ -115,10 +119,10 @@ namespace SpiceSharp.Documentation
         public static IReadOnlyDictionary<MemberDocumentation, T> ParameterValues<T>(this IParameterSetCollection parameterSetCollection, bool givenOnly = true)
         {
             var result = new Dictionary<MemberDocumentation, T>();
-            foreach (var ps in parameterSetCollection.ParameterSets)
+            foreach (IParameterSet ps in parameterSetCollection.ParameterSets)
             {
-                var n = ParameterValues<T>(ps, givenOnly);
-                foreach (var pair in n)
+                IReadOnlyDictionary<MemberDocumentation, T> n = ParameterValues<T>(ps, givenOnly);
+                foreach (KeyValuePair<MemberDocumentation, T> pair in n)
                     result.Add(pair.Key, pair.Value);
             }
             return new ReadOnlyDictionary<MemberDocumentation, T>(result);
@@ -138,20 +142,20 @@ namespace SpiceSharp.Documentation
         {
             parameterSet.ThrowIfNull(nameof(parameterSet));
             var result = new Dictionary<MemberDocumentation, T>();
-            foreach (var member in Parameters(parameterSet))
+            foreach (MemberDocumentation member in Parameters(parameterSet))
             {
                 if (member.Names == null || member.Names.Count == 0)
                     continue;
                 if (givenOnly)
                 {
-                    if (parameterSet.TryGetProperty<GivenParameter<T>>(member.Names[0], out var gp))
+                    if (parameterSet.TryGetProperty<GivenParameter<T>>(member.Names[0], out GivenParameter<T> gp))
                     {
                         if (gp.Given)
                             result.Add(member, gp.Value);
                         continue;
                     }
                 }
-                if (parameterSet.TryGetProperty<T>(member.Names[0], out var value))
+                if (parameterSet.TryGetProperty<T>(member.Names[0], out T value))
                     result.Add(member, value);
             }
             return new ReadOnlyDictionary<MemberDocumentation, T>(result);
@@ -170,8 +174,8 @@ namespace SpiceSharp.Documentation
         {
             parameterValues.ThrowIfNull(nameof(parameterValues));
             var sb = new StringBuilder(parameterValues.Count * 10);
-            bool first = true;
-            foreach (var value in parameterValues.Where(p => p.Key.IsParameter && p.Key.IsProperty))
+            var first = true;
+            foreach (KeyValuePair<MemberDocumentation, T> value in parameterValues.Where(p => p.Key.IsParameter && p.Key.IsProperty))
             {
                 if (first)
                     first = false;

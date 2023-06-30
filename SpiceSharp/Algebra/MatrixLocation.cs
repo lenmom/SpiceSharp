@@ -86,7 +86,10 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "({0},{1})".FormatString(Row, Column);
+        public override string ToString()
+        {
+            return "({0},{1})".FormatString(Row, Column);
+        }
 
         /// <summary>
         /// Implements the operator ==.
@@ -97,7 +100,9 @@ namespace SpiceSharp.Algebra
         /// The result of the operator.
         /// </returns>
         public static bool operator ==(MatrixLocation left, MatrixLocation right)
-            => left.Equals(right);
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -108,6 +113,8 @@ namespace SpiceSharp.Algebra
         /// The result of the operator.
         /// </returns>
         public static bool operator !=(MatrixLocation left, MatrixLocation right)
-            => !left.Equals(right);
+        {
+            return !left.Equals(right);
+        }
     }
 }

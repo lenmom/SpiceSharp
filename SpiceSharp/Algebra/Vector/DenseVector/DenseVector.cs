@@ -111,7 +111,7 @@ namespace SpiceSharp.Algebra
                 Expand(Math.Max(index1, index2));
             if (index1 == index2)
                 return;
-            var tmp = _values[index1];
+            T tmp = _values[index1];
             _values[index1] = _values[index2];
             _values[index2] = tmp;
         }
@@ -155,7 +155,10 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "Dense vector ({0})".FormatString(Length);
+        public override string ToString()
+        {
+            return "Dense vector ({0})".FormatString(Length);
+        }
 
         private void Expand(int newSize)
         {

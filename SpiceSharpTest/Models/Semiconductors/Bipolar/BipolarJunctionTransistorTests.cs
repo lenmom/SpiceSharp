@@ -9,7 +9,7 @@ namespace SpiceSharpTest.Models
     [TestFixture]
     public class BipolarJunctionTransistorTests : Framework
     {
-        BipolarJunctionTransistor CreateBJT(string name,
+        private BipolarJunctionTransistor CreateBJT(string name,
             string c, string b, string e, string subst,
             string model)
         {
@@ -18,7 +18,7 @@ namespace SpiceSharpTest.Models
             return bjt;
         }
 
-        BipolarJunctionTransistorModel CreateBJTModel(string name, string parameters)
+        private BipolarJunctionTransistorModel CreateBJTModel(string name, string parameters)
         {
             var bjtmodel = new BipolarJunctionTransistorModel(name);
             ApplyParameters(bjtmodel, parameters);
@@ -295,7 +295,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var tran = new Transient("tran", 1e-9, 10e-6);
             tran.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new RealVoltageExport(tran, "out") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(tran, "out") };
             Compare(tran, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -349,7 +349,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new ComplexVoltageExport(ac, "out") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

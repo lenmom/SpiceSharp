@@ -24,7 +24,7 @@ namespace SpiceSharp.Simulations
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         protected override void Initialize(object sender, EventArgs e)
         {
-            var state = Simulation.GetState<INoiseSimulationState>();
+            INoiseSimulationState state = Simulation.GetState<INoiseSimulationState>();
             Extractor = () => state.OutputNoiseDensity * state.Point.Value.InverseGainSquared;
         }
     }

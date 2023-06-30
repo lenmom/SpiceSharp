@@ -2,10 +2,9 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.CurrentControlledCurrentSources
 {
@@ -45,7 +44,7 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
             : base(context)
         {
             _complex = context.GetState<IComplexSimulationState>();
-            var behavior = context.Behaviors.GetValue<Biasing>();
+            Biasing behavior = context.Behaviors.GetValue<Biasing>();
 
             _variables = new OnePort<Complex>(_complex, context);
             _control = context.ControlBehaviors.GetValue<IBranchedBehavior<Complex>>().Branch;

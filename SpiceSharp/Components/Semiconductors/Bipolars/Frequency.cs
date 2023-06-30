@@ -1,9 +1,9 @@
 ﻿using SpiceSharp.Algebra;
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
-using SpiceSharp.Attributes;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Bipolars
 {
@@ -134,7 +134,7 @@ namespace SpiceSharp.Components.Bipolars
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var cstate = _complex;
+            IComplexSimulationState cstate = _complex;
             var gcpr = ModelTemperature.CollectorConduct * Parameters.Area;
             var gepr = ModelTemperature.EmitterConduct * Parameters.Area;
             var gpi = ConductancePi;
@@ -144,18 +144,18 @@ namespace SpiceSharp.Components.Bipolars
             var td = ModelTemperature.ExcessPhaseFactor;
             if (!td.Equals(0)) // Avoid computations
             {
-                var arg = td * cstate.Laplace;
+                Complex arg = td * cstate.Laplace;
 
                 gm += go;
                 gm *= Complex.Exp(-arg);
                 gm -= go;
             }
             var gx = ConductanceX;
-            var xcpi = CapBe * cstate.Laplace;
-            var xcmu = CapBc * cstate.Laplace;
-            var xcbx = CapBx * cstate.Laplace;
-            var xccs = CapCs * cstate.Laplace;
-            var xcmcb = Geqcb * cstate.Laplace;
+            Complex xcpi = CapBe * cstate.Laplace;
+            Complex xcmu = CapBc * cstate.Laplace;
+            Complex xcbx = CapBx * cstate.Laplace;
+            Complex xccs = CapCs * cstate.Laplace;
+            Complex xcmcb = Geqcb * cstate.Laplace;
 
             var m = Parameters.ParallelMultiplier;
             _elements.Add(

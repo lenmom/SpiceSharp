@@ -1,7 +1,5 @@
 ﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
 using SpiceSharp.Components.VoltageControlledCurrentSources;
-using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
@@ -57,9 +55,9 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         void IRuleSubject.Apply(IRules rules)
         {
-            var p = rules.GetParameterSet<ComponentRuleParameters>();
-            var nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
-            foreach (var rule in rules.GetRules<IConductiveRule>())
+            ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
+            IVariable[] nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
+            foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
                 rule.AddPath(this, ConductionTypes.None, nodes);
         }
     }

@@ -23,7 +23,7 @@ namespace SpiceSharp.Validation
         /// <param name="rules">The rules.</param>
         public GenericRules(params IRule[] rules)
         {
-            foreach (var rule in rules)
+            foreach (IRule rule in rules)
                 _rules.Add(rule);
         }
 
@@ -33,7 +33,7 @@ namespace SpiceSharp.Validation
         /// <param name="rules">The rules.</param>
         public GenericRules(IEnumerable<IRule> rules)
         {
-            foreach (var rule in rules)
+            foreach (IRule rule in rules)
                 _rules.Add(rule);
         }
 
@@ -45,7 +45,7 @@ namespace SpiceSharp.Validation
         /// </returns>
         public override IEnumerator<IRule> GetEnumerator()
         {
-            foreach (var rule in _rules)
+            foreach (IRule rule in _rules)
                 yield return rule;
         }
     }

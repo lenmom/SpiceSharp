@@ -1,4 +1,3 @@
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Mosfets.Level3
@@ -159,6 +158,8 @@ namespace SpiceSharp.Components.Mosfets.Level3
 
         /// <inheritdoc/>
         ModelParameters ICloneable<ModelParameters>.Clone()
-            => (ModelParameters)Clone();
+        {
+            return (ModelParameters)Clone();
+        }
     }
 }

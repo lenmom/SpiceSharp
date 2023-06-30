@@ -2,10 +2,9 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.CurrentControlledVoltageSources
 {

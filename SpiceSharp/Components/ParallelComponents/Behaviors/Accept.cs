@@ -1,5 +1,4 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using System;
 
 namespace SpiceSharp.Components.ParallelComponents
@@ -24,8 +23,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public Accept(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IAcceptBehavior), out var dist))
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IAcceptBehavior), out IWorkDistributor dist))
             {
                 _probeWorkload = new Workload(dist, parameters.Entities.Count);
                 _acceptWorkload = new Workload(dist, parameters.Entities.Count);
@@ -38,12 +37,12 @@ namespace SpiceSharp.Components.ParallelComponents
             _acceptBehaviors = context.GetBehaviors<IAcceptBehavior>();
             if (_acceptWorkload != null)
             {
-                foreach (var behavior in _acceptBehaviors)
+                foreach (IAcceptBehavior behavior in _acceptBehaviors)
                     _acceptWorkload.Actions.Add(behavior.Accept);
             }
             if (_probeWorkload != null)
             {
-                foreach (var behavior in _acceptBehaviors)
+                foreach (IAcceptBehavior behavior in _acceptBehaviors)
                     _probeWorkload.Actions.Add(behavior.Probe);
             }
         }
@@ -55,7 +54,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _probeWorkload.Execute();
             else
             {
-                foreach (var behavior in _acceptBehaviors)
+                foreach (IAcceptBehavior behavior in _acceptBehaviors)
                     behavior.Probe();
             }
         }
@@ -67,7 +66,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _acceptWorkload.Execute();
             else
             {
-                foreach (var behavior in _acceptBehaviors)
+                foreach (IAcceptBehavior behavior in _acceptBehaviors)
                     behavior.Accept();
             }
         }

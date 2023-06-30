@@ -19,7 +19,7 @@ namespace SpiceSharp.General
         {
             get
             {
-                var result = _dictionary[key];
+                TypeValues<V> result = _dictionary[key];
                 if (result.IsAmbiguous)
                     throw new AmbiguousTypeException(key);
                 return result.Value;
@@ -50,7 +50,7 @@ namespace SpiceSharp.General
             key.ThrowIfNull(nameof(key));
 
             // We should always be able to access the type by itself, so remove any ambiguous elements if necessary
-            if (_dictionary.TryGetValue(key, out var values))
+            if (_dictionary.TryGetValue(key, out TypeValues<V> values))
             {
                 if (values.IsDirect)
                     throw new ArgumentException(Properties.Resources.TypeAlreadyExists.FormatString(key.FullName));
@@ -63,7 +63,7 @@ namespace SpiceSharp.General
             values.Add(value, true);
             _values.Add(value);
 
-            foreach (var type in InheritanceCache.Get(key).Union(InterfaceCache.Get(key)))
+            foreach (Type type in InheritanceCache.Get(key).Union(InterfaceCache.Get(key)))
             {
                 if (!_dictionary.TryGetValue(type, out values))
                 {
@@ -78,12 +78,12 @@ namespace SpiceSharp.General
         public bool Remove(Type key, V value)
         {
             key.ThrowIfNull(nameof(key));
-            if (_dictionary.TryGetValue(key, out var values))
+            if (_dictionary.TryGetValue(key, out TypeValues<V> values))
             {
                 if (!values.IsDirect || !values.Value.Equals(value))
                     return false;
                 _values.Remove(value);
-                foreach (var type in InheritanceCache.Get(key).Union(InterfaceCache.Get(key)))
+                foreach (Type type in InheritanceCache.Get(key).Union(InterfaceCache.Get(key)))
                     _dictionary[type].Remove(value);
                 _dictionary.Remove(key);
                 return true;
@@ -99,16 +99,22 @@ namespace SpiceSharp.General
         }
 
         /// <inheritdoc/>
-        public bool ContainsKey(Type key) => _dictionary.ContainsKey(key.ThrowIfNull(nameof(key)));
+        public bool ContainsKey(Type key)
+        {
+            return _dictionary.ContainsKey(key.ThrowIfNull(nameof(key)));
+        }
 
         /// <inheritdoc/>
-        public bool Contains(V value) => _values.Contains(value.ThrowIfNull(nameof(value)));
+        public bool Contains(V value)
+        {
+            return _values.Contains(value.ThrowIfNull(nameof(value)));
+        }
 
         /// <inheritdoc/>
         public IEnumerable<V> GetAllValues(Type key)
         {
             key.ThrowIfNull(nameof(key));
-            if (_dictionary.TryGetValue(key, out var result))
+            if (_dictionary.TryGetValue(key, out TypeValues<V> result))
                 return result.Values.Cast<V>();
             return Enumerable.Empty<V>();
         }
@@ -117,7 +123,7 @@ namespace SpiceSharp.General
         public int GetValueCount(Type key)
         {
             key.ThrowIfNull(nameof(key));
-            if (_dictionary.TryGetValue(key, out var result))
+            if (_dictionary.TryGetValue(key, out TypeValues<V> result))
                 return result.Count;
             return 0;
         }
@@ -126,7 +132,7 @@ namespace SpiceSharp.General
         public bool TryGetValue(Type key, out V value)
         {
             key.ThrowIfNull(nameof(key));
-            if (_dictionary.TryGetValue(key, out var result))
+            if (_dictionary.TryGetValue(key, out TypeValues<V> result))
             {
                 if (result.IsAmbiguous)
                     throw new AmbiguousTypeException(key);

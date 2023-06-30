@@ -1,10 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System;
+using System.Linq;
 
 namespace SpiceSharpGenerator
 {
@@ -133,7 +133,7 @@ namespace SpiceSharpGenerator
         {
             if (syntaxNode is not AttributeSyntax attribute)
                 return;
-            if (_categories.TryGetValue(attribute.Name.GetText().ToString(), out var action))
+            if (_categories.TryGetValue(attribute.Name.GetText().ToString(), out Action<AttributeSyntax> action))
                 action(attribute);
         }
 

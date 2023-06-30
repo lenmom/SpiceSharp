@@ -165,11 +165,11 @@ namespace SpiceSharpTest.Algebra
         /// <param name="row"></param>
         /// <param name="col"></param>
         /// <param name="expected"></param>
-        void AssertInternal(ISparsePivotingSolver<double> solver, int row, int col, double expected)
+        private void AssertInternal(ISparsePivotingSolver<double> solver, int row, int col, double expected)
         {
             var indices = new MatrixLocation(row, col);
             indices = solver.InternalToExternal(indices);
-            var elt = solver.FindElement(indices);
+            Element<double> elt = solver.FindElement(indices);
             Assert.AreNotEqual(null, elt);
             Assert.AreEqual(expected, elt.Value);
         }

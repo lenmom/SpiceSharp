@@ -29,9 +29,9 @@ namespace SpiceSharp.Validation
         {
             get
             {
-                foreach (var rule in this)
+                foreach (IRule rule in this)
                 {
-                    foreach (var violation in rule.Violations)
+                    foreach (IRuleViolation violation in rule.Violations)
                         yield return violation;
                 }
             }
@@ -50,7 +50,7 @@ namespace SpiceSharp.Validation
         /// </summary>
         public virtual void Reset()
         {
-            foreach (var rule in this)
+            foreach (IRule rule in this)
                 rule.Reset();
         }
 
@@ -63,7 +63,7 @@ namespace SpiceSharp.Validation
         /// </returns>
         public IEnumerable<R> GetRules<R>() where R : IRule
         {
-            foreach (var rule in this)
+            foreach (IRule rule in this)
             {
                 if (rule is R r)
                     yield return r;
@@ -76,6 +76,9 @@ namespace SpiceSharp.Validation
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

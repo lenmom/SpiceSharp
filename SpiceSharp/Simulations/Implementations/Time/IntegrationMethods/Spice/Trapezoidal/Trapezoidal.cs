@@ -1,5 +1,4 @@
-﻿using SpiceSharp.ParameterSets;
-using SpiceSharp.Attributes;
+﻿using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -27,6 +26,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         /// <returns>
         /// The integration method.
         /// </returns>
-        public override IIntegrationMethod Create(IBiasingSimulationState state) => new Instance(this, state);
+        public override IIntegrationMethod Create(IBiasingSimulationState state)
+        {
+            return new Instance(this, state);
+        }
     }
 }

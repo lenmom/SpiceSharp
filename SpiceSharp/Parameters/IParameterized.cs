@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpiceSharp.ParameterSets
+﻿namespace SpiceSharp.ParameterSets
 {
     /// <summary>
     /// An interface that describes a class or struct that defines a parameter set

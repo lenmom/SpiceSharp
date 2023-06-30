@@ -1,4 +1,3 @@
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Mosfets.Level2
@@ -91,6 +90,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
         private GivenParameter<double> _junctionDepth;
 
         /// <inheritdoc/>
-        ModelParameters ICloneable<ModelParameters>.Clone() => (ModelParameters)Clone();
+        ModelParameters ICloneable<ModelParameters>.Clone()
+        {
+            return (ModelParameters)Clone();
+        }
     }
 }

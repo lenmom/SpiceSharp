@@ -22,7 +22,7 @@ namespace SpiceSharp.ParameterSets
                 return parameterized.Parameters;
             else
             {
-                foreach (var ps in ParameterSets)
+                foreach (IParameterSet ps in ParameterSets)
                 {
                     if (ps is P result)
                         return result;
@@ -41,7 +41,7 @@ namespace SpiceSharp.ParameterSets
             }
             else
             {
-                foreach (var ps in ParameterSets)
+                foreach (IParameterSet ps in ParameterSets)
                 {
                     if (ps is P result)
                     {
@@ -59,9 +59,9 @@ namespace SpiceSharp.ParameterSets
         {
             get
             {
-                foreach (var type in InterfaceCache.Get(GetType()).Where(t =>
+                foreach (Type type in InterfaceCache.Get(GetType()).Where(t =>
                 {
-                    var info = t.GetTypeInfo();
+                    TypeInfo info = t.GetTypeInfo();
                     return info.IsGenericType && info.GetGenericTypeDefinition() == typeof(IParameterized<>);
                 }))
                 {
@@ -75,7 +75,7 @@ namespace SpiceSharp.ParameterSets
         public override void SetParameter<P>(string name, P value)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TrySetParameter(name, value))
                     return;
@@ -87,7 +87,7 @@ namespace SpiceSharp.ParameterSets
         public override bool TrySetParameter<P>(string name, P value)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TrySetParameter(name, value))
                     return true;
@@ -99,7 +99,7 @@ namespace SpiceSharp.ParameterSets
         public override P GetProperty<P>(string name)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TryGetProperty(name, out P value))
                     return value;
@@ -111,7 +111,7 @@ namespace SpiceSharp.ParameterSets
         public override bool TryGetProperty<P>(string name, out P value)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TryGetProperty(name, out value))
                     return true;
@@ -123,9 +123,9 @@ namespace SpiceSharp.ParameterSets
         public override Action<P> CreateParameterSetter<P>(string name)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
-                var setter = ps.CreateParameterSetter<P>(name);
+                Action<P> setter = ps.CreateParameterSetter<P>(name);
                 if (setter != null)
                     return setter;
             }
@@ -136,9 +136,9 @@ namespace SpiceSharp.ParameterSets
         public override Func<P> CreatePropertyGetter<P>(string name)
         {
             // First try our parameter sets
-            foreach (var ps in ParameterSets)
+            foreach (IParameterSet ps in ParameterSets)
             {
-                var getter = ps.CreatePropertyGetter<P>(name);
+                Func<P> getter = ps.CreatePropertyGetter<P>(name);
                 if (getter != null)
                     return getter;
             }

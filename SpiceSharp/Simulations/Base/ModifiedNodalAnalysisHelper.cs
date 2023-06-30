@@ -108,7 +108,7 @@ namespace SpiceSharp.Simulations
                 // Add to the diagonal
                 for (var i = 1; i <= matrix.Size; i++)
                 {
-                    var diagonal = m.FindDiagonalElement(i);
+                    ISparseMatrixElement<double> diagonal = m.FindDiagonalElement(i);
                     if (diagonal != null)
                         diagonal.Value += gmin;
                 }
@@ -139,14 +139,14 @@ namespace SpiceSharp.Simulations
             var twins = 0;
 
             // Begin `CountTwins'.
-            var cTwin1 = matrix.GetFirstInColumn(column);
+            ISparseMatrixElement<T> cTwin1 = matrix.GetFirstInColumn(column);
             while (cTwin1 != null && cTwin1.Row <= size)
             {
                 // if (Math.Abs(pTwin1.Element.Magnitude) == 1.0)
                 if (Magnitude(cTwin1.Value).Equals(1.0))
                 {
                     var row = cTwin1.Row;
-                    var cTwin2 = matrix.GetFirstInColumn(row);
+                    ISparseMatrixElement<T> cTwin2 = matrix.GetFirstInColumn(row);
                     while (cTwin2 != null && cTwin2.Row != column)
                         cTwin2 = cTwin2.Below;
                     if (cTwin2 != null && Magnitude(cTwin2.Value).Equals(1.0))

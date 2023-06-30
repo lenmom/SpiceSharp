@@ -391,7 +391,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_PMOSDifferentialPair_Expect_Reference()
         {
-            var model = new Mosfet1Model("Model")
+            SpiceSharp.Entities.Entity model = new Mosfet1Model("Model")
                 .SetParameter("pmos", true)
                 .SetParameter("vto", -0.7)
                 .SetParameter("kp", 12.57e-4);
@@ -418,7 +418,7 @@ namespace SpiceSharpTest.Models
             var op = new OP("op");
             op.ExportSimulationData += (sender, args) =>
             {
-                var v = op.GetState<IBiasingSimulationState>().Solution;
+                SpiceSharp.Algebra.IVector<double> v = op.GetState<IBiasingSimulationState>().Solution;
             };
 
             // Disable source stepping and see if it converges
@@ -450,7 +450,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var dc = new DC("dc", "V1", 0.0, 5.0, 0.1);
             dc.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new RealVoltageExport(dc, "out") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(dc, "out") };
             Compare(dc, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -557,7 +557,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new ComplexVoltageExport(ac, "out") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

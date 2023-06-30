@@ -1,10 +1,9 @@
 ﻿using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Mosfets
 {
@@ -93,7 +92,7 @@ namespace SpiceSharp.Components.Mosfets
 
             // Charge oriented model parameters
             var gateSourceOverlapCap = ModelParameters.GateSourceOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
-            var gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor  * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
+            var gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
             var gateBulkOverlapCap = ModelParameters.GateBulkOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Properties.EffectiveLength;
 
             // Meyer"s model parameters

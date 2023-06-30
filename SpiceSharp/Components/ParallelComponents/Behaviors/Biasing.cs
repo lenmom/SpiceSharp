@@ -1,5 +1,4 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
 using System;
 
@@ -26,8 +25,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public Biasing(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IBiasingBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IBiasingBehavior), out IWorkDistributor dist) && dist != null)
             {
                 _loadWorkload = new Workload(dist, parameters.Entities.Count);
                 if (context.TryGetState(out IBiasingSimulationState bparent))
@@ -43,7 +42,7 @@ namespace SpiceSharp.Components.ParallelComponents
             _biasingBehaviors = context.GetBehaviors<IBiasingBehavior>();
             if (_loadWorkload != null)
             {
-                foreach (var behavior in _biasingBehaviors)
+                foreach (IBiasingBehavior behavior in _biasingBehaviors)
                     _loadWorkload.Actions.Add(behavior.Load);
             }
         }
@@ -59,7 +58,7 @@ namespace SpiceSharp.Components.ParallelComponents
             }
             else
             {
-                foreach (var behavior in _biasingBehaviors)
+                foreach (IBiasingBehavior behavior in _biasingBehaviors)
                     behavior.Load();
             }
         }

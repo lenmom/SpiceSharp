@@ -31,7 +31,10 @@ namespace SpiceSharp.Simulations
         }
 
         /// <inheritdoc/>
-        public double From(double value) => value;
+        public double From(double value)
+        {
+            return value;
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -71,7 +74,10 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => SI.GetHashCode() ^ 1.0.GetHashCode();
+        public override int GetHashCode()
+        {
+            return SI.GetHashCode() ^ 1.0.GetHashCode();
+        }
 
         /// <summary>
         /// Converts to string.
@@ -79,6 +85,9 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => _name;
+        public override string ToString()
+        {
+            return _name;
+        }
     }
 }

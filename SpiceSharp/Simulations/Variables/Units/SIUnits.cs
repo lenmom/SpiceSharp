@@ -87,11 +87,11 @@ namespace SpiceSharp.Simulations.Variables
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -107,7 +107,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         ///     <c>true</c> if the specified <see cref="SIUnits"/> is equal to this instance; otherwise <c>false</c>.
         /// </returns>
-        public bool Equals(SIUnits units) => _units == units._units;
+        public bool Equals(SIUnits units)
+        {
+            return _units == units._units;
+        }
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -115,7 +118,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => _units.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _units.GetHashCode();
+        }
 
         /// <summary>
         /// Converts to string.
@@ -178,7 +184,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(SIUnits left, SIUnits right) => left.Equals(right);
+        public static bool operator ==(SIUnits left, SIUnits right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -188,7 +197,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(SIUnits left, SIUnits right) => !left.Equals(right);
+        public static bool operator !=(SIUnits left, SIUnits right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator *.

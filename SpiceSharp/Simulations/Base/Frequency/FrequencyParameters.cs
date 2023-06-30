@@ -1,9 +1,9 @@
 ﻿using SpiceSharp.Algebra;
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations
 {
@@ -70,7 +70,9 @@ namespace SpiceSharp.Simulations
 
         /// <inheritdoc/>
         public FrequencyParameters Clone()
-            => (FrequencyParameters)MemberwiseClone();
+        {
+            return (FrequencyParameters)MemberwiseClone();
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the simulation should be validated.

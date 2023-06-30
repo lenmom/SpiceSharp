@@ -50,7 +50,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => (Local.GetHashCode() * 13) ^ Global.GetHashCode();
+        public override int GetHashCode()
+        {
+            return (Local.GetHashCode() * 13) ^ Global.GetHashCode();
+        }
 
         /// <summary>
         /// Implements the operator ==.
@@ -60,7 +63,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Bridge<T> left, Bridge<T> right) => left.Equals(right);
+        public static bool operator ==(Bridge<T> left, Bridge<T> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -70,7 +76,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(Bridge<T> left, Bridge<T> right) => !left.Equals(right);
+        public static bool operator !=(Bridge<T> left, Bridge<T> right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.

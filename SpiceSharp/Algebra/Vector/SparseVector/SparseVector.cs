@@ -109,7 +109,7 @@ namespace SpiceSharp.Algebra
                 return false;
 
             // Find the element
-            var element = _firstInVector;
+            Element element = _firstInVector;
             while (element != null)
             {
                 if (element.Index == index)
@@ -135,7 +135,7 @@ namespace SpiceSharp.Algebra
                 return _trashCan;
 
             // Find the element
-            var element = _firstInVector;
+            Element element = _firstInVector;
             while (element != null)
             {
                 if (element.Index == index)
@@ -148,10 +148,16 @@ namespace SpiceSharp.Algebra
         }
 
         /// <inheritdoc/>
-        public ISparseVectorElement<T> GetFirstInVector() => _firstInVector;
+        public ISparseVectorElement<T> GetFirstInVector()
+        {
+            return _firstInVector;
+        }
 
         /// <inheritdoc/>
-        public ISparseVectorElement<T> GetLastInVector() => _lastInVector;
+        public ISparseVectorElement<T> GetLastInVector()
+        {
+            return _lastInVector;
+        }
 
         /// <inheritdoc/>
         public void CopyTo(IVector<T> target)
@@ -183,7 +189,7 @@ namespace SpiceSharp.Algebra
             Element first = null, second = null;
 
             // Find first element
-            var element = _firstInVector;
+            Element element = _firstInVector;
             while (element != null)
             {
                 if (element.Index == index1)
@@ -211,7 +217,7 @@ namespace SpiceSharp.Algebra
         public void Reset()
         {
             _trashCan.Value = default;
-            var elt = _firstInVector;
+            Element elt = _firstInVector;
             while (elt != null)
             {
                 elt.Value = default;
@@ -235,11 +241,14 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "Sparse vector ({0})".FormatString(Length);
+        public override string ToString()
+        {
+            return "Sparse vector ({0})".FormatString(Length);
+        }
 
         private T GetVectorValue(int index)
         {
-            var element = FindElement(index);
+            Element<T> element = FindElement(index);
             if (element == null)
                 return default;
             return element.Value;
@@ -249,13 +258,13 @@ namespace SpiceSharp.Algebra
             if (value.Equals(default))
             {
                 // We don't need to create a new element unnecessarily
-                var element = FindElement(index);
+                Element<T> element = FindElement(index);
                 if (element != null)
                     element.Value = default;
             }
             else
             {
-                var element = GetElement(index);
+                Element<T> element = GetElement(index);
                 element.Value = value;
             }
         }
@@ -276,7 +285,7 @@ namespace SpiceSharp.Algebra
                 }
 
                 // Move the element back
-                var element = second.PreviousInVector;
+                Element element = second.PreviousInVector;
                 Remove(second);
                 while (element.PreviousInVector != null && element.PreviousInVector.Index > index1)
                     element = element.PreviousInVector;
@@ -301,7 +310,7 @@ namespace SpiceSharp.Algebra
                 }
 
                 // Move element forward
-                var element = first.NextInVector;
+                Element element = first.NextInVector;
                 Remove(first);
                 while (element.NextInVector != null && element.NextInVector.Index < index2)
                     element = element.NextInVector;
@@ -354,7 +363,7 @@ namespace SpiceSharp.Algebra
                     second.PreviousInVector.NextInVector = first;
 
                     // Swap element links
-                    var element = first.PreviousInVector;
+                    Element element = first.PreviousInVector;
                     first.PreviousInVector = second.PreviousInVector;
                     second.PreviousInVector = element;
 

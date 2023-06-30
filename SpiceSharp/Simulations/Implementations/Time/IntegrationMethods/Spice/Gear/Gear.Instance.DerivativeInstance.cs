@@ -52,7 +52,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 public JacobianInfo GetContributions(double coefficient)
                 {
                     var h = _method.Slope;
-                    var s = _states.Value.State;
+                    Algebra.IVector<double> s = _states.Value.State;
                     return new JacobianInfo(
                         h * coefficient,
                         s[_index + 1] - h * s[_index]);
@@ -60,19 +60,23 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                 /// <inheritdoc/>
                 public double GetPreviousValue(int index)
-                    => _states.GetPreviousValue(index).State[_index];
+                {
+                    return _states.GetPreviousValue(index).State[_index];
+                }
 
                 /// <inheritdoc/>
                 public double GetPreviousDerivative(int index)
-                    => _states.GetPreviousValue(index).State[_index + 1];
+                {
+                    return _states.GetPreviousValue(index).State[_index + 1];
+                }
 
                 /// <inheritdoc/>
                 public void Derive()
                 {
                     var derivativeIndex = _index + 1;
-                    var ag = _method.Coefficients;
+                    Algebra.DenseVector<double> ag = _method.Coefficients;
 
-                    var current = _states.Value.State;
+                    Algebra.IVector<double> current = _states.Value.State;
                     current[derivativeIndex] = 0.0;
                     for (var i = 0; i <= _method.Order; i++)
                         current[derivativeIndex] += ag[i + 1] * _states.GetPreviousValue(i).State[_index];
@@ -81,10 +85,10 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// <inheritdoc/>
                 public double Truncate()
                 {
-                    var parameters = _method.Parameters;
+                    SpiceMethod parameters = _method.Parameters;
                     var derivativeIndex = _index + 1;
-                    var current = _states.Value.State;
-                    var previous = _states.GetPreviousValue(1).State;
+                    Algebra.IVector<double> current = _states.Value.State;
+                    Algebra.IVector<double> previous = _states.GetPreviousValue(1).State;
 
                     var diff = new double[_method.MaxOrder + 2];
                     var deltmp = new double[_states.Length];
@@ -98,7 +102,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                     // Now compute divided differences
                     var j = 0;
-                    foreach (var state in _states)
+                    foreach (SpiceIntegrationState state in _states)
                     {
                         diff[j] = state.State[_index];
                         deltmp[j] = state.Delta;
@@ -117,7 +121,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                     }
 
                     // Calculate the new timestep
-                    double factor = double.NaN;
+                    var factor = double.NaN;
                     switch (_method.Order)
                     {
                         case 1:

@@ -1,8 +1,7 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Linq;
 using System;
+using System.Linq;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -35,8 +34,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public Noise(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(INoiseBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(INoiseBehavior), out IWorkDistributor dist) && dist != null)
             {
                 _noiseInitializeWorkload = new Workload(dist, parameters.Entities.Count);
                 _noiseComputeWorkload = new Workload(dist, parameters.Entities.Count);
@@ -51,12 +50,12 @@ namespace SpiceSharp.Components.ParallelComponents
             _noiseBehaviors = context.GetBehaviors<INoiseBehavior>();
             if (_noiseInitializeWorkload != null)
             {
-                foreach (var behavior in _noiseBehaviors)
+                foreach (INoiseBehavior behavior in _noiseBehaviors)
                     _noiseInitializeWorkload.Actions.Add(behavior.Initialize);
             }
             if (_noiseComputeWorkload != null)
             {
-                foreach (var behavior in _noiseBehaviors)
+                foreach (INoiseBehavior behavior in _noiseBehaviors)
                     _noiseComputeWorkload.Actions.Add(behavior.Compute);
             }
         }
@@ -68,7 +67,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _noiseInitializeWorkload.Execute();
             else
             {
-                foreach (var behavior in _noiseBehaviors)
+                foreach (INoiseBehavior behavior in _noiseBehaviors)
                     behavior.Initialize();
             }
         }
@@ -80,7 +79,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _noiseComputeWorkload.Execute();
             else
             {
-                foreach (var behavior in _noiseBehaviors)
+                foreach (INoiseBehavior behavior in _noiseBehaviors)
                     behavior.Compute();
             }
         }

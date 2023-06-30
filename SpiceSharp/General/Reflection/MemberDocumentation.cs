@@ -1,8 +1,7 @@
-﻿using System;
+﻿using SpiceSharp.Attributes;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Documentation
 {
@@ -125,7 +124,7 @@ namespace SpiceSharp.Documentation
                     break;
 
                 case MethodInfo methodInfo:
-                    var parameters = methodInfo.GetParameters();
+                    ParameterInfo[] parameters = methodInfo.GetParameters();
                     if (parameters.Length == 0)
                     {
                         IsProperty = true;
@@ -145,7 +144,7 @@ namespace SpiceSharp.Documentation
 
             // Go through the attributes and figure our what its properties are
             var names = new List<string>();
-            foreach (var attribute in Member.GetCustomAttributes())
+            foreach (Attribute attribute in Member.GetCustomAttributes())
             {
                 switch (attribute)
                 {

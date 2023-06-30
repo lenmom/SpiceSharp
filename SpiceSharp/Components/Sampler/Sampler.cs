@@ -1,11 +1,10 @@
-﻿using SpiceSharp.Entities;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Components.SamplerBehaviors;
+using SpiceSharp.Entities;
+using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
-using SpiceSharp.Components.SamplerBehaviors;
-using SpiceSharp.ParameterSets;
-using SpiceSharp.Behaviors;
 using System.Collections.Generic;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components
 {

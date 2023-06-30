@@ -1,6 +1,5 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -37,7 +36,7 @@ namespace SpiceSharp.Components.Diodes
             : base(context)
         {
             _time = context.GetState<ITimeSimulationState>();
-            var method = context.GetState<IIntegrationMethod>();
+            IIntegrationMethod method = context.GetState<IIntegrationMethod>();
             _capCharge = method.CreateDerivative();
         }
 
@@ -67,7 +66,7 @@ namespace SpiceSharp.Components.Diodes
             // Integrate
             _capCharge.Value = LocalCapCharge;
             _capCharge.Derive();
-            var info = _capCharge.GetContributions(LocalCapacitance, vd);
+            JacobianInfo info = _capCharge.GetContributions(LocalCapacitance, vd);
             var geq = info.Jacobian * m / n;
             var ceq = info.Rhs * m;
 

@@ -83,9 +83,9 @@ namespace SpiceSharpTest.Models
 
             // Make the simulation and run it
             var dc = new OP("op");
-            var ex = Assert.Throws<ValidationFailedException>(() => dc.Run(ckt));
+            ValidationFailedException ex = Assert.Throws<ValidationFailedException>(() => dc.Run(ckt));
             Assert.AreEqual(2, ex.Rules.ViolationCount);
-            var violations = ex.Rules.Violations.ToArray();
+            IRuleViolation[] violations = ex.Rules.Violations.ToArray();
             Assert.IsInstanceOf<FloatingNodeRuleViolation>(violations[0]);
             Assert.AreEqual("out", ((FloatingNodeRuleViolation)violations[0]).FloatingVariable.Name);
             Assert.IsInstanceOf<FloatingNodeRuleViolation>(violations[1]);
@@ -107,7 +107,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "ref", "0", 1.0));
 
             var op = new OP("op");
-            var exports = new[] { new RealVoltageExport(op, "ref") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(op, "ref") };
             Compare(op, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -129,7 +129,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "ref", "0", 1.0));
 
             var ac = new AC("ac");
-            var exports = new[] { new ComplexVoltageExport(ac, "ref") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "ref") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

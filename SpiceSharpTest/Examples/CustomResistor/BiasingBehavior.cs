@@ -31,7 +31,7 @@ namespace SpiceSharp.Components.NonlinearResistorBehaviors
             _baseConfig = context.GetSimulationParameterSet<BiasingParameters>();
 
             // Request the node variables
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _nodeA = state.GetSharedVariable(context.Nodes[0]);
             _nodeB = state.GetSharedVariable(context.Nodes[1]);
 

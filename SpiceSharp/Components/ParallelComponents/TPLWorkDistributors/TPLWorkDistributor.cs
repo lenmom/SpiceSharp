@@ -15,7 +15,7 @@ namespace SpiceSharp.Components.ParallelComponents
         {
             methods.ThrowIfNull(nameof(methods));
             var tasks = new Task[methods.Count];
-            for (int i = 0; i < methods.Count; i++)
+            for (var i = 0; i < methods.Count; i++)
                 tasks[i] = Task.Run(methods[i]);
             Task.WaitAll(tasks);
         }

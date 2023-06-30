@@ -26,7 +26,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void ITemperatureBehavior.Temperature()
         {
-            foreach (var behavior in Behaviors)
+            foreach (ITemperatureBehavior behavior in Behaviors)
                 behavior.Temperature();
         }
     }

@@ -71,7 +71,7 @@ namespace SpiceSharp.Simulations.Histories
         /// </summary>
         public void Accept()
         {
-            var tmp = _history[Length - 1];
+            T tmp = _history[Length - 1];
             for (var i = Length - 1; i > 0; i--)
                 _history[i] = _history[i - 1];
             _history[0] = tmp;
@@ -131,6 +131,9 @@ namespace SpiceSharp.Simulations.Histories
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => _history.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _history.GetEnumerator();
+        }
     }
 }

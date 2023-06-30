@@ -2,8 +2,8 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.LosslessTransmissionLines
 {
@@ -165,8 +165,8 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var laplace = _complex.Laplace;
-            var factor = Complex.Exp(-laplace * Parameters.Delay.Value);
+            Complex laplace = _complex.Laplace;
+            Complex factor = Complex.Exp(-laplace * Parameters.Delay.Value);
             var y = Parameters.Admittance * Parameters.ParallelMultiplier;
             var z = Parameters.Impedance / Parameters.ParallelMultiplier;
             _elements.Add(

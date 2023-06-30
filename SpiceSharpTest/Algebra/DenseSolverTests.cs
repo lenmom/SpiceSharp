@@ -10,7 +10,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_SimpleMatrix_Expect_Reference()
         {
-            double[][] matrix = new[]
+            var matrix = new[]
             {
                 new[] { 1.0, 1.0, 1.0, 1.0 },
                 new[] { 0.0, 2.0, 0.0, 0.0 },

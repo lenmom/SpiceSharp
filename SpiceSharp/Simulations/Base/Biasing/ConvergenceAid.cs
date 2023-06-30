@@ -64,14 +64,14 @@ namespace SpiceSharp.Simulations
         {
             // Clear the row
             var hasOtherTypes = false;
-            foreach (var v in _state.Map)
+            foreach (System.Collections.Generic.KeyValuePair<IVariable, int> v in _state.Map)
             {
                 // If the variable is a current, then we can't just set it to 0... 
                 if (v.Key.Unit != Units.Volt)
                     hasOtherTypes = true;
                 else
                 {
-                    var elt = _state.Solver.FindElement(new MatrixLocation(_index, v.Value));
+                    Element<double> elt = _state.Solver.FindElement(new MatrixLocation(_index, v.Value));
                     if (elt != null)
                         elt.Value = 0.0;
                 }

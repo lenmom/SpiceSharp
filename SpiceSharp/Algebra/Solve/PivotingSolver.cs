@@ -1,6 +1,6 @@
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
 using System;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -176,7 +176,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "Pivoting solver ({0}x{1})".FormatString(Size, Size + 1);
+        public override string ToString()
+        {
+            return "Pivoting solver ({0}x{1})".FormatString(Size, Size + 1);
+        }
 
         /// <inheritdoc/>
         public abstract void Solve(IVector<T> solution);

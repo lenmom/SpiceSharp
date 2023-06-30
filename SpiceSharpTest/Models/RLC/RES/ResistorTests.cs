@@ -19,8 +19,8 @@ namespace SpiceSharpTest.Models
             var op = new OP("op");
             op.AfterLoad += (sender, args) =>
             {
-                var solver = op.GetState<IBiasingSimulationState>().Solver;
-                var elt = solver.FindElement(new SpiceSharp.Algebra.MatrixLocation(1, 1));
+                SpiceSharp.Algebra.ISparsePivotingSolver<double> solver = op.GetState<IBiasingSimulationState>().Solver;
+                SpiceSharp.Algebra.Element<double> elt = solver.FindElement(new SpiceSharp.Algebra.MatrixLocation(1, 1));
                 Assert.AreEqual(1.0 / SpiceSharp.Components.Resistors.Parameters.MinimumResistance, elt.Value, 1e-20);
             };
             op.Run(ckt);
@@ -73,7 +73,7 @@ namespace SpiceSharpTest.Models
         /// <param name="dcVoltage">DC voltage</param>
         /// <param name="resistance">Resistance</param>
         /// <returns></returns>
-        static Circuit CreateResistorDcCircuit(double dcVoltage, double resistance)
+        private static Circuit CreateResistorDcCircuit(double dcVoltage, double resistance)
         {
             var ckt = new Circuit(
                 new VoltageSource("V1", "IN", "0", dcVoltage),
@@ -90,7 +90,7 @@ namespace SpiceSharpTest.Models
              * The test verifies that after OP simulation:
              * 1) a current through resistor is 0.01 A (Ohms law)
              */
-            var ckt = CreateResistorDcCircuit(10, 1000);
+            Circuit ckt = CreateResistorDcCircuit(10, 1000);
 
             // Create simulation, exports and references
             var op = new OP("op");
@@ -111,7 +111,7 @@ namespace SpiceSharpTest.Models
              * The test verifies that after AC simulation:
              * 1) a current through resistor is 0.01 A (Ohms law)
              */
-            var ckt = CreateResistorDcCircuit(10, 1000);
+            Circuit ckt = CreateResistorDcCircuit(10, 1000);
             ckt["V1"].SetParameter("acmag", 1.0);
 
             // Create simulation, exports and references
@@ -129,7 +129,7 @@ namespace SpiceSharpTest.Models
         /// <param name="resistance1">Resistance 1</param>
         /// <param name="resistance2">Resistance 2</param>
         /// <returns></returns>
-        static Circuit CreateVoltageDividerResistorDcCircuit(double dcVoltage, double resistance1, double resistance2)
+        private static Circuit CreateVoltageDividerResistorDcCircuit(double dcVoltage, double resistance1, double resistance2)
         {
             var ckt = new Circuit(
                 new VoltageSource("V1", "IN", "0", dcVoltage),
@@ -148,7 +148,7 @@ namespace SpiceSharpTest.Models
              * The test verifies that after OP simulation:
              * 1) voltage at "OUT" node is ((R1 + R2) / (R1 * R2)) * V 
              */
-            var ckt = CreateVoltageDividerResistorDcCircuit(100, 3, 1);
+            Circuit ckt = CreateVoltageDividerResistorDcCircuit(100, 3, 1);
 
             // Create simulation, exports and references
             var op = new OP("op");
@@ -167,7 +167,7 @@ namespace SpiceSharpTest.Models
         /// <param name="resistance1">Resistance 1</param>
         /// <param name="resistance2">Resistance 2</param>
         /// <returns></returns>
-        static Circuit CreateParallelResistorsDcCircuit(double dcVoltage, double resistance1, double resistance2)
+        private static Circuit CreateParallelResistorsDcCircuit(double dcVoltage, double resistance1, double resistance2)
         {
             var ckt = new Circuit(
                 new VoltageSource("V1", "IN", "0", dcVoltage),
@@ -188,7 +188,7 @@ namespace SpiceSharpTest.Models
             double dc = 100;
             var r1 = 2.0;
             var r2 = 1.0;
-            var ckt = CreateParallelResistorsDcCircuit(dc, r1, r2);
+            Circuit ckt = CreateParallelResistorsDcCircuit(dc, r1, r2);
 
             // Create simulation, exports and references
             var op = new OP("op");

@@ -53,7 +53,7 @@ namespace SpiceSharp.Components.VoltageDelays
         /// <inheritdoc/>
         void ITimeBehavior.InitializeStates()
         {
-            var sol = _biasing.Solution;
+            IVector<double> sol = _biasing.Solution;
             var input = sol[_contPosNode] - sol[_contNegNode];
             Signal.SetProbedValues(input);
         }
@@ -61,7 +61,7 @@ namespace SpiceSharp.Components.VoltageDelays
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var sol = _biasing.Solution;
+            IVector<double> sol = _biasing.Solution;
             var input = sol[_contPosNode] - sol[_contNegNode];
             Signal.SetProbedValues(input);
 
@@ -70,7 +70,7 @@ namespace SpiceSharp.Components.VoltageDelays
             else
             {
                 BiasingElements.Add(1, -1, 1, -1);
-                double c = Signal.InputDerivative;
+                var c = Signal.InputDerivative;
                 _elements.Add(-c, c, Signal.Values[0]);
             }
         }

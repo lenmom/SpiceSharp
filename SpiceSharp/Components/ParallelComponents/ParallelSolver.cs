@@ -19,10 +19,16 @@ namespace SpiceSharp.Components.ParallelComponents
         private readonly List<BridgeElement> _bridgeElements = new List<BridgeElement>();
 
         /// <inheritdoc/>
-        P IParameterSetCollection.GetParameterSet<P>() => _parent.GetParameterSet<P>();
+        P IParameterSetCollection.GetParameterSet<P>()
+        {
+            return _parent.GetParameterSet<P>();
+        }
 
         /// <inheritdoc/>
-        bool IParameterSetCollection.TryGetParameterSet<P>(out P value) => _parent.TryGetParameterSet(out value);
+        bool IParameterSetCollection.TryGetParameterSet<P>(out P value)
+        {
+            return _parent.TryGetParameterSet(out value);
+        }
 
         /// <inheritdoc/>
         IEnumerable<IParameterSet> IParameterSetCollection.ParameterSets => _parent.ParameterSets;
@@ -77,7 +83,9 @@ namespace SpiceSharp.Components.ParallelComponents
 
         /// <inheritdoc/>
         void IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.Precondition(PreconditioningMethod<ISparseMatrix<T>, ISparseVector<T>, T> method)
-            => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.Precondition)));
+        {
+            throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.Precondition)));
+        }
 
         /// <inheritdoc/>
         void ISolver<T>.Clear()
@@ -88,16 +96,20 @@ namespace SpiceSharp.Components.ParallelComponents
 
         /// <inheritdoc/>
         bool ISolver<T>.Factor()
-            => throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.Factor)));
+        {
+            throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.Factor)));
+        }
 
         /// <inheritdoc/>
         int IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor()
-            => throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor)));
+        {
+            throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor)));
+        }
 
         /// <inheritdoc/>
         public Element<T> FindElement(MatrixLocation location)
         {
-            var elt = _parent.FindElement(location);
+            Element<T> elt = _parent.FindElement(location);
             if (elt == null)
                 return null;
             if (_sharedMatrixElements.Contains(location))
@@ -115,7 +127,7 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <inheritdoc/>
         public Element<T> FindElement(int row)
         {
-            var elt = _parent.FindElement(row);
+            Element<T> elt = _parent.FindElement(row);
             if (elt == null)
                 return null;
             if (_sharedVectorElements.Contains(row))
@@ -132,7 +144,7 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <inheritdoc/>
         public Element<T> GetElement(MatrixLocation location)
         {
-            var elt = _parent.GetElement(location);
+            Element<T> elt = _parent.GetElement(location);
             if (_sharedMatrixElements.Contains(location))
             {
                 var bridge = new BridgeElement(elt);
@@ -145,13 +157,15 @@ namespace SpiceSharp.Components.ParallelComponents
         }
 
         /// <inheritdoc/>
-        public bool RemoveElement(MatrixLocation location) =>
+        public bool RemoveElement(MatrixLocation location)
+        {
             throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor)));
+        }
 
         /// <inheritdoc/>
         public Element<T> GetElement(int row)
         {
-            var elt = _parent.GetElement(row);
+            Element<T> elt = _parent.GetElement(row);
             if (_sharedVectorElements.Contains(row))
             {
                 var bridge = new BridgeElement(elt);
@@ -165,58 +179,86 @@ namespace SpiceSharp.Components.ParallelComponents
 
         /// <inheritdoc/>
         public bool RemoveElement(int index)
-            => throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor)));
+        {
+            throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.OrderAndFactor)));
+        }
 
         /// <summary>
         /// Clears all matrix and vector elements.
         /// </summary>
         public void Reset()
         {
-            foreach (var bridge in _bridgeElements)
+            foreach (BridgeElement bridge in _bridgeElements)
                 bridge.Value = default;
         }
 
         /// <inheritdoc/>
         void ISolver<T>.Solve(IVector<T> solution)
-            => throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.Solve)));
+        {
+            throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.Solve)));
+        }
 
         /// <inheritdoc/>
         void ISolver<T>.SolveTransposed(IVector<T> solution)
-            => throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.SolveTransposed)));
+        {
+            throw new SpiceSharpException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(ISolver<T>.SolveTransposed)));
+        }
 
         /// <inheritdoc/>
         MatrixLocation IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.InternalToExternal(MatrixLocation location)
-            => _parent.InternalToExternal(location);
+        {
+            return _parent.InternalToExternal(location);
+        }
 
         /// <inheritdoc/>
         MatrixLocation IPivotingSolver<ISparseMatrix<T>, ISparseVector<T>, T>.ExternalToInternal(MatrixLocation location)
-            => _parent.ExternalToInternal(location);
+        {
+            return _parent.ExternalToInternal(location);
+        }
 
         /// <summary>
         /// Applies all bridge elements.
         /// </summary>
         public void Apply()
         {
-            foreach (var bridge in _bridgeElements)
+            foreach (BridgeElement bridge in _bridgeElements)
                 bridge.Apply();
         }
 
         /// <inheritdoc/>
-        public void SetParameter<P>(string name, P value) => _parent.SetParameter(name, value);
+        public void SetParameter<P>(string name, P value)
+        {
+            _parent.SetParameter(name, value);
+        }
 
         /// <inheritdoc/>
-        public bool TrySetParameter<P>(string name, P value) => _parent.TrySetParameter(name, value);
+        public bool TrySetParameter<P>(string name, P value)
+        {
+            return _parent.TrySetParameter(name, value);
+        }
 
         /// <inheritdoc/>
-        public P GetProperty<P>(string name) => _parent.GetProperty<P>(name);
+        public P GetProperty<P>(string name)
+        {
+            return _parent.GetProperty<P>(name);
+        }
 
         /// <inheritdoc/>
-        public bool TryGetProperty<P>(string name, out P value) => _parent.TryGetProperty(name, out value);
+        public bool TryGetProperty<P>(string name, out P value)
+        {
+            return _parent.TryGetProperty(name, out value);
+        }
 
         /// <inheritdoc/>
-        public Action<P> CreateParameterSetter<P>(string name) => _parent.CreateParameterSetter<P>(name);
+        public Action<P> CreateParameterSetter<P>(string name)
+        {
+            return _parent.CreateParameterSetter<P>(name);
+        }
 
         /// <inheritdoc/>
-        public Func<P> CreatePropertyGetter<P>(string name) => _parent.CreatePropertyGetter<P>(name);
+        public Func<P> CreatePropertyGetter<P>(string name)
+        {
+            return _parent.CreatePropertyGetter<P>(name);
+        }
     }
 }

@@ -31,7 +31,7 @@ namespace SpiceSharp.Components.NoiseSources
         /// </summary>
         public void Compute(double current)
         {
-            var val = _variables.Positive.Value - _variables.Negative.Value;
+            Complex val = _variables.Positive.Value - _variables.Negative.Value;
             var gain = val.Real * val.Real + val.Imaginary * val.Imaginary;
             OutputNoiseDensity = 2.0 * Constants.Charge * Math.Abs(current) * gain;
         }

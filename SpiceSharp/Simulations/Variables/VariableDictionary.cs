@@ -56,7 +56,7 @@ namespace SpiceSharp.Simulations
             get
             {
                 name.ThrowIfNull(nameof(name));
-                if (_map.TryGetValue(name, out var node))
+                if (_map.TryGetValue(name, out V node))
                     return node;
                 throw new KeyNotFoundException(Properties.Resources.VariableNotFound.FormatString(name));
             }
@@ -102,7 +102,10 @@ namespace SpiceSharp.Simulations
         /// <c>true</c> if the read-only dictionary contains an element that has the specified key; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="key"/> is <c>null</c>.</exception>
-        public bool ContainsKey(string key) => _map.ContainsKey(key);
+        public bool ContainsKey(string key)
+        {
+            return _map.ContainsKey(key);
+        }
 
         /// <summary>
         /// Gets the value that is associated with the specified key.
@@ -113,7 +116,10 @@ namespace SpiceSharp.Simulations
         /// <c>true</c> if the dictionary contains an element that has the specified key; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="key"/> is <c>null</c>.</exception>
-        public bool TryGetValue(string key, out V value) => _map.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out V value)
+        {
+            return _map.TryGetValue(key, out value);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -121,7 +127,14 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<string, V>> GetEnumerator() => _map.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerator<KeyValuePair<string, V>> GetEnumerator()
+        {
+            return _map.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

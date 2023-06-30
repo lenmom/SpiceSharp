@@ -1,8 +1,8 @@
 using SpiceSharp.Algebra;
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.Generic;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations
 {
@@ -157,7 +157,7 @@ namespace SpiceSharp.Simulations
         {
             var clone = (BiasingParameters)MemberwiseClone();
             clone.Nodesets = new Dictionary<string, double>();
-            foreach (var pair in Nodesets)
+            foreach (KeyValuePair<string, double> pair in Nodesets)
                 clone.Nodesets.Add(pair.Key, pair.Value);
             return clone;
         }

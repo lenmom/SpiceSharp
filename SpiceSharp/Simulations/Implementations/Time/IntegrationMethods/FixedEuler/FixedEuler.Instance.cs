@@ -66,10 +66,16 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             }
 
             /// <inheritdoc/>
-            public IVector<double> GetPreviousSolution(int index) => null;
+            public IVector<double> GetPreviousSolution(int index)
+            {
+                return null;
+            }
 
             /// <inheritdoc/>
-            public double GetPreviousTimestep(int index) => _parameters.Step;
+            public double GetPreviousTimestep(int index)
+            {
+                return _parameters.Step;
+            }
 
             /// <inheritdoc/>
             public void Initialize()
@@ -108,10 +114,10 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             {
                 if (BaseTime.Equals(0.0))
                 {
-                    foreach (var state in _states)
+                    foreach (IVector<double> state in _states)
                         _states.Value.CopyTo(state);
                 }
-                foreach (var state in _registeredStates)
+                foreach (IIntegrationState state in _registeredStates)
                     state.Accept();
             }
 

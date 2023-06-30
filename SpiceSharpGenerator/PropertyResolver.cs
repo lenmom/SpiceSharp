@@ -32,7 +32,7 @@ namespace SpiceSharpGenerator
         private IEnumerable<string> GetCode()
         {
             Generated.Clear();
-            foreach (var (field, trivia) in _fields)
+            foreach ((IFieldSymbol field, SyntaxTriviaList trivia) in _fields)
             {
                 var g = new GeneratedProperty(field);
                 Generated.Add(g);
@@ -50,7 +50,7 @@ namespace SpiceSharpGenerator
                 var checks = new List<string>(4);
                 sb.Append("[");
                 var isFirst = true;
-                foreach (var attribute in field.GetAttributes())
+                foreach (AttributeData attribute in field.GetAttributes())
                 {
                     if (attribute.IsAttribute("LessThanAttribute"))
                         checks.Add($"Utility.LessThan(value, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");

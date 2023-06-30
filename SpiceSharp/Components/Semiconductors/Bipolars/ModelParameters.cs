@@ -1,5 +1,5 @@
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Components.Bipolars
 {

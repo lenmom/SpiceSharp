@@ -1,6 +1,5 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Validation;
 using System;
@@ -66,9 +65,9 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         void IRuleSubject.Apply(IRules rules)
         {
-            var p = rules.GetParameterSet<ComponentRuleParameters>();
-            var nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
-            foreach (var rule in rules.GetRules<IConductiveRule>())
+            ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
+            Simulations.IVariable[] nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
+            foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
                 rule.AddPath(this, ConductionTypes.None, nodes[0], nodes[1]);
         }
     }

@@ -77,7 +77,7 @@ namespace SpiceSharp.Algebra
             /// <returns>The element at the specified column, or <c>null</c> if the element doesn't exist.</returns>
             public Element Find(int column)
             {
-                var element = FirstInRow;
+                Element element = FirstInRow;
                 while (element != null)
                 {
                     if (element.Column == column)
@@ -139,7 +139,7 @@ namespace SpiceSharp.Algebra
                     }
 
                     // Move the element back
-                    var element = second.Left;
+                    Element element = second.Left;
                     Remove(second);
                     while (element.Left != null && element.Left.Column > columnFirst)
                         element = element.Left;
@@ -164,7 +164,7 @@ namespace SpiceSharp.Algebra
                     }
 
                     // Move the element forward
-                    var element = first.Right;
+                    Element element = first.Right;
                     Remove(first);
                     while (element.Right != null && element.Right.Column < columnSecond)
                         element = element.Right;
@@ -217,7 +217,7 @@ namespace SpiceSharp.Algebra
                         second.Left.Right = first;
 
                         // Swap element links
-                        var element = first.Left;
+                        Element element = first.Left;
                         first.Left = second.Left;
                         second.Left = element;
 

@@ -376,7 +376,7 @@ namespace SpiceSharpTest.Models
             // Build the simulation
             var tran = new Transient("tran", 1e-6, 20e-6);
             CompareAbsTol = 1e-6; // Relaxing constraints, I believe this is because the match is not "perfect" with the series resistor
-            var exports = new[] { new RealVoltageExport(tran, "a"), new RealVoltageExport(tran, "b") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(tran, "a"), new RealVoltageExport(tran, "b") };
             Compare(tran, ckt_ref, ckt_act, exports);
         }
 
@@ -408,7 +408,7 @@ namespace SpiceSharpTest.Models
             // Build the simulation
             var ac = new AC("tran", new DecadeSweep(0.1, 1e8, 5));
             CompareAbsTol = 1e-6; // Relaxing constraints, I believe this is because the match is not "perfect" with the series resistor
-            var exports = new[] { new ComplexVoltageExport(ac, "a"), new ComplexVoltageExport(ac, "b") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "a"), new ComplexVoltageExport(ac, "b") };
             Compare(ac, ckt_ref, ckt_act, exports);
         }
     }

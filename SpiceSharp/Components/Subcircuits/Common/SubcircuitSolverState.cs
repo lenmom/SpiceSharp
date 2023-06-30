@@ -138,8 +138,14 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<string, IVariable<T>>> GetEnumerator() => Parent.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, IVariable<T>>> GetEnumerator()
+        {
+            return Parent.GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

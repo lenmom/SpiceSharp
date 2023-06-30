@@ -47,14 +47,14 @@ namespace SpiceSharp.Components.Mosfets
         /// <param name="factory">The variable factory.</param>
         public MosfetVariables(IComponentBindingContext context, IVariableFactory<IVariable<T>> factory)
         {
-            var nodes = context.Nodes.CheckNodes(4);
+            IReadOnlyList<string> nodes = context.Nodes.CheckNodes(4);
             Drain = factory.GetSharedVariable(nodes[0]);
             Gate = factory.GetSharedVariable(nodes[1]);
             Source = factory.GetSharedVariable(nodes[2]);
             Bulk = factory.GetSharedVariable(nodes[3]);
-            var bp = context.GetParameterSet<Parameters>();
-            var mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
-            
+            Parameters bp = context.GetParameterSet<Parameters>();
+            ModelParameters mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
+
             if (!mbp.DrainResistance.Equals(0.0) || !mbp.SheetResistance.Equals(0.0) && bp.DrainSquares > 0)
                 DrainPrime = factory.CreatePrivateVariable(context.Behaviors.Name.Combine("drain"), Units.Volt);
             else
@@ -181,7 +181,10 @@ namespace SpiceSharp.Components.Mosfets
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(MosfetVariables<T> left, MosfetVariables<T> right) => left.Equals(right);
+        public static bool operator ==(MosfetVariables<T> left, MosfetVariables<T> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -191,6 +194,9 @@ namespace SpiceSharp.Components.Mosfets
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(MosfetVariables<T> left, MosfetVariables<T> right) => !left.Equals(right);
+        public static bool operator !=(MosfetVariables<T> left, MosfetVariables<T> right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using System;
 
 namespace SpiceSharp.Components.Inductors

@@ -1,5 +1,5 @@
-﻿using System;
-using SpiceSharp.Diagnostics;
+﻿using SpiceSharp.Diagnostics;
+using System;
 
 namespace SpiceSharp.ParameterSets
 {
@@ -21,7 +21,7 @@ namespace SpiceSharp.ParameterSets
             // If we have a generic implementation for it, use that instead
             if (this is IImportParameterSet<P> ips)
             {
-                var method = ips.GetParameterSetter(name);
+                Action<P> method = ips.GetParameterSetter(name);
                 if (method != null)
                 {
                     method.Invoke(value);
@@ -37,7 +37,7 @@ namespace SpiceSharp.ParameterSets
             // If we have a generic implementation for it, use that instead
             if (this is IImportParameterSet<P> ips)
             {
-                var method = ips.GetParameterSetter(name);
+                Action<P> method = ips.GetParameterSetter(name);
                 if (method != null)
                 {
                     method.Invoke(value);
@@ -53,7 +53,7 @@ namespace SpiceSharp.ParameterSets
             // If we have a generic implementation for it, use that instead
             if (this is IExportPropertySet<P> eps)
             {
-                var method = eps.GetPropertyGetter(name);
+                Func<P> method = eps.GetPropertyGetter(name);
                 if (method != null)
                     return method.Invoke();
             }
@@ -66,7 +66,7 @@ namespace SpiceSharp.ParameterSets
             // If we have a generic implementation for it, use that instead
             if (this is IExportPropertySet<P> eps)
             {
-                var method = eps.GetPropertyGetter(name);
+                Func<P> method = eps.GetPropertyGetter(name);
                 if (method != null)
                 {
                     value = method.Invoke();
@@ -104,6 +104,9 @@ namespace SpiceSharp.ParameterSets
     public abstract class ParameterSet<P> : ParameterSet, ICloneable<P>
     {
         /// <inheritdoc/>
-        public virtual P Clone() => (P)MemberwiseClone();
+        public virtual P Clone()
+        {
+            return (P)MemberwiseClone();
+        }
     }
 }

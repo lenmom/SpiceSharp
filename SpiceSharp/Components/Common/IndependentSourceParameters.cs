@@ -1,7 +1,7 @@
-﻿using SpiceSharp.ParameterSets;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 using System;
 using System.Numerics;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.CommonBehaviors
 {
@@ -96,7 +96,7 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <inheritdoc/>
         public override IndependentSourceParameters Clone()
         {
-            var clone = base.Clone();
+            IndependentSourceParameters clone = base.Clone();
             clone.Waveform = Waveform?.Clone();
             return clone;
         }

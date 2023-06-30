@@ -1,9 +1,7 @@
-using SpiceSharp.ParameterSets;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using SpiceSharp.Attributes;
 using SpiceSharp.Simulations.Sweeps;
+using System;
+using System.Collections.Generic;
 
 namespace SpiceSharp.Simulations
 {
@@ -47,7 +45,7 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                double n = Math.Log(Final / Initial) / Math.Log(_r);
+                var n = Math.Log(Final / Initial) / Math.Log(_r);
                 if (double.IsNaN(n) || double.IsInfinity(n))
                     throw new ArgumentException(Properties.Resources.Sweeps_Unreachable.FormatString(Final));
                 return (int)Math.Round(n);

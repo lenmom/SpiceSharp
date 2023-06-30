@@ -51,7 +51,10 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         /// <summary>
         /// Accepts the current point and moves on to the next.
         /// </summary>
-        public void Accept() => _history.Accept();
+        public void Accept()
+        {
+            _history.Accept();
+        }
 
         /// <summary>
         /// Gets a previous value of the state. An index of 0 indicates the current value.
@@ -60,6 +63,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         /// <returns>
         /// The previous value.
         /// </returns>
-        public T GetPreviousValue(int index) => _history.GetPreviousValue(index);
+        public T GetPreviousValue(int index)
+        {
+            return _history.GetPreviousValue(index);
+        }
     }
 }

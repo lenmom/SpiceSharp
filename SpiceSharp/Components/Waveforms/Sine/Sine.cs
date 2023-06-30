@@ -1,8 +1,8 @@
+using SpiceSharp.Attributes;
+using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
-using SpiceSharp.Attributes;
-using SpiceSharp.Entities;
 
 namespace SpiceSharp.Components
 {

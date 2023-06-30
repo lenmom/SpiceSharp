@@ -18,7 +18,7 @@ namespace SpiceSharpTest.Models
                 {
                     yield return time;
                     time += 1e-3;
-                }    
+                }
             }
         }
 
@@ -38,6 +38,7 @@ namespace SpiceSharpTest.Models
             tran.Run(ckt);
 
             // Make sure we went through all our reference points
-            Assert.IsFalse(refPoints.MoveNext());        }
+            Assert.IsFalse(refPoints.MoveNext());
+        }
     }
 }

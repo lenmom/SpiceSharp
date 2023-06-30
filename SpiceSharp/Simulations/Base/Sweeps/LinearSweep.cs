@@ -1,8 +1,7 @@
-using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations
 {
@@ -103,6 +102,9 @@ namespace SpiceSharp.Simulations
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

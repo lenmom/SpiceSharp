@@ -112,14 +112,22 @@ namespace SpiceSharpTest.Simulations
 
             // First run: build the reference
             var r = new List<double>();
-            void BuildReference(object sender, ExportDataEventArgs args) => r.Add(dcExportV1.Value);
+            void BuildReference(object sender, ExportDataEventArgs args)
+            {
+                r.Add(dcExportV1.Value);
+            }
+
             dc.ExportSimulationData += BuildReference;
             dc.Run(ckt);
             dc.ExportSimulationData -= BuildReference;
 
             // Rerun: check with reference
             var index = 0;
-            void CheckReference(object sender, ExportDataEventArgs args) => Assert.AreEqual(dcExportV1.Value, r[index++], 1e-20);
+            void CheckReference(object sender, ExportDataEventArgs args)
+            {
+                Assert.AreEqual(dcExportV1.Value, r[index++], 1e-20);
+            }
+
             dc.ExportSimulationData += CheckReference;
             dc.Rerun();
             dc.ExportSimulationData -= CheckReference;
@@ -143,7 +151,7 @@ namespace SpiceSharpTest.Simulations
                 new Resistor("R3", "int", "0", 1e3));
 
             var dc = new DC("dc", "V1", -2, 2, 0.1);
-            bool a = true;
+            var a = true;
             dc.ExportSimulationData += (sender, args) =>
             {
                 if (a)

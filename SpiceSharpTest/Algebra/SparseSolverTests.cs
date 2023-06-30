@@ -26,7 +26,7 @@ namespace SpiceSharpTest.Algebra
         public void When_Spice3f5Reference01_Expect_NoException()
         {
             // Load a matrix from Spice 3f5
-            var solver = ReadSpice3f5File(
+            SparseRealSolver solver = ReadSpice3f5File(
                 Path.Combine(TestContext.CurrentContext.TestDirectory, Path.Combine("Algebra", "Matrices", "spice3f5_matrix01.dat")),
                 Path.Combine(TestContext.CurrentContext.TestDirectory, Path.Combine("Algebra", "Matrices", "spice3f5_vector01.dat")));
 
@@ -76,7 +76,7 @@ namespace SpiceSharpTest.Algebra
         {
             // Build the solver with only the quick diagonal pivoting
             var solver = new SparseRealSolver();
-            var strategy = solver.Parameters;
+            Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzQuickDiagonal<double>());
 
@@ -109,7 +109,7 @@ namespace SpiceSharpTest.Algebra
         {
             // Build the solver with only the quick diagonal pivoting
             var solver = new SparseRealSolver();
-            var strategy = solver.Parameters;
+            Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzDiagonal<double>());
 
@@ -142,7 +142,7 @@ namespace SpiceSharpTest.Algebra
         {
             // Build the solver with only the quick diagonal pivoting
             var solver = new SparseRealSolver();
-            var strategy = solver.Parameters;
+            Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzEntireMatrix<double>());
 

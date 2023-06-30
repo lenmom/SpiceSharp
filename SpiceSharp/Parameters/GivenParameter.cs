@@ -59,7 +59,10 @@ namespace SpiceSharp
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator T(GivenParameter<T> parameter) => parameter.Value;
+        public static implicit operator T(GivenParameter<T> parameter)
+        {
+            return parameter.Value;
+        }
 
         /// <summary>
         /// Performs an implicit conversion from the base value type to <see cref="GivenParameter{T}"/>.
@@ -68,7 +71,10 @@ namespace SpiceSharp
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator GivenParameter<T>(T value) => new GivenParameter<T>(value);
+        public static implicit operator GivenParameter<T>(T value)
+        {
+            return new GivenParameter<T>(value);
+        }
 
         /// <summary>
         /// Determines whether the specified <see cref="object" />, is equal to this instance.
@@ -95,7 +101,10 @@ namespace SpiceSharp
         /// <returns>
         ///     <c>true</c> if the specified value is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(T value) => Value.Equals(value);
+        public bool Equals(T value)
+        {
+            return Value.Equals(value);
+        }
 
         /// <summary>
         /// Determines whether the specified value is equal to this instance.
@@ -133,7 +142,10 @@ namespace SpiceSharp
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(GivenParameter<T> left, GivenParameter<T> right) => left.Equals(right);
+        public static bool operator ==(GivenParameter<T> left, GivenParameter<T> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -143,6 +155,9 @@ namespace SpiceSharp
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(GivenParameter<T> left, GivenParameter<T> right) => !(left == right);
+        public static bool operator !=(GivenParameter<T> left, GivenParameter<T> right)
+        {
+            return !(left == right);
+        }
     }
 }

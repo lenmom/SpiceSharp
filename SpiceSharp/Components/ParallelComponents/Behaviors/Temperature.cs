@@ -1,5 +1,4 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using System;
 
 namespace SpiceSharp.Components.ParallelComponents
@@ -24,8 +23,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public Temperature(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(ITemperatureBehavior), out var dist))
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(ITemperatureBehavior), out IWorkDistributor dist))
                 _workload = new Workload(dist, parameters.Entities.Count);
         }
 
@@ -35,7 +34,7 @@ namespace SpiceSharp.Components.ParallelComponents
             _behaviors = context.GetBehaviors<ITemperatureBehavior>();
             if (_workload != null)
             {
-                foreach (var behavior in _behaviors)
+                foreach (ITemperatureBehavior behavior in _behaviors)
                     _workload.Actions.Add(behavior.Temperature);
             }
         }
@@ -47,7 +46,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _workload.Execute();
             else
             {
-                foreach (var behavior in _behaviors)
+                foreach (ITemperatureBehavior behavior in _behaviors)
                     behavior.Temperature();
             }
         }

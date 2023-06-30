@@ -1,6 +1,5 @@
-using SpiceSharp.ParameterSets;
-using System;
 using SpiceSharp.Attributes;
+using System;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -31,7 +30,9 @@ namespace SpiceSharp.Algebra.Solve
 
         /// <inheritdoc/>
         public override MarkowitzSearchStrategy<T> Clone()
-            => (MarkowitzSearchStrategy<T>)MemberwiseClone();
+        {
+            return (MarkowitzSearchStrategy<T>)MemberwiseClone();
+        }
 
         /// <inheritdoc/>
         public override Pivot<ISparseMatrixElement<T>> FindPivot(Markowitz<T> markowitz, ISparseMatrix<T> matrix, int eliminationStep, int max)
@@ -51,7 +52,7 @@ namespace SpiceSharp.Algebra.Solve
             for (var i = eliminationStep; i <= max; i++)
             {
                 // Find an entry point to the interesting part of the column
-                var lowest = matrix.GetLastInColumn(i);
+                ISparseMatrixElement<T> lowest = matrix.GetLastInColumn(i);
                 while (lowest != null && lowest.Row > max)
                     lowest = lowest.Above;
                 if (lowest == null || lowest.Row < eliminationStep)
@@ -59,7 +60,7 @@ namespace SpiceSharp.Algebra.Solve
 
                 // Find the biggest magnitude in the column for checking valid pivots later
                 var largest = 0.0;
-                var element = lowest;
+                ISparseMatrixElement<T> element = lowest;
                 while (element != null && element.Row >= eliminationStep)
                 {
                     largest = Math.Max(largest, markowitz.Magnitude(element.Value));

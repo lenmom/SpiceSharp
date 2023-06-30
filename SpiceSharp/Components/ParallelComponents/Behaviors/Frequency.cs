@@ -1,5 +1,4 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
 using System;
 
@@ -26,8 +25,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public Frequency(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IFrequencyBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IFrequencyBehavior), out IWorkDistributor dist) && dist != null)
             {
                 _initWorkload = new Workload(dist, parameters.Entities.Count);
                 _loadWorkload = new Workload(dist, parameters.Entities.Count);
@@ -42,12 +41,12 @@ namespace SpiceSharp.Components.ParallelComponents
             _frequencyBehaviors = context.GetBehaviors<IFrequencyBehavior>();
             if (_initWorkload != null)
             {
-                foreach (var behavior in _frequencyBehaviors)
+                foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                     _initWorkload.Actions.Add(behavior.InitializeParameters);
             }
             if (_loadWorkload != null)
             {
-                foreach (var behavior in _frequencyBehaviors)
+                foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                     _loadWorkload.Actions.Add(behavior.Load);
             }
         }
@@ -59,7 +58,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _initWorkload.Execute();
             else
             {
-                foreach (var behavior in _frequencyBehaviors)
+                foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                     behavior.InitializeParameters();
             }
         }
@@ -75,7 +74,7 @@ namespace SpiceSharp.Components.ParallelComponents
             }
             else
             {
-                foreach (var behavior in _frequencyBehaviors)
+                foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                     behavior.Load();
             }
         }

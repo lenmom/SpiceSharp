@@ -127,9 +127,9 @@ namespace SpiceSharp.Simulations
             _method.Initialize();
 
             // Set up initial conditions
-            var state = GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = GetState<IBiasingSimulationState>();
             _initialConditions.Clear();
-            foreach (var ic in TimeParameters.InitialConditions)
+            foreach (KeyValuePair<string, double> ic in TimeParameters.InitialConditions)
             {
                 if (state.ContainsKey(ic.Key))
                     _initialConditions.Add(new ConvergenceAid(state.GetSharedVariable(ic.Key), GetState<IBiasingSimulationState>(), ic.Value));
@@ -143,13 +143,13 @@ namespace SpiceSharp.Simulations
         {
             if (TimeParameters.Validate)
             {
-                var state = GetState<IBiasingSimulationState>();
+                IBiasingSimulationState state = GetState<IBiasingSimulationState>();
                 var rules = new Biasing.Rules(state, BiasingParameters.NodeComparer);
 
                 // We want to add our own connections for initial conditions
-                foreach (var ic in _initialConditions)
+                foreach (ConvergenceAid ic in _initialConditions)
                 {
-                    foreach (var rule in rules.GetRules<IConductiveRule>())
+                    foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
                         rule.AddPath(null, ConductionTypes.Dc, ic.Variable, state.Map[0]);
                 }
                 Validate(rules, entities);
@@ -168,8 +168,8 @@ namespace SpiceSharp.Simulations
             {
                 // Copy initial conditions in the current solution such that device may be able to copy them
                 // in InitializeStates()
-                var state = GetState<IBiasingSimulationState>();
-                foreach (var ic in _initialConditions)
+                IBiasingSimulationState state = GetState<IBiasingSimulationState>();
+                foreach (ConvergenceAid ic in _initialConditions)
                 {
                     var index = state.Map[ic.Variable];
                     state.Solution[index] = ic.Value;
@@ -197,9 +197,9 @@ namespace SpiceSharp.Simulations
             var exportargs = new ExportDataEventArgs(this);
 
             // Start our statistics
-            var stats = ((BiasingSimulation)this).Statistics;
+            Biasing.BiasingSimulationStatistics stats = ((BiasingSimulation)this).Statistics;
             var startIters = stats.Iterations;
-            var startselapsed = stats.SolveTime.Elapsed;
+            TimeSpan startselapsed = stats.SolveTime.Elapsed;
             Statistics.TransientTime.Start();
             try
             {
@@ -225,7 +225,7 @@ namespace SpiceSharp.Simulations
                     }
 
                     // Continue integration
-                    foreach (var behavior in _truncatingBehaviors)
+                    foreach (ITruncatingBehavior behavior in _truncatingBehaviors)
                         _method.Truncate(behavior.Prepare());
                     _method.Prepare();
 
@@ -249,7 +249,7 @@ namespace SpiceSharp.Simulations
                         {
                             // If our integration method approves of our solution, continue to the next timepoint
                             var max = double.PositiveInfinity;
-                            foreach (var behavior in _truncatingBehaviors)
+                            foreach (ITruncatingBehavior behavior in _truncatingBehaviors)
                                 max = Math.Min(behavior.Evaluate(), max);
                             if (_method.Evaluate(max))
                                 break;
@@ -279,8 +279,8 @@ namespace SpiceSharp.Simulations
         /// </returns>
         protected bool TimeIterate(int maxIterations)
         {
-            var state = GetState<IBiasingSimulationState>();
-            var solver = state.Solver;
+            IBiasingSimulationState state = GetState<IBiasingSimulationState>();
+            ISparsePivotingSolver<double> solver = state.Solver;
             var iterno = 0;
             var initTransient = _method.BaseTime.Equals(0.0);
 
@@ -419,7 +419,7 @@ namespace SpiceSharp.Simulations
         /// </summary>
         protected virtual void InitializeStates()
         {
-            foreach (var behavior in _transientBehaviors)
+            foreach (ITimeBehavior behavior in _transientBehaviors)
                 behavior.InitializeStates();
         }
 
@@ -430,7 +430,7 @@ namespace SpiceSharp.Simulations
         /// <param name="e">Arguments</param>
         protected void LoadInitialConditions(object sender, LoadStateEventArgs e)
         {
-            foreach (var ic in _initialConditions)
+            foreach (ConvergenceAid ic in _initialConditions)
                 ic.Aid();
         }
 
@@ -439,7 +439,7 @@ namespace SpiceSharp.Simulations
         /// </summary>
         protected void Accept()
         {
-            foreach (var behavior in _acceptBehaviors)
+            foreach (IAcceptBehavior behavior in _acceptBehaviors)
                 behavior.Accept();
             _method.Accept();
             Statistics.Accepted++;
@@ -451,7 +451,7 @@ namespace SpiceSharp.Simulations
         protected void Probe()
         {
             _method.Probe();
-            foreach (var behavior in _acceptBehaviors)
+            foreach (IAcceptBehavior behavior in _acceptBehaviors)
                 behavior.Probe();
         }
     }

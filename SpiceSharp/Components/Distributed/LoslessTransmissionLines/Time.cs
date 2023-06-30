@@ -58,7 +58,7 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// <inheritdoc/>
         void ITimeBehavior.InitializeStates()
         {
-            var sol = BiasingState.Solution;
+            IVector<double> sol = BiasingState.Solution;
 
             // Calculate the inputs
             var z = Parameters.Impedance / Parameters.ParallelMultiplier;
@@ -72,7 +72,7 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         {
             var m = Parameters.ParallelMultiplier;
             var y = Parameters.Admittance * m;
-            var sol = BiasingState.Solution;
+            IVector<double> sol = BiasingState.Solution;
 
             // Calculate inputs
             var z = Parameters.Impedance / m;
@@ -96,7 +96,7 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
                     y, -y, -y, y, 1, 1, -1, -1
                     );
             }
-            double c = Signals.InputDerivative;
+            var c = Signals.InputDerivative;
             double d = -c * z;
             _elements.Add(
                 -c, c, d,

@@ -49,7 +49,7 @@ namespace SpiceSharpTest.Models
                 var voltage2 = args.GetVoltage("a") - args.GetVoltage("b");
 
                 // Because the property is always one iteration behind on the current solution, we relax the error a little bit
-                double tol = Math.Max(Math.Abs(voltage), Math.Abs(voltage2)) * RelTol + 1e-9;
+                var tol = Math.Max(Math.Abs(voltage), Math.Abs(voltage2)) * RelTol + 1e-9;
                 Assert.AreEqual(voltage2, voltage, tol);
             };
             dc.Run(ckt);
@@ -112,9 +112,9 @@ namespace SpiceSharpTest.Models
 
             // Create references
             double[] riRef = { -1.945791742986885e-12, -1.904705637099517e-08, -1.946103289747125e-12, -3.018754997881332e-08, -1.946885859826953e-12, -4.784404245850086e-08, -1.948851586992178e-12, -7.582769719229839e-08, -1.953789270386556e-12, -1.201788010800761e-07, -1.966192170307985e-12, -1.904705637099495e-07, -1.997346846331992e-12, -3.018754997881245e-07, -2.075603854314768e-12, -4.784404245849736e-07, -2.272176570837208e-12, -7.582769719228451e-07, -2.765944910274710e-12, -1.201788010800207e-06, -4.006234902415568e-12, -1.904705637097290e-06, -7.121702504803603e-12, -3.018754997872460e-06, -1.494740330300116e-11, -4.784404245814758e-06, -3.460467495474045e-11, -7.582769719089195e-06, -8.398150889530617e-11, -1.201788010744768e-05, -2.080105080892987e-10, -1.904705636876583e-05, -5.195572682013223e-10, -3.018754996993812e-05, -1.302127347221150e-09, -4.784404242316795e-05, -3.267854507347871e-09, -7.582769705163549e-05, -8.205537869558709e-09, -1.201788005200868e-04, -2.060843758802494e-08, -1.904705614805916e-04 };
-            Complex[][] references = new Complex[1][];
+            var references = new Complex[1][];
             references[0] = new Complex[riRef.Length / 2];
-            for (int i = 0; i < riRef.Length; i += 2)
+            for (var i = 0; i < riRef.Length; i += 2)
             {
                 references[0][i / 2] = new Complex(riRef[i], riRef[i + 1]);
             }
@@ -257,7 +257,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_MultipliersDC_Expect_Reference()
         {
-            var model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
+            DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
             var cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0), model);
             ParallelSeries(cktReference, name => new Diode(name, "", "", model.Name), "in", "0", 3, 2);
@@ -276,7 +276,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_MultipliersSmallSignal_Expect_Reference()
         {
-            var model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
+            DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
             var cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0).SetParameter("acmag", 1.0), model);
             ParallelSeries(cktReference, name => new Diode(name, "", "", model.Name), "in", "0", 3, 2);
@@ -295,7 +295,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_MultipliersNoise_Expect_Reference()
         {
-            var model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=5680 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9 Kf=1e-10 Af=0.9");
+            DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=5680 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9 Kf=1e-10 Af=0.9");
             var cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 3),
                 new Resistor("R1", "in", "out", 10e3),
@@ -322,7 +322,7 @@ namespace SpiceSharpTest.Models
              * Output voltage is expected to behavior like the reference
              */
             // Build circuit
-            var model = CreateDiodeModel("1N914", "Is = 2.52e-9 Rs = 0.568 N = 1.752 Cjo = 4e-12 M = 0.4 tt = 20e-9");
+            DiodeModel model = CreateDiodeModel("1N914", "Is = 2.52e-9 Rs = 0.568 N = 1.752 Cjo = 4e-12 M = 0.4 tt = 20e-9");
             var ckt = new Circuit(
                 new VoltageSource("V1r", "inr", "0", new Pulse(0, 5, 1e-6, 10e-9, 10e-9, 1e-6, 2e-6)),
                 new VoltageSource("Vsupplyr", "vddr", "0", 5.0),
@@ -357,7 +357,7 @@ namespace SpiceSharpTest.Models
         public void When_Breakdown_Expect_Reference()
         {
             // Source: https://www.el-component.com/diodes/1n4148
-            var model = CreateDiodeModel("1N4148", "IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9");
+            DiodeModel model = CreateDiodeModel("1N4148", "IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9");
             var ckt = new Circuit(
                 new VoltageSource("V1", "a", "0", 0.0),
                 CreateDiode("D1", "a", "0", "1N4148"),
@@ -365,7 +365,7 @@ namespace SpiceSharpTest.Models
 
             // Sweep
             var dc = new DC("dc", "V1", -111.0, 1.0, 0.5);
-            var exports = new[] { new RealCurrentExport(dc, "V1") };
+            RealCurrentExport[] exports = new[] { new RealCurrentExport(dc, "V1") };
             var references = new[]
             {
                 new[]

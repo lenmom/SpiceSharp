@@ -59,7 +59,7 @@ namespace SpiceSharp.Validation
         /// <param name="variables">The variables.</param>
         public void AddPath(IRuleSubject subject, params IVariable[] variables)
         {
-            foreach (var v in variables)
+            foreach (IVariable v in variables)
             {
                 if (v.Equals(_search))
                     ViolationCount = 0;
@@ -74,7 +74,7 @@ namespace SpiceSharp.Validation
         /// <param name="variables">The variables that are connected.</param>
         public void AddPath(IRuleSubject subject, ConductionTypes type, params IVariable[] variables)
         {
-            foreach (var v in variables)
+            foreach (IVariable v in variables)
             {
                 if (v.Equals(_search))
                     ViolationCount = 0;

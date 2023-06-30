@@ -39,7 +39,7 @@ namespace SpiceSharp.Simulations
         protected override void Initialize(object sender, EventArgs e)
         {
             e.ThrowIfNull(nameof(e));
-            var eb = Simulation.EntityBehaviors[EntityName];
+            Behaviors.IBehaviorContainer eb = Simulation.EntityBehaviors[EntityName];
             if (eb != null)
                 Extractor = eb.CreatePropertyGetter<double>(PropertyName);
         }

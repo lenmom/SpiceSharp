@@ -30,7 +30,7 @@ namespace SpiceSharp.General
             get
             {
                 key.ThrowIfNull(nameof(key));
-                if (_interfaces.TryGetValue(key, out var result))
+                if (_interfaces.TryGetValue(key, out TypeValues<V> result))
                     return result.Value;
                 return _dictionary[key];
             }
@@ -68,9 +68,9 @@ namespace SpiceSharp.General
             }
 
             // Make references for the interfaces as well
-            foreach (var ctype in InterfaceCache.Get(key))
+            foreach (Type ctype in InterfaceCache.Get(key))
             {
-                if (!_interfaces.TryGetValue(ctype, out var values))
+                if (!_interfaces.TryGetValue(ctype, out TypeValues<V> values))
                 {
                     values = new TypeValues<V>();
                     _interfaces.Add(ctype, values);
@@ -83,11 +83,11 @@ namespace SpiceSharp.General
         public bool Remove(Type key, V value)
         {
             key.ThrowIfNull(nameof(key));
-            if (_dictionary.TryGetValue(key, out var existing))
+            if (_dictionary.TryGetValue(key, out V existing))
             {
                 if (!existing.Equals(value))
                     return false;
-                foreach (var type in InterfaceCache.Get(key))
+                foreach (Type type in InterfaceCache.Get(key))
                     _interfaces[type].Remove(value);
                 _dictionary.Remove(key);
                 return true;
@@ -99,7 +99,7 @@ namespace SpiceSharp.General
         public IEnumerable<V> GetAllValues(Type key)
         {
             key.ThrowIfNull(nameof(key));
-            if (_interfaces.TryGetValue(key, out var result))
+            if (_interfaces.TryGetValue(key, out TypeValues<V> result))
                 return result.Values;
             return Enumerable.Empty<V>();
         }
@@ -108,7 +108,7 @@ namespace SpiceSharp.General
         public int GetValueCount(Type key)
         {
             key.ThrowIfNull(nameof(key));
-            if (_interfaces.TryGetValue(key, out var result))
+            if (_interfaces.TryGetValue(key, out TypeValues<V> result))
                 return result.Count;
             return 0;
         }
@@ -117,14 +117,14 @@ namespace SpiceSharp.General
         public bool TryGetValue(Type key, out V value)
         {
             key.ThrowIfNull(nameof(key));
-            if (_interfaces.TryGetValue(key, out var result))
+            if (_interfaces.TryGetValue(key, out TypeValues<V> result))
             {
                 if (result.IsAmbiguous)
                     throw new AmbiguousTypeException(key);
                 value = result.Value;
                 return true;
             }
-            if (_dictionary.TryGetValue(key, out var direct))
+            if (_dictionary.TryGetValue(key, out V direct))
             {
                 value = direct;
                 return true;
@@ -134,10 +134,16 @@ namespace SpiceSharp.General
         }
 
         /// <inheritdoc/>
-        public bool ContainsKey(Type key) => _interfaces.ContainsKey(key.ThrowIfNull(nameof(key))) || _dictionary.ContainsKey(key);
+        public bool ContainsKey(Type key)
+        {
+            return _interfaces.ContainsKey(key.ThrowIfNull(nameof(key))) || _dictionary.ContainsKey(key);
+        }
 
         /// <inheritdoc/>
-        public bool Contains(V value) => _dictionary.ContainsValue(value);
+        public bool Contains(V value)
+        {
+            return _dictionary.ContainsValue(value);
+        }
 
         /// <inheritdoc/>
         public void Clear()

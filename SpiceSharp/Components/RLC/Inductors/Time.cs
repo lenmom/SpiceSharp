@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -44,17 +43,17 @@ namespace SpiceSharp.Components.Inductors
         /// </summary>
         /// <param name="context">The context.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
-        public Time(IComponentBindingContext context) 
+        public Time(IComponentBindingContext context)
             : base(context)
         {
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             var br = state.Map[Branch];
             _time = context.GetState<ITimeSimulationState>();
             _elements = new ElementSet<double>(state.Solver, new[] {
                 new MatrixLocation(br, br)
             }, new[] { br });
 
-            var method = context.GetState<IIntegrationMethod>();
+            IIntegrationMethod method = context.GetState<IIntegrationMethod>();
             _flux = method.CreateDerivative();
         }
 
@@ -87,7 +86,7 @@ namespace SpiceSharp.Components.Inductors
 
             // Finally load the Y-matrix
             _flux.Derive();
-            var info = _flux.GetContributions(Inductance);
+            JacobianInfo info = _flux.GetContributions(Inductance);
             _elements.Add(
                 -info.Jacobian,
                 info.Rhs

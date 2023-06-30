@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -26,7 +26,7 @@ namespace SpiceSharpGenerator
         public BehaviorFactoryResolver(INamedTypeSymbol entity, IEnumerable<BehaviorData> behaviors, INamedTypeSymbol context)
         {
             _entity = entity;
-            foreach (var behavior in behaviors)
+            foreach (BehaviorData behavior in behaviors)
             {
                 _behaviors.Add(behavior.Behavior, behavior);
                 _graph.Add(behavior);
@@ -39,29 +39,29 @@ namespace SpiceSharpGenerator
             _graph.ClearDependencies();
 
             // Go through each behavior in the first pass and try to resolve
-            foreach (var behavior in _behaviors.Values)
+            foreach (BehaviorData behavior in _behaviors.Values)
             {
                 _graph.Add(behavior);
-                
+
                 // Make sure that hierarchies are respected
-                var baseType = behavior.Behavior.BaseType;
+                INamedTypeSymbol baseType = behavior.Behavior.BaseType;
                 while (baseType != null)
                 {
-                    if (_behaviors.TryGetValue(baseType, out var childBehavior))
+                    if (_behaviors.TryGetValue(baseType, out BehaviorData childBehavior))
                         _graph.MakeDependency(childBehavior, behavior);
                     baseType = baseType.BaseType;
                 }
 
                 // Add required behaviors
-                foreach (var required in behavior.Required)
+                foreach (INamedTypeSymbol required in behavior.Required)
                 {
-                    if (_behaviors.TryGetValue(required, out var data))
+                    if (_behaviors.TryGetValue(required, out BehaviorData data))
                         _graph.MakeDependency(behavior, data);
                     else
                     {
                         if (required.TypeKind == TypeKind.Interface)
                         {
-                            foreach (var possibility in _behaviors.Values.Where(data => data.Behavior.AllInterfaces.Any(itf => SymbolEqualityComparer.Default.Equals(itf, required))))
+                            foreach (BehaviorData possibility in _behaviors.Values.Where(data => data.Behavior.AllInterfaces.Any(itf => SymbolEqualityComparer.Default.Equals(itf, required))))
                                 _graph.MakeDependency(behavior, possibility);
                         }
                     }
@@ -77,7 +77,7 @@ namespace SpiceSharpGenerator
             var sb = new StringBuilder(32);
             var needsBuilder = true;
 
-            foreach (var behavior in _graph.OrderByIndependentFirst())
+            foreach (BehaviorData behavior in _graph.OrderByIndependentFirst())
             {
                 // No behavior needed, but still respect the order!
                 if (behavior.Check == null)

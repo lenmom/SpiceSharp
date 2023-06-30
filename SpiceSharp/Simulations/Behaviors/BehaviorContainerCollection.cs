@@ -48,7 +48,7 @@ namespace SpiceSharp.Behaviors
                 _lock.EnterUpgradeableReadLock();
                 try
                 {
-                    if (_dictionary.TryGetValue(name, out var result))
+                    if (_dictionary.TryGetValue(name, out IBehaviorContainer result))
                         return result;
                     var args = new BehaviorsNotFoundEventArgs(name);
                     OnBehaviorsNotFound(args);
@@ -119,7 +119,7 @@ namespace SpiceSharp.Behaviors
             try
             {
                 var list = new List<T>(_values.Count);
-                foreach (var elt in _values)
+                foreach (IBehaviorContainer elt in _values)
                 {
                     if (elt.TryGetValue(out T value))
                         list.Add(value);
@@ -193,7 +193,10 @@ namespace SpiceSharp.Behaviors
         /// Raises the <see cref="BehaviorsNotFound" /> event.
         /// </summary>
         /// <param name="args">The <see cref="BehaviorsNotFoundEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBehaviorsNotFound(BehaviorsNotFoundEventArgs args) => BehaviorsNotFound?.Invoke(this, args);
+        protected virtual void OnBehaviorsNotFound(BehaviorsNotFoundEventArgs args)
+        {
+            BehaviorsNotFound?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -201,7 +204,10 @@ namespace SpiceSharp.Behaviors
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IBehaviorContainer> GetEnumerator() => _values.GetEnumerator();
+        public IEnumerator<IBehaviorContainer> GetEnumerator()
+        {
+            return _values.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -209,6 +215,9 @@ namespace SpiceSharp.Behaviors
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

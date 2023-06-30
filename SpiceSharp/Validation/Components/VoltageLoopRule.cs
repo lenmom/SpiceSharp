@@ -32,7 +32,7 @@ namespace SpiceSharp.Validation
         {
             get
             {
-                foreach (var violation in _violations)
+                foreach (VoltageLoopRuleViolation violation in _violations)
                     yield return violation;
             }
         }
@@ -55,15 +55,15 @@ namespace SpiceSharp.Validation
         public void Fix(IRuleSubject subject, IVariable a, IVariable b)
         {
             // If both variables are part of the same fixed-voltage group, then this rule is violated
-            bool hasA = _groups.TryGetValue(a, out var groupA);
-            bool hasB = _groups.TryGetValue(b, out var groupB);
+            var hasA = _groups.TryGetValue(a, out Group groupA);
+            var hasB = _groups.TryGetValue(b, out Group groupB);
             if (hasA && hasB)
             {
                 if (groupA == groupB)
                     _violations.Add(new VoltageLoopRuleViolation(this, subject, a, b));
                 else
                 {
-                    foreach (var variable in groupB)
+                    foreach (IVariable variable in groupB)
                         _groups[variable] = groupA;
                     groupA.Join(groupB);
                 }

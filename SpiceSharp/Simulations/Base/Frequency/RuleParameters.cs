@@ -30,6 +30,8 @@ namespace SpiceSharp.Simulations.Frequency
 
         /// <inheritdoc/>
         public RuleParameters Clone()
-            => (RuleParameters)MemberwiseClone();
+        {
+            return (RuleParameters)MemberwiseClone();
+        }
     }
 }

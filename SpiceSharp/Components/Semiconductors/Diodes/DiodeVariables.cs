@@ -34,7 +34,7 @@ namespace SpiceSharp.Components.Diodes
         {
             context.Nodes.CheckNodes(2);
 
-            var mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
+            ModelParameters mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
 
             Positive = factory.GetSharedVariable(context.Nodes[0]);
             Negative = factory.GetSharedVariable(context.Nodes[1]);
@@ -73,14 +73,17 @@ namespace SpiceSharp.Components.Diodes
         /// </summary>
         /// <param name="map">The map.</param>
         /// <returns>The right hand side vector indices.</returns>
-        public int[] GetRhsIndicies(IVariableMap map) => new[] { map[Negative], map[PosPrime] };
+        public int[] GetRhsIndicies(IVariableMap map)
+        {
+            return new[] { map[Negative], map[PosPrime] };
+        }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -119,7 +122,10 @@ namespace SpiceSharp.Components.Diodes
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(DiodeVariables<T> left, DiodeVariables<T> right) => left.Equals(right);
+        public static bool operator ==(DiodeVariables<T> left, DiodeVariables<T> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -129,6 +135,9 @@ namespace SpiceSharp.Components.Diodes
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(DiodeVariables<T> left, DiodeVariables<T> right) => !left.Equals(right);
+        public static bool operator !=(DiodeVariables<T> left, DiodeVariables<T> right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

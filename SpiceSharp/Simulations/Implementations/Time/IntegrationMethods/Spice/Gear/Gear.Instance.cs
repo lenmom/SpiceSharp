@@ -87,7 +87,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 var delta = States.Value.Delta;
 
                 // Set up the matrix
-                int n = Order + 1;
+                var n = Order + 1;
                 for (var i = 1; i <= n; i++)
                     Solver[i] = 0.0;
                 Solver[2] = -1 / delta;

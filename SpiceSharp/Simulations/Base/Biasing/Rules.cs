@@ -29,7 +29,7 @@ namespace SpiceSharp.Simulations.Biasing
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="factory"/> is <c>null</c>.</exception>
         public Rules(IVariableFactory<IVariable> factory, IEqualityComparer<string> comparer)
         {
-            var ground = factory.ThrowIfNull(nameof(factory)).GetSharedVariable(Constants.Ground);
+            IVariable ground = factory.ThrowIfNull(nameof(factory)).GetSharedVariable(Constants.Ground);
             _floatingNode = new FloatingNodeRule(ground);
             _groundPresence = new VariablePresenceRule(ground);
             Parameters = new ComponentRuleParameters(factory, comparer ?? Constants.DefaultComparer);

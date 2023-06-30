@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Simulations.IntegrationMethods;
 using System;
@@ -174,7 +173,7 @@ namespace SpiceSharp.Components.Bipolars
             base.Load();
             if (_time.UseDc)
                 return;
-            var state = BiasingState;
+            IBiasingSimulationState state = BiasingState;
             var gpi = 0.0;
             var gmu = 0.0;
             var cb = 0.0;
@@ -187,7 +186,7 @@ namespace SpiceSharp.Components.Bipolars
             CalculateCapacitances(vbe, vbc, vbx, vcs);
 
             _biasingStateChargeBe.Derive();
-            var info = _biasingStateChargeBe.GetContributions(Geqcb);
+            JacobianInfo info = _biasingStateChargeBe.GetContributions(Geqcb);
             var geqcb = info.Jacobian; // Multiplies geqcb with method.Slope (ag[0])
             gpi += _biasingStateChargeBe.GetContributions(CapBe).Jacobian;
             cb += _biasingStateChargeBe.Derivative;

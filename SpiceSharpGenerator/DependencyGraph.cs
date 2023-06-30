@@ -133,16 +133,16 @@ namespace SpiceSharpGenerator
             while (s.Any())
             {
                 // Remove a node n from S
-                var n = s.First();
+                T n = s.First();
                 s.Remove(n);
 
                 // We found another element!
                 yield return n;
 
                 // For each node m with an edge e from n to m do
-                foreach (var e in _edges.Where(e => e.Item1.Equals(n)).ToList())
+                foreach (Tuple<T, T> e in _edges.Where(e => e.Item1.Equals(n)).ToList())
                 {
-                    var m = e.Item2;
+                    T m = e.Item2;
 
                     // Remove edge e from the graph
                     edges.Remove(e);

@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -91,15 +90,15 @@ namespace SpiceSharp.Components.Bipolars
         public Noise(IComponentBindingContext context)
             : base(context)
         {
-            var complex = context.GetState<IComplexSimulationState>();
+            IComplexSimulationState complex = context.GetState<IComplexSimulationState>();
             _noise = context.GetState<INoiseSimulationState>();
 
-            var c = complex.GetSharedVariable(context.Nodes[0]);
-            var b = complex.GetSharedVariable(context.Nodes[1]);
-            var e = complex.GetSharedVariable(context.Nodes[2]);
-            var bp = BasePrime;
-            var cp = CollectorPrime;
-            var ep = EmitterPrime;
+            IVariable<System.Numerics.Complex> c = complex.GetSharedVariable(context.Nodes[0]);
+            IVariable<System.Numerics.Complex> b = complex.GetSharedVariable(context.Nodes[1]);
+            IVariable<System.Numerics.Complex> e = complex.GetSharedVariable(context.Nodes[2]);
+            IVariable<System.Numerics.Complex> bp = BasePrime;
+            IVariable<System.Numerics.Complex> cp = CollectorPrime;
+            IVariable<System.Numerics.Complex> ep = EmitterPrime;
 
             _rc = new NoiseThermal("rc", c, cp);
             _rb = new NoiseThermal("rb", b, bp);

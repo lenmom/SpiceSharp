@@ -129,7 +129,7 @@ namespace SpiceSharpTest.Models
 
             tran.BeforeTemperature += (sender, args) =>
                 {
-                    var state = tran.GetState<ITemperatureSimulationState>();
+                    ITemperatureSimulationState state = tran.GetState<ITemperatureSimulationState>();
                     ((TemperatureSimulationState)state).Temperature = Constants.CelsiusKelvin + 30.0;
                 };
 
@@ -152,7 +152,7 @@ namespace SpiceSharpTest.Models
              */
             double dcVoltage = 10;
             var resistorResistance = 10e3; // 10000;
-            double factor = (1.0 + 3.0 * 1.1 + 3.0 * 3.0 * 2.1);
+            var factor = (1.0 + 3.0 * 1.1 + 3.0 * 3.0 * 2.1);
             var capacitance = 1e-6;
             var capacitanceAfterTemperature = capacitance * factor;
 
@@ -177,7 +177,7 @@ namespace SpiceSharpTest.Models
 
             tran.BeforeTemperature += (sender, args) =>
                 {
-                    var state = tran.GetState<ITemperatureSimulationState>();
+                    ITemperatureSimulationState state = tran.GetState<ITemperatureSimulationState>();
                     ((TemperatureSimulationState)state).Temperature = Constants.CelsiusKelvin + 30.0;
                 };
 

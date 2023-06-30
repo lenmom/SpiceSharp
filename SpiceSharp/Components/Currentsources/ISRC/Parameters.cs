@@ -1,8 +1,4 @@
 ﻿using SpiceSharp.Attributes;
-using SpiceSharp.Components.CommonBehaviors;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpiceSharp.Components.CurrentSources
 {
@@ -23,6 +19,9 @@ namespace SpiceSharp.Components.CurrentSources
         private double _parallelMultiplier = 1.0;
 
         /// <inheritdoc/>
-        Parameters ICloneable<Parameters>.Clone() => (Parameters)base.Clone();
+        Parameters ICloneable<Parameters>.Clone()
+        {
+            return (Parameters)base.Clone();
+        }
     }
 }

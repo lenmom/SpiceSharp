@@ -1,5 +1,4 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Behaviors;
 using System;
 
 namespace SpiceSharp.Components.ParallelComponents
@@ -24,8 +23,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public FrequencyUpdate(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IFrequencyUpdateBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IFrequencyUpdateBehavior), out IWorkDistributor dist) && dist != null)
                 _updateWorkload = new Workload(dist, parameters.Entities.Count);
         }
 
@@ -35,7 +34,7 @@ namespace SpiceSharp.Components.ParallelComponents
             _updateBehaviors = context.GetBehaviors<IFrequencyUpdateBehavior>();
             if (_updateWorkload != null)
             {
-                foreach (var behavior in _updateBehaviors)
+                foreach (IFrequencyUpdateBehavior behavior in _updateBehaviors)
                     _updateWorkload.Actions.Add(behavior.Update);
             }
         }
@@ -47,7 +46,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _updateWorkload.Execute();
             else
             {
-                foreach (var behavior in _updateBehaviors)
+                foreach (IFrequencyUpdateBehavior behavior in _updateBehaviors)
                     behavior.Update();
             }
         }

@@ -1,8 +1,6 @@
 ﻿using SpiceSharp.ParameterSets;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SpiceSharp.Simulations.Sweeps
 {
@@ -35,8 +33,8 @@ namespace SpiceSharp.Simulations.Sweeps
         public IEnumerator<double> GetEnumerator()
         {
             // Trivial case: The initial value and final value are the same
-            int n = N;
-            double current = A;
+            var n = N;
+            var current = A;
             yield return current;
 
             // Just the starting point
@@ -44,7 +42,7 @@ namespace SpiceSharp.Simulations.Sweeps
                 yield break;
 
             // Geometric decaying progressions
-            double r = R;
+            var r = R;
             if (n < 0)
             {
                 r = 1.0 / r;
@@ -52,7 +50,7 @@ namespace SpiceSharp.Simulations.Sweeps
             }
 
             // Output the geometric progression
-            for (int i = 0; i < n; i++)
+            for (var i = 0; i < n; i++)
             {
                 current *= r;
                 yield return current;
@@ -65,6 +63,9 @@ namespace SpiceSharp.Simulations.Sweeps
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

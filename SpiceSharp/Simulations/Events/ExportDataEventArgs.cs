@@ -76,7 +76,10 @@ namespace SpiceSharp.Simulations
         /// For better performance, consider using <see cref="RealVoltageExport" />.
         /// </remarks>
         /// <seealso cref="RealVoltageExport" />
-        public double GetVoltage(string node) => GetVoltage(node, null);
+        public double GetVoltage(string node)
+        {
+            return GetVoltage(node, null);
+        }
 
         /// <summary>
         /// Gets the differential voltage between two specified nodes.
@@ -106,7 +109,10 @@ namespace SpiceSharp.Simulations
         /// For better performance, consider using <see cref="ComplexVoltageExport"/>
         /// </remarks>
         /// <seealso cref="ComplexVoltageExport"/>
-        public Complex GetComplexVoltage(string node) => GetComplexVoltage(node, null);
+        public Complex GetComplexVoltage(string node)
+        {
+            return GetComplexVoltage(node, null);
+        }
 
         /// <summary>
         /// Gets the differential complex voltage between two specified nodes.
@@ -121,7 +127,7 @@ namespace SpiceSharp.Simulations
             positive.ThrowIfNull(nameof(positive));
             if (_simulation is ISimulation<IVariable<Complex>> sim)
             {
-                var voltage = sim.Solved[positive].Value;
+                Complex voltage = sim.Solved[positive].Value;
                 if (negative != null)
                     voltage -= sim.Solved[negative].Value;
                 return voltage;

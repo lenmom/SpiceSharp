@@ -37,7 +37,7 @@ namespace SpiceSharp.Algebra
             var order = Size - Degeneracy;
 
             // Scramble
-            var rhsElement = Vector.GetFirstInVector();
+            ISparseVectorElement<Complex> rhsElement = Vector.GetFirstInVector();
             var index = 0;
             while (rhsElement != null && rhsElement.Index <= order)
             {
@@ -57,13 +57,13 @@ namespace SpiceSharp.Algebra
             // Forward substitution
             for (var i = 1; i <= order; i++)
             {
-                var temp = _intermediate[i];
+                Complex temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
-                    var pivot = Matrix.FindDiagonalElement(i);
+                    ISparseMatrixElement<Complex> pivot = Matrix.FindDiagonalElement(i);
                     temp *= pivot.Value;
                     _intermediate[i] = temp;
-                    var element = pivot.Below;
+                    ISparseMatrixElement<Complex> element = pivot.Below;
                     while (element != null && element.Row <= order)
                     {
                         _intermediate[element.Row] -= temp * element.Value;
@@ -75,9 +75,9 @@ namespace SpiceSharp.Algebra
             // Backward substitution
             for (var i = order; i > 0; i--)
             {
-                var temp = _intermediate[i];
-                var pivot = Matrix.FindDiagonalElement(i);
-                var element = pivot.Right;
+                Complex temp = _intermediate[i];
+                ISparseMatrixElement<Complex> pivot = Matrix.FindDiagonalElement(i);
+                ISparseMatrixElement<Complex> element = pivot.Right;
                 while (element != null)
                 {
                     temp -= element.Value * _intermediate[element.Column];
@@ -105,7 +105,7 @@ namespace SpiceSharp.Algebra
             // Scramble
             for (var i = 0; i <= Size; i++)
                 _intermediate[i] = 0.0;
-            var rhsElement = Vector.GetFirstInVector();
+            ISparseVectorElement<Complex> rhsElement = Vector.GetFirstInVector();
             while (rhsElement != null)
             {
                 var newIndex = Column[Row.Reverse(rhsElement.Index)];
@@ -116,10 +116,10 @@ namespace SpiceSharp.Algebra
             // Forward elimination
             for (var i = 1; i <= order; i++)
             {
-                var temp = _intermediate[i];
+                Complex temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
-                    var element = Matrix.FindDiagonalElement(i).Right;
+                    ISparseMatrixElement<Complex> element = Matrix.FindDiagonalElement(i).Right;
                     while (element != null && element.Column <= order)
                     {
                         _intermediate[element.Column] -= temp * element.Value;
@@ -131,9 +131,9 @@ namespace SpiceSharp.Algebra
             // Backward substitution
             for (var i = order; i > 0; i--)
             {
-                var temp = _intermediate[i];
-                var pivot = Matrix.FindDiagonalElement(i);
-                var element = pivot.Below;
+                Complex temp = _intermediate[i];
+                ISparseMatrixElement<Complex> pivot = Matrix.FindDiagonalElement(i);
+                ISparseMatrixElement<Complex> element = pivot.Below;
                 while (element != null && element.Row <= order)
                 {
                     temp -= _intermediate[element.Row] * element.Value;
@@ -154,14 +154,14 @@ namespace SpiceSharp.Algebra
                 throw new AlgebraException(Properties.Resources.Algebra_InvalidPivot.FormatString(pivot.Row));
             pivot.Value = Inverse(pivot.Value);
 
-            var upper = pivot.Right;
+            ISparseMatrixElement<Complex> upper = pivot.Right;
             while (upper != null)
             {
                 // Calculate upper triangular element
                 upper.Value *= pivot.Value;
 
-                var sub = upper.Below;
-                var lower = pivot.Below;
+                ISparseMatrixElement<Complex> sub = upper.Below;
+                ISparseMatrixElement<Complex> lower = pivot.Below;
                 while (lower != null)
                 {
                     var row = lower.Row;
@@ -190,7 +190,10 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A scalar indicating the magnitude of the complex value.
         /// </returns>
-        private static double Magnitude(Complex value) => Math.Abs(value.Real) + Math.Abs(value.Imaginary);
+        private static double Magnitude(Complex value)
+        {
+            return Math.Abs(value.Real) + Math.Abs(value.Imaginary);
+        }
 
         /// <summary>
         /// Calculates the inverse of a complex number.

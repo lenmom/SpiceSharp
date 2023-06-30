@@ -48,7 +48,9 @@ namespace SpiceSharp.Components
                 /// <param name="x">The x-coordinate.</param>
                 /// <returns>The value at the specified coordinate.</returns>
                 public double At(double x)
-                    => _m * x + _q;
+                {
+                    return _m * x + _q;
+                }
             }
 
             /// <inheritdoc/>

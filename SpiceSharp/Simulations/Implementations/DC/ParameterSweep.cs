@@ -94,11 +94,11 @@ namespace SpiceSharp.Simulations
         /// </returns>
         public IEnumerator<double> CreatePoints(IBiasingSimulation simulation)
         {
-            var behaviors = simulation.EntityBehaviors[Name];
+            IBehaviorContainer behaviors = simulation.EntityBehaviors[Name];
             Action<double> setter = null;
-            foreach (var behavior in behaviors)
+            foreach (IBehavior behavior in behaviors)
             {
-                foreach (var ps in behavior.ParameterSets)
+                foreach (IParameterSet ps in behavior.ParameterSets)
                 {
                     setter = ps.CreateParameterSetter<double>(Property);
                     if (setter != null)
@@ -119,6 +119,8 @@ namespace SpiceSharp.Simulations
 
         /// <inheritdoc/>
         public ISweep Clone()
-            => (ISweep)MemberwiseClone();
+        {
+            return (ISweep)MemberwiseClone();
+        }
     }
 }

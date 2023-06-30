@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using SpiceSharpGenerator.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
 using ClassDeclarationSyntax = Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax;
@@ -33,25 +32,25 @@ namespace SpiceSharpGenerator
                 return;
 
             // Get all the binding contexts
-            var bindingContexts = GetBindingContexts(context, receiver.BindingContexts.Keys);
-            var behaviorMap = GetBehaviorMap(context, receiver.Behaviors.Keys);
+            BindingContextCollection bindingContexts = GetBindingContexts(context, receiver.BindingContexts.Keys);
+            Dictionary<INamedTypeSymbol, List<BehaviorData>> behaviorMap = GetBehaviorMap(context, receiver.Behaviors.Keys);
             CreateBehaviorFactories(context, bindingContexts, behaviorMap, receiver.Entities.Keys);
-            var generatedProperties = CreatePropertyChecks(context, receiver.CheckedFields.Keys);
+            Dictionary<INamedTypeSymbol, GeneratedPropertyCollection> generatedProperties = CreatePropertyChecks(context, receiver.CheckedFields.Keys);
             CreatePropertyParameterMethods(context, receiver.ParameterSets.Keys, generatedProperties);
         }
 
         private BindingContextCollection GetBindingContexts(GeneratorExecutionContext context, IEnumerable<ClassDeclarationSyntax> @classes)
         {
             var contexts = new BindingContextCollection();
-            foreach (var bindingContext in @classes)
+            foreach (ClassDeclarationSyntax bindingContext in @classes)
             {
-                var model = context.Compilation.GetSemanticModel(bindingContext.SyntaxTree);
+                SemanticModel model = context.Compilation.GetSemanticModel(bindingContext.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(bindingContext, context.CancellationToken) as INamedTypeSymbol;
 
                 // Add binding contexts
-                foreach (var attribute in symbol.GetAttributes().Where(attribute => attribute.IsAttribute(Constants.BindingContextFor)))
+                foreach (AttributeData attribute in symbol.GetAttributes().Where(attribute => attribute.IsAttribute(Constants.BindingContextFor)))
                 {
-                    var target = attribute.MakeGenericFromAttribute();
+                    INamedTypeSymbol target = attribute.MakeGenericFromAttribute();
                     contexts.Add(target, symbol);
                 }
             }
@@ -65,23 +64,23 @@ namespace SpiceSharpGenerator
             var created = new List<BehaviorData>(8);
             var required = new List<INamedTypeSymbol>(4);
 #pragma warning restore RS1024 // Compare symbols correctly
-            foreach (var behavior in @classes)
+            foreach (ClassDeclarationSyntax behavior in @classes)
             {
-                var model = context.Compilation.GetSemanticModel(behavior.SyntaxTree);
+                SemanticModel model = context.Compilation.GetSemanticModel(behavior.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(behavior, context.CancellationToken) as INamedTypeSymbol;
                 INamedTypeSymbol check = null;
                 created.Clear();
                 required.Clear();
 
                 // Create the behavior for all entities that were used
-                foreach (var attribute in symbol.GetAttributes())
+                foreach (AttributeData attribute in symbol.GetAttributes())
                 {
                     // Deal with BehaviorForAttribute
                     if (attribute.IsAttribute(Constants.BehaviorFor))
                     {
                         if (attribute.ConstructorArguments[0].Value is INamedTypeSymbol target)
                         {
-                            if (!behaviorMap.TryGetValue(target, out var behaviorList))
+                            if (!behaviorMap.TryGetValue(target, out List<BehaviorData> behaviorList))
                             {
                                 behaviorList = new List<BehaviorData>(8);
                                 behaviorMap.Add(target, behaviorList);
@@ -113,8 +112,8 @@ namespace SpiceSharpGenerator
                 }
 
                 // Update all created behaviors
-                var arr = required.ToArray();
-                foreach (var c in created)
+                INamedTypeSymbol[] arr = required.ToArray();
+                foreach (BehaviorData c in created)
                 {
                     c.Check = check;
                     c.Required = arr;
@@ -128,13 +127,13 @@ namespace SpiceSharpGenerator
             IEnumerable<ClassDeclarationSyntax> @classes)
         {
             // Let's start by generating code for incomplete entities
-            foreach (var entity in @classes)
+            foreach (ClassDeclarationSyntax entity in @classes)
             {
-                var model = context.Compilation.GetSemanticModel(entity.SyntaxTree);
+                SemanticModel model = context.Compilation.GetSemanticModel(entity.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(entity, context.CancellationToken) as INamedTypeSymbol;
 
                 // Get the set of behaviors for this entity
-                var bindingContext = bindingContexts.GetBindingContext(symbol);
+                INamedTypeSymbol bindingContext = bindingContexts.GetBindingContext(symbol);
                 var factory = new BehaviorFactoryResolver(symbol, behaviorMap[symbol], bindingContext);
                 var code = factory.Create();
                 context.AddSource(symbol.ToString() + ".Behaviors.cs", code);
@@ -143,9 +142,9 @@ namespace SpiceSharpGenerator
         private void CreatePropertyParameterMethods(GeneratorExecutionContext context, IEnumerable<ClassDeclarationSyntax> @classes,
             Dictionary<INamedTypeSymbol, GeneratedPropertyCollection> generatedProperties)
         {
-            foreach (var parameterset in @classes)
+            foreach (ClassDeclarationSyntax parameterset in @classes)
             {
-                var model = context.Compilation.GetSemanticModel(parameterset.SyntaxTree);
+                SemanticModel model = context.Compilation.GetSemanticModel(parameterset.SyntaxTree);
                 var symbol = model.GetDeclaredSymbol(parameterset, context.CancellationToken) as INamedTypeSymbol;
 
                 var factory = new ParameterImportExportResolver(symbol, generatedProperties);
@@ -159,22 +158,22 @@ namespace SpiceSharpGenerator
             var map = new Dictionary<INamedTypeSymbol, List<(IFieldSymbol, SyntaxTriviaList)>>(SymbolEqualityComparer.Default);
             var generated = new Dictionary<INamedTypeSymbol, GeneratedPropertyCollection>(SymbolEqualityComparer.Default);
 #pragma warning restore RS1024 // Compare symbols correctly
-            foreach (var field in fields)
+            foreach (FieldDeclarationSyntax field in fields)
             {
-                var model = context.Compilation.GetSemanticModel(field.SyntaxTree);
-                foreach (var variable in field.Declaration.Variables)
+                SemanticModel model = context.Compilation.GetSemanticModel(field.SyntaxTree);
+                foreach (Microsoft.CodeAnalysis.CSharp.Syntax.VariableDeclaratorSyntax variable in field.Declaration.Variables)
                 {
                     var symbol = model.GetDeclaredSymbol(variable, context.CancellationToken) as IFieldSymbol;
-                    var @class = symbol.ContainingType;
-                    if (!map.TryGetValue(@class, out var list))
-                {
+                    INamedTypeSymbol @class = symbol.ContainingType;
+                    if (!map.TryGetValue(@class, out List<(IFieldSymbol, SyntaxTriviaList)> list))
+                    {
                         list = new List<(IFieldSymbol, SyntaxTriviaList)>();
                         map.Add(@class, list);
                     }
                     list.Add((symbol, field.GetLeadingTrivia()));
                 }
-                }
-            foreach (var pair in map)
+            }
+            foreach (KeyValuePair<INamedTypeSymbol, List<(IFieldSymbol, SyntaxTriviaList)>> pair in map)
             {
                 var factory = new PropertyResolver(pair.Key, pair.Value);
                 var code = factory.Create();

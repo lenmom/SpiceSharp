@@ -134,7 +134,7 @@ namespace SpiceSharpTest.Simulations
             // Test a single derivative state
             var f = 100.0;
             var w = 2 * Math.PI * f;
-                 
+
             var tran = new Transient("tran", new FixedEuler { Step = 1e-7, StopTime = 1 / f });
             var ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", new Sine(0, 1, f)),
@@ -260,15 +260,15 @@ namespace SpiceSharpTest.Simulations
             // This is badly conditioned problem. We test the limit of the solver here.
 
             // First create the models
-            var diodeModelA = new DiodeModel("DA")
+            SpiceSharp.Entities.Entity diodeModelA = new DiodeModel("DA")
                 .SetParameter("n", 0.1e-3);
-            var diodeModelB = new DiodeModel("DB")
+            SpiceSharp.Entities.Entity diodeModelB = new DiodeModel("DB")
                 .SetParameter("is", 100e-14);
-            var bjtModelQp1 = new BipolarJunctionTransistorModel("QP1")
+            SpiceSharp.Entities.Entity bjtModelQp1 = new BipolarJunctionTransistorModel("QP1")
                 .SetParameter("pnp", true)
                 .SetParameter("is", 16e-15)
                 .SetParameter("bf", 1700.0);
-            var bjtModelQp2 = new BipolarJunctionTransistorModel("QP2")
+            SpiceSharp.Entities.Entity bjtModelQp2 = new BipolarJunctionTransistorModel("QP2")
                 .SetParameter("pnp", true)
                 .SetParameter("is", 16e-15)
                 .SetParameter("bf", 1610.5);
@@ -468,14 +468,22 @@ namespace SpiceSharpTest.Simulations
 
             // Run the simulation a first time for building the reference values
             var r = new List<double>();
-            void BuildReference(object sender, ExportDataEventArgs args) => r.Add(export.Value);
+            void BuildReference(object sender, ExportDataEventArgs args)
+            {
+                r.Add(export.Value);
+            }
+
             tran.ExportSimulationData += BuildReference;
             tran.Run(ckt);
             tran.ExportSimulationData -= BuildReference;
 
             // Rerun the simulation for building the reference values
             var index = 0;
-            void CheckReference(object sender, ExportDataEventArgs args) => Assert.AreEqual(r[index++], export.Value, 1e-20);
+            void CheckReference(object sender, ExportDataEventArgs args)
+            {
+                Assert.AreEqual(r[index++], export.Value, 1e-20);
+            }
+
             tran.ExportSimulationData += CheckReference;
             tran.Rerun();
             tran.ExportSimulationData -= CheckReference;

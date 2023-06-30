@@ -108,7 +108,7 @@ namespace SpiceSharp.Algebra
                     }
 
                     // Move the element back
-                    var element = second.Above;
+                    Element element = second.Above;
                     Remove(second);
                     while (element.Above != null && element.Above.Row > rowFirst)
                         element = element.Above;
@@ -133,7 +133,7 @@ namespace SpiceSharp.Algebra
                     }
 
                     // Move the element forward
-                    var element = first.Below;
+                    Element element = first.Below;
                     Remove(first);
                     while (element.Below != null && element.Below.Row < rowSecond)
                         element = element.Below;
@@ -186,7 +186,7 @@ namespace SpiceSharp.Algebra
                         second.Above.Below = first;
 
                         // Correct element links
-                        var element = first.Above;
+                        Element element = first.Above;
                         first.Above = second.Above;
                         second.Above = element;
                         element = first.Below;

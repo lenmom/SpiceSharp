@@ -44,7 +44,7 @@ namespace SpiceSharpGenerator
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            var c = SymbolEqualityComparer.Default;
+            SymbolEqualityComparer c = SymbolEqualityComparer.Default;
             return c.GetHashCode(Behavior);
         }
 
@@ -70,6 +70,9 @@ namespace SpiceSharpGenerator
         /// Converts to a string.
         /// </summary>
         /// <returns>The string.</returns>
-        public override string ToString() => Behavior.ToString();
+        public override string ToString()
+        {
+            return Behavior.ToString();
+        }
     }
 }

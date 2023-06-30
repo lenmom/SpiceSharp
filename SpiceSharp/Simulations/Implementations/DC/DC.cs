@@ -65,7 +65,7 @@ namespace SpiceSharp.Simulations
             : this(name)
         {
             sweeps.ThrowIfNull(nameof(sweeps));
-            foreach (var sweep in sweeps)
+            foreach (ISweep sweep in sweeps)
                 DCParameters.Sweeps.Add(sweep);
         }
 
@@ -81,7 +81,7 @@ namespace SpiceSharp.Simulations
             Iteration.Mode = IterationModes.Junction;
 
             // Initialize
-            var sweeps = DCParameters.Sweeps.ToArray();
+            ISweep[] sweeps = DCParameters.Sweeps.ToArray();
             _sweepEnumerators = new IEnumerator<double>[DCParameters.Sweeps.Count];
             for (var i = 0; i < sweeps.Length; i++)
             {

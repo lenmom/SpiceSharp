@@ -56,7 +56,7 @@ namespace SpiceSharp
         {
             if (entities == null)
                 return;
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
                 Add(entity);
         }
 
@@ -69,7 +69,7 @@ namespace SpiceSharp
         {
             if (entities == null)
                 return;
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
                 Add(entity);
         }
 
@@ -81,32 +81,50 @@ namespace SpiceSharp
         public void Merge(Circuit ckt)
         {
             ckt.ThrowIfNull(nameof(ckt));
-            foreach (var entity in ckt)
+            foreach (IEntity entity in ckt)
                 Add(entity);
         }
 
         /// <inheritdoc/>
-        public bool Remove(string name) => _entities.Remove(name);
+        public bool Remove(string name)
+        {
+            return _entities.Remove(name);
+        }
 
         /// <inheritdoc/>
-        public bool Contains(string name) => _entities.Contains(name);
+        public bool Contains(string name)
+        {
+            return _entities.Contains(name);
+        }
 
         /// <inheritdoc/>
-        public bool TryGetEntity(string name, out IEntity entity) => _entities.TryGetEntity(name, out entity);
+        public bool TryGetEntity(string name, out IEntity entity)
+        {
+            return _entities.TryGetEntity(name, out entity);
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<E> ByType<E>() where E : IEntity => _entities.ByType<E>();
+        public IEnumerable<E> ByType<E>() where E : IEntity
+        {
+            return _entities.ByType<E>();
+        }
 
         /// <summary>
         /// Adds an item to the <see cref="ICollection{T}" />.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="ICollection{T}" />.</param>
-        public void Add(IEntity item) => _entities.Add(item);
+        public void Add(IEntity item)
+        {
+            _entities.Add(item);
+        }
 
         /// <summary>
         /// Removes all items from the <see cref="ICollection{T}" />.
         /// </summary>
-        public void Clear() => _entities.Clear();
+        public void Clear()
+        {
+            _entities.Clear();
+        }
 
         /// <summary>
         /// Determines whether this instance contains the object.
@@ -115,14 +133,20 @@ namespace SpiceSharp
         /// <returns>
         /// true if <paramref name="item" /> is found in the <see cref="ICollection{T}" />; otherwise, false.
         /// </returns>
-        public bool Contains(IEntity item) => _entities.Contains(item);
+        public bool Contains(IEntity item)
+        {
+            return _entities.Contains(item);
+        }
 
         /// <summary>
         /// Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.
         /// </summary>
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-        public void CopyTo(IEntity[] array, int arrayIndex) => _entities.CopyTo(array, arrayIndex);
+        public void CopyTo(IEntity[] array, int arrayIndex)
+        {
+            _entities.CopyTo(array, arrayIndex);
+        }
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="ICollection{T}" />.
@@ -131,7 +155,10 @@ namespace SpiceSharp
         /// <returns>
         /// true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.
         /// </returns>
-        public bool Remove(IEntity item) => _entities.Remove(item);
+        public bool Remove(IEntity item)
+        {
+            return _entities.Remove(item);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -139,7 +166,10 @@ namespace SpiceSharp
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IEntity> GetEnumerator() => _entities.GetEnumerator();
+        public IEnumerator<IEntity> GetEnumerator()
+        {
+            return _entities.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -147,10 +177,15 @@ namespace SpiceSharp
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_entities).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)_entities).GetEnumerator();
+        }
 
         /// <inheritdoc/>
         public IEntityCollection Clone()
-            => new Circuit(_entities.Clone());
+        {
+            return new Circuit(_entities.Clone());
+        }
     }
 }

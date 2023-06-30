@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -112,7 +111,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
         public Biasing(IComponentBindingContext context)
             : base(context)
         {
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _config = context.GetSimulationParameterSet<BiasingParameters>();
             _iteration = context.GetState<IIterationSimulationState>();
             _args = new MosfetContributionEventArgs(_contributions);
@@ -129,7 +128,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var con = _contributions;
+            Contributions<double> con = _contributions;
             con.Reset();
 
             /* first, we compute a few useful values - these could be
@@ -229,9 +228,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
 				 * gate, channel and bulk for mosfets based on
 				 * semi-empirical equations */
 
-                double coeff0 = 0.0631353e0;
-                double coeff1 = 0.8013292e0;
-                double coeff2 = -0.01110777e0;
+                var coeff0 = 0.0631353e0;
+                var coeff1 = 0.8013292e0;
+                var coeff2 = -0.01110777e0;
                 double oneoverxl;   /* 1/effective length */
                 double eta; /* eta from model after length factor */
                 double phibs;   /* phi - vbs */
@@ -264,9 +263,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dvtdvb;
                 double csonco;
                 double cdonco;
-                double dxndvb = 0.0;
-                double dvodvb = 0.0;
-                double dvodvd = 0.0;
+                var dxndvb = 0.0;
+                var dvodvb = 0.0;
+                var dvodvd = 0.0;
                 double vgsx;
                 double dvtdvd;
                 double onfg;
@@ -278,20 +277,20 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dvsdvg;
                 double dvsdvb;
                 double dvsdvd;
-                double xn = 0.0;
+                var xn = 0.0;
                 double vdsc;
-                double onvdsc = 0.0;
+                var onvdsc = 0.0;
                 double dvsdga;
                 double vdsx;
                 double dcodvb;
                 double cdnorm;
                 double cdo;
                 double cd1;
-                double fdrain = 0.0;
+                var fdrain = 0.0;
                 double fd2;
-                double dfddvg = 0.0;
-                double dfddvb = 0.0;
-                double dfddvd = 0.0;
+                var dfddvg = 0.0;
+                var dfddvb = 0.0;
+                var dfddvd = 0.0;
                 double gdsat;
                 double cdsat;
                 double gdoncd;
@@ -314,7 +313,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dlonxl;
                 double xlfact;
                 double diddl;
-                double gds0 = 0.0;
+                var gds0 = 0.0;
                 double emoncd;
                 double ondvt;
                 double onxn;

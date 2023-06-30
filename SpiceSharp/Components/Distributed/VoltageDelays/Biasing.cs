@@ -66,14 +66,14 @@ namespace SpiceSharp.Components.VoltageDelays
             context.Nodes.CheckNodes(4);
 
             Parameters = context.GetParameterSet<Parameters>();
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             Variables = new TwoPort<double>(state, context);
-            int posNode = state.Map[Variables.Right.Positive];
-            int negNode = state.Map[Variables.Right.Negative];
-            int contPosNode = state.Map[Variables.Left.Positive];
-            int contNegNode = state.Map[Variables.Left.Negative];
+            var posNode = state.Map[Variables.Right.Positive];
+            var negNode = state.Map[Variables.Right.Negative];
+            var contPosNode = state.Map[Variables.Left.Positive];
+            var contNegNode = state.Map[Variables.Left.Negative];
             Branch = state.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            int branchEq = state.Map[Branch];
+            var branchEq = state.Map[Branch];
 
             BiasingElements = new ElementSet<double>(state.Solver, new[] {
                         new MatrixLocation(posNode, branchEq),

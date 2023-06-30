@@ -25,8 +25,8 @@ namespace SpiceSharp.Components.Subcircuits
         public Frequency(SubcircuitBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            var parent = context.GetState<IComplexSimulationState>();
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            IComplexSimulationState parent = context.GetState<IComplexSimulationState>();
             if (parameters.LocalSolver)
             {
                 _state = new LocalSimulationState(Name, parent, new SparseComplexSolver());
@@ -46,7 +46,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void IFrequencyBehavior.InitializeParameters()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IFrequencyBehavior behavior in Behaviors)
                 behavior.InitializeParameters();
         }
 
@@ -60,14 +60,14 @@ namespace SpiceSharp.Components.Subcircuits
                 {
                     _state.IsConvergent = true;
                     _state.Solver.Reset();
-                    foreach (var behavior in Behaviors)
+                    foreach (IFrequencyBehavior behavior in Behaviors)
                         behavior.Load();
                 }
                 while (!_state.Apply());
             }
             else
             {
-                foreach (var behavior in Behaviors)
+                foreach (IFrequencyBehavior behavior in Behaviors)
                     behavior.Load();
             }
         }

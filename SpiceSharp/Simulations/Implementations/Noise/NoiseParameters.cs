@@ -1,5 +1,5 @@
-﻿using SpiceSharp.ParameterSets;
-using SpiceSharp.Attributes;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations
 {
@@ -57,6 +57,8 @@ namespace SpiceSharp.Simulations
 
         /// <inheritdoc/>
         public NoiseParameters Clone()
-            => (NoiseParameters)MemberwiseClone();
+        {
+            return (NoiseParameters)MemberwiseClone();
+        }
     }
 }

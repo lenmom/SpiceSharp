@@ -34,7 +34,7 @@ namespace SpiceSharp.Components.Subcircuits
             {
                 { Constants.Ground, Constants.Ground }
             };
-            foreach (var bridge in nodes)
+            foreach (Bridge<string> bridge in nodes)
                 _nodeMap.Add(bridge.Local, bridge.Global);
         }
 
@@ -47,6 +47,9 @@ namespace SpiceSharp.Components.Subcircuits
         }
 
         /// <inheritdoc/>
-        public IVariable CreatePrivateVariable(string name, IUnit unit) => _parent.CreatePrivateVariable(_name.Combine(name), unit);
+        public IVariable CreatePrivateVariable(string name, IUnit unit)
+        {
+            return _parent.CreatePrivateVariable(_name.Combine(name), unit);
+        }
     }
 }

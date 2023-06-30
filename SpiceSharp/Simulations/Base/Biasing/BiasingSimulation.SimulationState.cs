@@ -34,7 +34,7 @@ namespace SpiceSharp.Simulations
             public IVariable<double> GetSharedVariable(string name)
             {
                 name.ThrowIfNull(nameof(name));
-                if (TryGetValue(name, out var result))
+                if (TryGetValue(name, out IVariable<double> result))
                     return result;
 
                 // We create a private variable and then make it shared by adding it to the solved variable set
@@ -61,7 +61,7 @@ namespace SpiceSharp.Simulations
 
             public void StoreSolution()
             {
-                var tmp = OldSolution;
+                IVector<double> tmp = OldSolution;
                 OldSolution = Solution;
                 Solution = tmp;
             }

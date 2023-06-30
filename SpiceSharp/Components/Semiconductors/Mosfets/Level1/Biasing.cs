@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -107,7 +106,7 @@ namespace SpiceSharp.Components.Mosfets.Level1
         public Biasing(IComponentBindingContext context)
             : base(context)
         {
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _config = context.GetSimulationParameterSet<BiasingParameters>();
             _iteration = context.GetState<IIterationSimulationState>();
             _args = new MosfetContributionEventArgs(_contributions);
@@ -127,7 +126,7 @@ namespace SpiceSharp.Components.Mosfets.Level1
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var con = _contributions;
+            Contributions<double> con = _contributions;
             con.Reset();
 
             var vt = Constants.KOverQ * Parameters.Temperature;
@@ -141,12 +140,12 @@ namespace SpiceSharp.Components.Mosfets.Level1
             else
             {
                 DrainSatCur = Properties.TempSatCurDensity * m * Parameters.DrainArea;
-                SourceSatCur = Properties.TempSatCurDensity * m  * Parameters.SourceArea;
+                SourceSatCur = Properties.TempSatCurDensity * m * Parameters.SourceArea;
             }
             var Beta = Properties.TempTransconductance * m * Parameters.Width / Properties.EffectiveLength;
 
             // Get the current voltages
-            Initialize(out double vgs, out var vds, out var vbs, out var check);
+            Initialize(out var vgs, out var vds, out var vbs, out var check);
             var vbd = vbs - vds;
             var vgd = vgs - vds;
 

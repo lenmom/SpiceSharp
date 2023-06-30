@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using SpiceSharp;
-using SpiceSharp.Behaviors;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
 using System;
@@ -199,10 +198,10 @@ namespace SpiceSharpTest.Models
 
             var op = new OP("op");
             op.Run(ckt);
-            var behaviors = op.EntityBehaviors["X2"].GetValue<SpiceSharp.Components.Subcircuits.EntitiesBehavior>();
+            SpiceSharp.Components.Subcircuits.EntitiesBehavior behaviors = op.EntityBehaviors["X2"].GetValue<SpiceSharp.Components.Subcircuits.EntitiesBehavior>();
             Assert.AreEqual(10.0 / 4.0, behaviors.LocalBehaviors["R2"].GetProperty<double>("v"), 1e-12);
 
-            var state = behaviors.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = behaviors.GetState<IBiasingSimulationState>();
             Assert.AreEqual(10.0 / 4.0, state.Solution[state.Map[state.GetSharedVariable("b")]], 1e-12);
         }
     }

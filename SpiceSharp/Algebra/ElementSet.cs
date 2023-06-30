@@ -22,9 +22,9 @@ namespace SpiceSharp.Algebra
             solver.ThrowIfNull(nameof(solver));
 
             // Allocate memory for all the elements
-            int length = (rhsPins?.Length ?? 0) + (matrixPins?.Length ?? 0);
+            var length = (rhsPins?.Length ?? 0) + (matrixPins?.Length ?? 0);
             _elements = new Element<T>[length];
-            int offset = 0;
+            var offset = 0;
 
             if (matrixPins != null)
             {
@@ -94,6 +94,9 @@ namespace SpiceSharp.Algebra
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString() => "ElementSet ({0})".FormatString(_elements.Length);
+        public override string ToString()
+        {
+            return "ElementSet ({0})".FormatString(_elements.Length);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SpiceSharp.Behaviors;
+using SpiceSharp.Components.Subcircuits;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
@@ -6,8 +7,6 @@ using SpiceSharp.Validation;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using SpiceSharp.Components.Subcircuits;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {
@@ -46,7 +45,7 @@ namespace SpiceSharp.Components
                     return Array<Bridge<string>>.Empty();
 
                 // Make a list of node bridges
-                var pins = Parameters.Definition.Pins;
+                IReadOnlyList<string> pins = Parameters.Definition.Pins;
                 var outNodes = _connections;
                 if ((outNodes == null && pins.Count > 0) || outNodes.Length != pins.Count)
                     throw new NodeMismatchException(pins.Count, outNodes?.Length ?? 0);
@@ -102,7 +101,7 @@ namespace SpiceSharp.Components
                 localSim.Run(Parameters.Definition.Entities);
 
                 // Allow the behaviors to fetch the behaviors if they want
-                foreach (var behavior in behaviors)
+                foreach (IBehavior behavior in behaviors)
                 {
                     if (behavior is ISubcircuitBehavior subcktBehavior)
                         subcktBehavior.FetchBehaviors(context);
@@ -127,11 +126,11 @@ namespace SpiceSharp.Components
             if (Parameters.Definition == null)
                 return;
 
-            var crp = rules.GetParameterSet<ComponentRuleParameters>();
+            ComponentRuleParameters crp = rules.GetParameterSet<ComponentRuleParameters>();
             var newRules = new SubcircuitRules(rules, new ComponentRuleParameters(
                 new VariableFactory(Name, crp.Factory, NodeMap, crp.Comparer),
                 crp.Comparer));
-            foreach (var c in Parameters.Definition.Entities)
+            foreach (IEntity c in Parameters.Definition.Entities)
             {
                 if (c is IRuleSubject subject)
                     subject.Apply(newRules);

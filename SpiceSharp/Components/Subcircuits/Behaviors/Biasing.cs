@@ -28,8 +28,8 @@ namespace SpiceSharp.Components.Subcircuits
         public Biasing(SubcircuitBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            var parent = context.GetState<IBiasingSimulationState>();
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            IBiasingSimulationState parent = context.GetState<IBiasingSimulationState>();
             if (parameters.LocalSolver)
             {
                 _state = new LocalSimulationState(Name, parent, new SparseRealSolver());
@@ -69,7 +69,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// </summary>
         protected virtual void LoadBehaviors()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IBiasingBehavior behavior in Behaviors)
                 behavior.Load();
         }
 
@@ -78,7 +78,7 @@ namespace SpiceSharp.Components.Subcircuits
         {
             _state?.Update();
             var result = true;
-            foreach (var behavior in _convergenceBehaviors)
+            foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
                 result &= behavior.IsConvergent();
             return result;
         }

@@ -2,10 +2,9 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Switches
 {
@@ -51,7 +50,7 @@ namespace SpiceSharp.Components.Switches
         public Frequency(ISwitchBindingContext context)
             : base(context)
         {
-            var state = context.GetState<IComplexSimulationState>();
+            IComplexSimulationState state = context.GetState<IComplexSimulationState>();
             _variables = new OnePort<Complex>(state.GetSharedVariable(context.Nodes[0]), state.GetSharedVariable(context.Nodes[1]));
             _elements = new ElementSet<Complex>(state.Solver, _variables.GetMatrixLocations(state.Map));
         }

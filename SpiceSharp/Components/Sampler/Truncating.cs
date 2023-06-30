@@ -77,12 +77,18 @@ namespace SpiceSharp.Components.SamplerBehaviors
         /// <remarks>
         /// For our sampler, we don't care about truncation errors.
         /// </remarks>
-        double ITruncatingBehavior.Evaluate() => double.PositiveInfinity;
+        double ITruncatingBehavior.Evaluate()
+        {
+            return double.PositiveInfinity;
+        }
 
         /// <inheritdoc/>
         /// <remarks>
         /// Here is where we have a soft-limit to our next timepoint.
         /// </remarks>
-        double ITruncatingBehavior.Prepare() => _continue ? _points.Current - _method.Time : double.PositiveInfinity;
+        double ITruncatingBehavior.Prepare()
+        {
+            return _continue ? _points.Current - _method.Time : double.PositiveInfinity;
+        }
     }
 }

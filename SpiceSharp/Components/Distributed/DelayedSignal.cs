@@ -174,7 +174,7 @@ namespace SpiceSharp.Components.Distributed
             var refTime = _probed.Time - Delay;
 
             // We need at least 2 nodes before the accepted timepoint in case the timestep is truncated
-            var tmp = _oldest;
+            Node tmp = _oldest;
             while (tmp.Newer?.Newer != null && tmp.Newer.Newer.Time < refTime)
                 tmp = tmp.Newer;
 
@@ -220,7 +220,7 @@ namespace SpiceSharp.Components.Distributed
                 case 0: return _probed.Values[index];
                 case 1: return _probed.Older.Values[index];
                 default:
-                    var elt = _probed;
+                    Node elt = _probed;
                     for (var i = 0; i < back; i++)
                         elt = elt?.Older;
                     return elt?.Values[index] ?? _oldest.Values[index];
@@ -239,7 +239,7 @@ namespace SpiceSharp.Components.Distributed
                 case 0: return _probed.Time;
                 case 1: return _probed.Older.Time;
                 default:
-                    var elt = _probed;
+                    Node elt = _probed;
                     for (var i = 0; i < back; i++)
                         elt = elt?.Older;
                     return elt?.Time ?? double.NegativeInfinity;
@@ -252,7 +252,7 @@ namespace SpiceSharp.Components.Distributed
         /// <param name="time">The time.</param>
         private void MoveReferenceCloseTo(double time)
         {
-            var r = _reference;
+            Node r = _reference;
             var distance = Math.Abs(r.Time - time);
             var hasMoved = false;
 

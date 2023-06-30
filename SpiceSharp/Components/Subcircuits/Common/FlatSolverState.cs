@@ -38,9 +38,9 @@ namespace SpiceSharp.Components.Subcircuits
             // Create aliases for each node
             if (nodes != null)
             {
-                foreach (var bridge in nodes)
+                foreach (Bridge<string> bridge in nodes)
                 {
-                    var elt = Parent.GetSharedVariable(bridge.Global);
+                    IVariable<T> elt = Parent.GetSharedVariable(bridge.Global);
                     Add(bridge.Local, elt);
                 }
             }
@@ -57,6 +57,9 @@ namespace SpiceSharp.Components.Subcircuits
         }
 
         /// <inheritdoc/>
-        public override IVariable<T> CreatePrivateVariable(string name, IUnit unit) => Parent.CreatePrivateVariable(Name.Combine(name), unit);
+        public override IVariable<T> CreatePrivateVariable(string name, IUnit unit)
+        {
+            return Parent.CreatePrivateVariable(Name.Combine(name), unit);
+        }
     }
 }

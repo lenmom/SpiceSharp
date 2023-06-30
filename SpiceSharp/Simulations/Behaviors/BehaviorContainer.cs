@@ -70,7 +70,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public P GetParameterSet<P>() where P : IParameterSet, ICloneable<P>
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetParameterSet(out P value))
                     return value;
@@ -81,7 +81,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public bool TryGetParameterSet<P>(out P value) where P : IParameterSet, ICloneable<P>
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetParameterSet(out value))
                     return true;
@@ -95,9 +95,9 @@ namespace SpiceSharp.Behaviors
         {
             get
             {
-                foreach (var behavior in this)
+                foreach (IBehavior behavior in this)
                 {
-                    foreach (var ps in behavior.ParameterSets)
+                    foreach (IParameterSet ps in behavior.ParameterSets)
                         yield return ps;
                 }
             }
@@ -106,7 +106,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public void SetParameter<P>(string name, P value)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TrySetParameter(name, value))
                     return;
@@ -117,7 +117,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public bool TrySetParameter<P>(string name, P value)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TrySetParameter(name, value))
                     return true;
@@ -128,9 +128,9 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public Action<P> CreateParameterSetter<P>(string name)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
-                var result = behavior.CreateParameterSetter<P>(name);
+                Action<P> result = behavior.CreateParameterSetter<P>(name);
                 if (result != null)
                     return result;
             }
@@ -140,7 +140,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public P GetProperty<P>(string name)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetProperty(name, out P value))
                     return value;
@@ -151,7 +151,7 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public bool TryGetProperty<P>(string name, out P value)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetProperty(name, out value))
                     return true;
@@ -163,9 +163,9 @@ namespace SpiceSharp.Behaviors
         /// <inheritdoc/>
         public Func<P> CreatePropertyGetter<P>(string name)
         {
-            foreach (var behavior in this)
+            foreach (IBehavior behavior in this)
             {
-                var result = behavior.CreatePropertyGetter<P>(name);
+                Func<P> result = behavior.CreatePropertyGetter<P>(name);
                 if (result != null)
                     return result;
             }
@@ -174,6 +174,8 @@ namespace SpiceSharp.Behaviors
 
         /// <inheritdoc/>
         public IBehaviorContainerBuilder<TContext> Build<TContext>(ISimulation simulation, TContext context) where TContext : IBindingContext
-            => new BehaviorContainerBuilder<TContext>(this, simulation, context);
+        {
+            return new BehaviorContainerBuilder<TContext>(this, simulation, context);
+        }
     }
 }

@@ -31,7 +31,10 @@ namespace SpiceSharp.Algebra
         /// <summary>
         /// Converts to string.
         /// </summary>
-        public override string ToString() => Value.ToString();
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
 
         /// <summary>
         /// Adds the specified value to the element.
@@ -74,8 +77,8 @@ namespace SpiceSharp.Algebra
             }
             if (result == null)
             {
-                var a = Expression.Parameter(typeof(T));
-                var b = Expression.Parameter(typeof(T));
+                ParameterExpression a = Expression.Parameter(typeof(T));
+                ParameterExpression b = Expression.Parameter(typeof(T));
                 result = Expression.Lambda<Func<T, T, T>>(Expression.Add(a, b), a, b).Compile();
             }
 
@@ -104,8 +107,8 @@ namespace SpiceSharp.Algebra
             }
             if (result == null)
             {
-                var a = Expression.Parameter(typeof(T));
-                var b = Expression.Parameter(typeof(T));
+                ParameterExpression a = Expression.Parameter(typeof(T));
+                ParameterExpression b = Expression.Parameter(typeof(T));
                 result = Expression.Lambda<Func<T, T, T>>(Expression.Subtract(a, b), a, b).Compile();
             }
 

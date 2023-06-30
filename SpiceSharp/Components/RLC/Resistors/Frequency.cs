@@ -1,11 +1,10 @@
 ﻿using SpiceSharp.Algebra;
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
-using SpiceSharp.Attributes;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -36,7 +35,7 @@ namespace SpiceSharp.Components.Resistors
         {
             get
             {
-                var voltage = ComplexVoltage;
+                Complex voltage = ComplexVoltage;
                 return voltage * Complex.Conjugate(voltage) * Conductance;
             }
         }
@@ -48,7 +47,7 @@ namespace SpiceSharp.Components.Resistors
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
         public Frequency(IComponentBindingContext context) : base(context)
         {
-            var state = context.GetState<IComplexSimulationState>();
+            IComplexSimulationState state = context.GetState<IComplexSimulationState>();
             _variables = new OnePort<Complex>(state, context);
             _elements = new ElementSet<Complex>(state.Solver, _variables.GetMatrixLocations(state.Map));
         }

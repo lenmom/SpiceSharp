@@ -127,7 +127,10 @@ namespace SpiceSharp.Simulations
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The magnitude of the complex number.</returns>
-        private double ComplexMagnitude(Complex value) => Math.Abs(value.Real) + Math.Abs(value.Imaginary);
+        private double ComplexMagnitude(Complex value)
+        {
+            return Math.Abs(value.Real) + Math.Abs(value.Imaginary);
+        }
 
         /// <inheritdoc/>
         protected override void Execute()
@@ -145,7 +148,7 @@ namespace SpiceSharp.Simulations
         /// <exception cref="SingularException">Thrown if the equation matrix is singular.</exception>
         protected void AcIterate()
         {
-            var solver = _state.Solver;
+            ISparsePivotingSolver<Complex> solver = _state.Solver;
 
         retry:
 
@@ -197,7 +200,7 @@ namespace SpiceSharp.Simulations
             }
 
             // Update with the found solution
-            foreach (var behavior in _frequencyUpdateBehaviors)
+            foreach (IFrequencyUpdateBehavior behavior in _frequencyUpdateBehaviors)
                 behavior.Update();
 
             // Reset values
@@ -209,13 +212,19 @@ namespace SpiceSharp.Simulations
         /// Raises the <see cref="BeforeFrequencyLoad" /> event.
         /// </summary>
         /// <param name="args">The <see cref="LoadStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeFrequencyLoad(LoadStateEventArgs args) => BeforeFrequencyLoad?.Invoke(this, args);
+        protected virtual void OnBeforeFrequencyLoad(LoadStateEventArgs args)
+        {
+            BeforeFrequencyLoad?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterFrequencyLoad" /> event.
         /// </summary>
         /// <param name="args">The <see cref="LoadStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterFrequencyLoad(LoadStateEventArgs args) => AfterFrequencyLoad?.Invoke(this, args);
+        protected virtual void OnAfterFrequencyLoad(LoadStateEventArgs args)
+        {
+            AfterFrequencyLoad?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Initializes the small-signal parameters.
@@ -234,7 +243,7 @@ namespace SpiceSharp.Simulations
             }
 
             // Initialize the parameters
-            foreach (var behavior in _frequencyBehaviors)
+            foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                 behavior.InitializeParameters();
         }
 
@@ -266,7 +275,7 @@ namespace SpiceSharp.Simulations
         /// <exception cref="SpiceSharpException">Thrown if a behavior cannot load the complex matrix and/or right hand side vector.</exception>
         protected virtual void LoadFrequencyBehaviors()
         {
-            foreach (var behavior in _frequencyBehaviors)
+            foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
                 behavior.Load();
         }
     }

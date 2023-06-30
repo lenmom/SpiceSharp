@@ -22,11 +22,20 @@ namespace SpiceSharpGenerator
         /// <summary>
         /// Clears the generated properties.
         /// </summary>
-        public void Clear() => _properties.Clear();
+        public void Clear()
+        {
+            _properties.Clear();
+        }
 
         /// <inheritdoc/>
-        public IEnumerator<GeneratedProperty> GetEnumerator() => _properties.GetEnumerator();
+        public IEnumerator<GeneratedProperty> GetEnumerator()
+        {
+            return _properties.GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

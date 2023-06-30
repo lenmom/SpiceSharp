@@ -58,7 +58,7 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
                     }
                     else
                     {
-                        var signals = Signals;
+                        Distributed.DelayedSignal signals = Signals;
                         var delta = signals.GetTime(0) - signals.GetTime(1);
                         slope1 = (signals.GetValue(0, 0) - signals.GetValue(1, 0)) / delta;
                         slope2 = (signals.GetValue(0, 1) - signals.GetValue(1, 1)) / delta;

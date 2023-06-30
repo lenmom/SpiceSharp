@@ -139,7 +139,7 @@ namespace SpiceSharp.Entities
             _lock.EnterUpgradeableReadLock();
             try
             {
-                if (!_entities.TryGetValue(name, out var entity))
+                if (!_entities.TryGetValue(name, out IEntity entity))
                     return false;
 
                 _lock.EnterWriteLock();
@@ -172,10 +172,10 @@ namespace SpiceSharp.Entities
         {
             item.ThrowIfNull(nameof(item));
             _lock.EnterUpgradeableReadLock();
-            bool success = false;
+            var success = false;
             try
             {
-                if (!_entities.TryGetValue(item.Name, out var result) || result != item)
+                if (!_entities.TryGetValue(item.Name, out IEntity result) || result != item)
                     return false;
 
                 _lock.EnterWriteLock();
@@ -227,7 +227,7 @@ namespace SpiceSharp.Entities
             _lock.EnterReadLock();
             try
             {
-                if (_entities.TryGetValue(item.Name, out var result))
+                if (_entities.TryGetValue(item.Name, out IEntity result))
                     return result == item;
                 return false;
             }
@@ -257,7 +257,7 @@ namespace SpiceSharp.Entities
             _lock.EnterReadLock();
             try
             {
-                foreach (var entity in _entities.Values)
+                foreach (IEntity entity in _entities.Values)
                 {
                     if (entity is E e)
                         yield return e;
@@ -289,11 +289,14 @@ namespace SpiceSharp.Entities
             }
 
             // Enumerate
-            foreach (var entity in result)
+            foreach (IEntity entity in result)
                 yield return entity;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         void ICollection<IEntity>.CopyTo(IEntity[] array, int arrayIndex)
         {
@@ -303,25 +306,31 @@ namespace SpiceSharp.Entities
             if (array.Length < arrayIndex + Count)
                 throw new ArgumentException(Properties.Resources.NotEnoughElements);
 
-            foreach (var item in _entities.Values)
+            foreach (IEntity item in _entities.Values)
                 array[arrayIndex++] = item;
         }
 
         /// <summary>
         /// Raises the <seealso cref="EntityAdded"/> event.
         /// </summary>
-        protected virtual void OnEntityAdded(EntityEventArgs args) => EntityAdded?.Invoke(this, args);
+        protected virtual void OnEntityAdded(EntityEventArgs args)
+        {
+            EntityAdded?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <seealso cref="EntityRemoved"/> event.
         /// </summary>
-        protected virtual void OnEntityRemoved(EntityEventArgs args) => EntityRemoved?.Invoke(this, args);
+        protected virtual void OnEntityRemoved(EntityEventArgs args)
+        {
+            EntityRemoved?.Invoke(this, args);
+        }
 
         /// <inheritdoc/>
         public IEntityCollection Clone()
         {
             var clone = new ConcurrentEntityCollection(_entities.Comparer);
-            foreach (var pair in _entities.Values)
+            foreach (IEntity pair in _entities.Values)
                 clone.Add(pair.Clone());
             return clone;
         }

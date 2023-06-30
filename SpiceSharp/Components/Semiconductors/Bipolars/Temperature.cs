@@ -169,7 +169,7 @@ namespace SpiceSharp.Components.Bipolars
         /// </summary>
         /// <param name="context">The context.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
-        public Temperature(IComponentBindingContext context) 
+        public Temperature(IComponentBindingContext context)
             : base(context)
         {
             context.ThrowIfNull(nameof(context));

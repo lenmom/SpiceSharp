@@ -66,7 +66,10 @@ namespace SpiceSharp.Entities
         /// <summary>
         /// Removes all items from the <see cref="ICollection{T}" />.
         /// </summary>
-        public void Clear() => _entities.Clear();
+        public void Clear()
+        {
+            _entities.Clear();
+        }
 
         /// <summary>
         /// Adds an item to the <see cref="ICollection{T}" />.
@@ -92,7 +95,7 @@ namespace SpiceSharp.Entities
         public bool Remove(string name)
         {
             name.ThrowIfNull(nameof(name));
-            if (!_entities.TryGetValue(name, out var entity))
+            if (!_entities.TryGetValue(name, out IEntity entity))
                 return false;
             _entities.Remove(name);
             OnEntityRemoved(new EntityEventArgs(entity));
@@ -110,7 +113,7 @@ namespace SpiceSharp.Entities
         public bool Remove(IEntity item)
         {
             item.ThrowIfNull(nameof(item));
-            if (!_entities.TryGetValue(item.Name, out var result) || result != item)
+            if (!_entities.TryGetValue(item.Name, out IEntity result) || result != item)
                 return false;
             _entities.Remove(item.Name);
             OnEntityRemoved(new EntityEventArgs(item));
@@ -118,7 +121,10 @@ namespace SpiceSharp.Entities
         }
 
         /// <inheritdoc/>
-        public bool Contains(string name) => _entities.ContainsKey(name);
+        public bool Contains(string name)
+        {
+            return _entities.ContainsKey(name);
+        }
 
         /// <summary>
         /// Determines whether this instance contains the object.
@@ -131,18 +137,21 @@ namespace SpiceSharp.Entities
         public bool Contains(IEntity entity)
         {
             entity.ThrowIfNull(nameof(entity));
-            if (_entities.TryGetValue(entity.Name, out var result))
+            if (_entities.TryGetValue(entity.Name, out IEntity result))
                 return result == entity;
             return false;
         }
 
         /// <inheritdoc/>
-        public bool TryGetEntity(string name, out IEntity entity) => _entities.TryGetValue(name, out entity);
+        public bool TryGetEntity(string name, out IEntity entity)
+        {
+            return _entities.TryGetValue(name, out entity);
+        }
 
         /// <inheritdoc/>
         public IEnumerable<E> ByType<E>() where E : IEntity
         {
-            foreach (var entity in _entities.Values)
+            foreach (IEntity entity in _entities.Values)
             {
                 if (entity is E e)
                     yield return e;
@@ -155,7 +164,10 @@ namespace SpiceSharp.Entities
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public virtual IEnumerator<IEntity> GetEnumerator() => _entities.Values.GetEnumerator();
+        public virtual IEnumerator<IEntity> GetEnumerator()
+        {
+            return _entities.Values.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -163,7 +175,10 @@ namespace SpiceSharp.Entities
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
         /// <summary>
         /// Copies the elements of the collection to an array, starting at a particular array index.
@@ -177,7 +192,7 @@ namespace SpiceSharp.Entities
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
             if (array.Length < arrayIndex + Count)
                 throw new ArgumentException(Properties.Resources.NotEnoughElements);
-            foreach (var item in _entities.Values)
+            foreach (IEntity item in _entities.Values)
                 array[arrayIndex++] = item;
         }
 
@@ -185,19 +200,25 @@ namespace SpiceSharp.Entities
         /// Raises the <see cref="EntityAdded" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EntityEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnEntityAdded(EntityEventArgs args) => EntityAdded?.Invoke(this, args);
+        protected virtual void OnEntityAdded(EntityEventArgs args)
+        {
+            EntityAdded?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="EntityRemoved" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EntityEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnEntityRemoved(EntityEventArgs args) => EntityRemoved?.Invoke(this, args);
+        protected virtual void OnEntityRemoved(EntityEventArgs args)
+        {
+            EntityRemoved?.Invoke(this, args);
+        }
 
         /// <inheritdoc/>
         public IEntityCollection Clone()
         {
             var clone = new EntityCollection(_entities.Comparer);
-            foreach (var entity in _entities.Values)
+            foreach (IEntity entity in _entities.Values)
                 clone.Add(entity);
             return clone;
         }

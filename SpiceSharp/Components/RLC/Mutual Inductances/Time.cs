@@ -29,10 +29,10 @@ namespace SpiceSharp.Components.MutualInductances
         public Time(BindingContext context) : base(context)
         {
             _time = context.GetState<ITimeSimulationState>();
-            var state = context.GetState<IBiasingSimulationState>();
-            var load1 = context.Inductor1Behaviors.GetValue<Inductors.Time>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
+            Inductors.Time load1 = context.Inductor1Behaviors.GetValue<Inductors.Time>();
             _branch1 = load1.Branch;
-            var load2 = context.Inductor2Behaviors.GetValue<Inductors.Time>();
+            Inductors.Time load2 = context.Inductor2Behaviors.GetValue<Inductors.Time>();
             _branch2 = load2.Branch;
 
             // Register events for modifying the flux through the inductors

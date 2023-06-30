@@ -21,6 +21,8 @@ namespace SpiceSharp.Components.Mosfets.Level1
 
         /// <inheritdoc/>
         ModelParameters ICloneable<ModelParameters>.Clone()
-            => (ModelParameters)MemberwiseClone();
+        {
+            return (ModelParameters)MemberwiseClone();
+        }
     }
 }

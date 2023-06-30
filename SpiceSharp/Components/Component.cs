@@ -62,7 +62,7 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         void IRuleSubject.Apply(IRules rules)
         {
-            var p = rules.GetParameterSet<ComponentRuleParameters>();
+            ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
 
             // Map the connections to variables
             if (_connections != null)
@@ -71,7 +71,7 @@ namespace SpiceSharp.Components
                 for (var i = 0; i < _connections.Length; i++)
                     variables[i] = p.Factory.GetSharedVariable(_connections[i]);
 
-                foreach (var rule in rules.GetRules<IConductiveRule>())
+                foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
                     rule.AddPath(this, variables);
             }
         }

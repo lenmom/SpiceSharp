@@ -93,7 +93,7 @@ namespace SpiceSharp.Components
                 // Are we at a breakpoint?
                 if (_method is IBreakpointMethod method)
                 {
-                    var breaks = method.Breakpoints;
+                    Breakpoints breaks = method.Breakpoints;
                     if (!method.Break)
                         return;
 

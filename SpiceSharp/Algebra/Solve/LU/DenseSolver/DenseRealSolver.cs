@@ -30,7 +30,9 @@ namespace SpiceSharp.Algebra
 
         /// <inheritdoc/>
         public override void Solve(IVector<double> solution)
-            => Solve(solution, Size);
+        {
+            Solve(solution, Size);
+        }
 
         /// <summary>
         /// Solves the system of equations with a matrix that was factored for a number of steps.
@@ -80,7 +82,9 @@ namespace SpiceSharp.Algebra
 
         /// <inheritdoc/>
         public override void SolveTransposed(IVector<double> solution)
-            => SolveTransposed(solution, Size);
+        {
+            SolveTransposed(solution, Size);
+        }
 
         /// <summary>
         /// Solves the transposed.

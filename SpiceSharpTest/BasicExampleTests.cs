@@ -55,17 +55,17 @@ namespace SpiceSharpTest
         {
             // Create the mosfet
             var model = new Mosfet1Model("M1");
-            var parameters = model.GetParameterSet<SpiceSharp.Components.Mosfets.Level1.ModelParameters>();
+            SpiceSharp.Components.Mosfets.Level1.ModelParameters parameters = model.GetParameterSet<SpiceSharp.Components.Mosfets.Level1.ModelParameters>();
 
             // <example_parameters_mos1_creategetter>
             // Create a getter for the nominal temperature of the mosfet1 model
-            var tnomGetter = parameters.CreatePropertyGetter<double>("tnom");
+            Func<double> tnomGetter = parameters.CreatePropertyGetter<double>("tnom");
             var temperature = tnomGetter(); // In degrees Celsius
             // </example_parameters_mos1_creategetter>
 
             // <example_parameters_mos1_createsetter>
             // Create a setter for the gate-drain overlap capacitance of the mosfet1 model
-            var cgdoSetter = parameters.CreateParameterSetter<double>("cgdo");
+            Action<double> cgdoSetter = parameters.CreateParameterSetter<double>("cgdo");
             cgdoSetter(1e-12); // 1pF
             // </example_parameters_mos1_createsetter>
 
@@ -194,7 +194,7 @@ namespace SpiceSharpTest
             // Simulate
             ac.ExportSimulationData += (sender, args) =>
             {
-                var output = exportVoltage.Value;
+                System.Numerics.Complex output = exportVoltage.Value;
                 var decibels = 10.0 * Math.Log10(output.Real * output.Real + output.Imaginary * output.Imaginary);
             };
             ac.Run(ckt);
@@ -279,11 +279,11 @@ namespace SpiceSharpTest
             var ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 1.0),
                 new VoltageSource("V2", "in", "0", 2.0));
-            var rules = ckt.Validate();
+            IRules rules = ckt.Validate();
             if (rules.ViolationCount > 0)
             {
                 // We have rules that were violated
-                foreach (var violation in rules.Violations)
+                foreach (IRuleViolation violation in rules.Violations)
                 {
                     // Handle rule violations
                 }
@@ -298,7 +298,7 @@ namespace SpiceSharpTest
             // <example_EntityDocumentation>
             var entity = new ResistorModel("RM1");
             // using SpiceSharp.Reflection;
-            foreach (var parameter in entity.Parameters())
+            foreach (MemberDocumentation parameter in entity.Parameters())
             {
                 Console.Write(string.Join(", ", parameter.Names));
                 Console.WriteLine($" : {parameter.Description} ({parameter.Member.Name}, {parameter.BaseType.Name})");
@@ -310,7 +310,7 @@ namespace SpiceSharpTest
             // <example_SimulationDocumentation>
             var simulation = new Transient("tran");
             // using SpiceSharp.Reflection;
-            foreach (var parameter in simulation.Parameters())
+            foreach (MemberDocumentation parameter in simulation.Parameters())
             {
                 Console.Write(string.Join(", ", parameter.Names));
                 Console.WriteLine($" : {parameter.Description} ({parameter.Member.Name}, {parameter.BaseType.Name})");
@@ -329,7 +329,7 @@ namespace SpiceSharpTest
                 // Behaviors are created when executing a simulation,
                 // so we need to register for the event to have access to them.
                 // using SpiceSharp.Reflection;
-                foreach (var parameter in op.EntityBehaviors["V1"].Parameters())
+                foreach (MemberDocumentation parameter in op.EntityBehaviors["V1"].Parameters())
                 {
                     Console.Write(string.Join(", ", parameter.Names));
                     Console.WriteLine($" : {parameter.Description} ({parameter.Member.Name}, {parameter.BaseType.Name})");

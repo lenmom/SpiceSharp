@@ -22,7 +22,7 @@ namespace SpiceSharp.Simulations.Variables
         /// <inheritdoc/>
         public IVariable GetSharedVariable(string name)
         {
-            if (TryGetValue(name, out var result))
+            if (TryGetValue(name, out IVariable result))
                 return result;
             result = new Variable(name, Units.Volt);
             Add(name, result);
@@ -30,6 +30,9 @@ namespace SpiceSharp.Simulations.Variables
         }
 
         /// <inheritdoc/>
-        public IVariable CreatePrivateVariable(string name, IUnit unit) => new Variable(name, unit);
+        public IVariable CreatePrivateVariable(string name, IUnit unit)
+        {
+            return new Variable(name, unit);
+        }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Linq;
 using System;
+using System.Linq;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -37,14 +37,14 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void INoiseSource.Initialize()
         {
-            foreach (var behavior in Behaviors)
+            foreach (INoiseBehavior behavior in Behaviors)
                 behavior.Initialize();
         }
 
         /// <inheritdoc/>
         void INoiseBehavior.Compute()
         {
-            foreach (var behavior in Behaviors)
+            foreach (INoiseBehavior behavior in Behaviors)
                 behavior.Compute();
         }
     }

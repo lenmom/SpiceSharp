@@ -26,7 +26,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void IBiasingUpdateBehavior.Update()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IBiasingUpdateBehavior behavior in Behaviors)
                 behavior.Update();
         }
     }

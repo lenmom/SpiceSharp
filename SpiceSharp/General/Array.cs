@@ -19,6 +19,9 @@
         /// in .NET Standard 1.5, despite it being documented as such. That's why
         /// I rolled out a custom one.
         /// </remarks>
-        public static T[] Empty() => _empty;
+        public static T[] Empty()
+        {
+            return _empty;
+        }
     }
 }

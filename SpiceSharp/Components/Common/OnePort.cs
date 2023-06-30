@@ -58,8 +58,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>An array of matrix locations.</returns>
         public MatrixLocation[] GetMatrixLocations(IVariableMap map)
         {
-            int pos = map[Positive];
-            int neg = map[Negative];
+            var pos = map[Positive];
+            var neg = map[Negative];
             return new[]
             {
                 new MatrixLocation(pos, pos),
@@ -76,17 +76,17 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>An array with indices.</returns>
         public int[] GetRhsIndices(IVariableMap map)
         {
-            int pos = map[Positive];
-            int neg = map[Negative];
+            var pos = map[Positive];
+            var neg = map[Negative];
             return new[] { pos, neg };
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -107,7 +107,10 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => (Positive.GetHashCode() * 13) ^ Negative.GetHashCode();
+        public override int GetHashCode()
+        {
+            return (Positive.GetHashCode() * 13) ^ Negative.GetHashCode();
+        }
 
         /// <summary>
         /// Implements the operator ==.
@@ -117,7 +120,10 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(OnePort<T> left, OnePort<T> right) => left.Equals(right);
+        public static bool operator ==(OnePort<T> left, OnePort<T> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -127,6 +133,9 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(OnePort<T> left, OnePort<T> right) => !left.Equals(right);
+        public static bool operator !=(OnePort<T> left, OnePort<T> right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

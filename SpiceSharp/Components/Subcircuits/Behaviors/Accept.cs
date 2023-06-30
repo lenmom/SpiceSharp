@@ -26,14 +26,14 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void IAcceptBehavior.Accept()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IAcceptBehavior behavior in Behaviors)
                 behavior.Accept();
         }
 
         /// <inheritdoc/>
         void IAcceptBehavior.Probe()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IAcceptBehavior behavior in Behaviors)
                 behavior.Probe();
         }
     }

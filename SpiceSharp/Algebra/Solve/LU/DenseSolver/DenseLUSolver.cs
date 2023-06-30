@@ -58,7 +58,10 @@ namespace SpiceSharp.Algebra.Solve
         }
 
         /// <inheritdoc/>
-        public override bool Factor() => Factor(Size);
+        public override bool Factor()
+        {
+            return Factor(Size);
+        }
 
         /// <summary>
         /// Factor the equation matrix and right hand side vector.
@@ -75,7 +78,7 @@ namespace SpiceSharp.Algebra.Solve
             int order = Math.Min(size, Size) - Degeneracy;
             for (var step = 1; step <= order; step++)
             {
-                var pivot = Matrix[step, step];
+                T pivot = Matrix[step, step];
                 if (pivot.Equals(default))
                     return false;
                 Eliminate(step, size);
@@ -114,7 +117,7 @@ namespace SpiceSharp.Algebra.Solve
 
             for (; step <= order; step++)
             {
-                var pivot = Parameters.FindPivot(Matrix, step, max);
+                Pivot<MatrixLocation> pivot = Parameters.FindPivot(Matrix, step, max);
                 if (pivot.Info == PivotInfo.None)
                     return step - 1;
                 SwapRows(pivot.Element.Row, step);

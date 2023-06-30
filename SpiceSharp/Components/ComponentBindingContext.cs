@@ -43,7 +43,7 @@ namespace SpiceSharp.Components
             : base(component, simulation, behaviors)
         {
             // Get the nodes of the component
-            var nodes = component.Nodes;
+            IReadOnlyList<string> nodes = component.Nodes;
             string[] myNodes;
             if (nodes != null && nodes.Count > 0)
             {

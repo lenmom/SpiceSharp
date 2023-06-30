@@ -32,7 +32,10 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <summary>
         /// Executes the work.
         /// </summary>
-        public void Execute() => _distributor.Execute(Actions);
+        public void Execute()
+        {
+            _distributor.Execute(Actions);
+        }
     }
 
     /// <summary>
@@ -66,6 +69,9 @@ namespace SpiceSharp.Components.ParallelComponents
         /// Executes the work.
         /// </summary>
         /// <returns>The combined result.</returns>
-        public R Execute() => _distributor.Execute(Functions);
+        public R Execute()
+        {
+            return _distributor.Execute(Functions);
+        }
     }
 }

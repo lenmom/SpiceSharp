@@ -36,11 +36,11 @@ namespace SpiceSharp.Algebra.Solve
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" />, is equal to this instance.
+        /// Determines whether the specified <see cref="object" />, is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -71,7 +71,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => (Element?.GetHashCode() ?? 0) ^ Info.GetHashCode();
+        public override int GetHashCode()
+        {
+            return (Element?.GetHashCode() ?? 0) ^ Info.GetHashCode();
+        }
 
         /// <summary>
         /// Implements the operator ==.
@@ -81,7 +84,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Pivot<P> left, Pivot<P> right) => left.Equals(right);
+        public static bool operator ==(Pivot<P> left, Pivot<P> right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -91,7 +97,10 @@ namespace SpiceSharp.Algebra.Solve
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(Pivot<P> left, Pivot<P> right) => !left.Equals(right);
+        public static bool operator !=(Pivot<P> left, Pivot<P> right)
+        {
+            return !left.Equals(right);
+        }
     }
 
     /// <summary>

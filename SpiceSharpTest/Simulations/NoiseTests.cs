@@ -25,7 +25,11 @@ namespace SpiceSharpTest.Simulations
 
             // Run the simulation a first time for building the reference values
             var r = new List<double>();
-            void BuildReference(object sender, ExportDataEventArgs args) => r.Add(export.Value);
+            void BuildReference(object sender, ExportDataEventArgs args)
+            {
+                r.Add(export.Value);
+            }
+
             noise.ExportSimulationData += BuildReference;
             noise.Run(ckt);
             noise.ExportSimulationData -= BuildReference;

@@ -50,8 +50,14 @@ namespace SpiceSharp.Behaviors
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)_behaviors).GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)_behaviors).GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => _behaviors.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _behaviors.GetEnumerator();
+        }
     }
 }

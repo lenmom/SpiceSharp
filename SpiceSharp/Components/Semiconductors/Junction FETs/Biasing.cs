@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 using Transistor = SpiceSharp.Components.Mosfets.Transistor;
@@ -192,7 +191,7 @@ namespace SpiceSharp.Components.JFETs
             double cdrain, gm, gds, betap, bfac;
 
             // Get the current voltages
-            Initialize(out double vgs, out double vgd, out bool check);
+            Initialize(out var vgs, out var vgd, out var check);
             var vds = vgs - vgd;
 
             // Determine dc current and derivatives 
@@ -350,7 +349,10 @@ namespace SpiceSharp.Components.JFETs
         }
 
         /// <inheritdoc/>
-        void IBiasingBehavior.Load() => Load();
+        void IBiasingBehavior.Load()
+        {
+            Load();
+        }
 
         /// <summary>
         /// Initializes the voltages for the current iteration.
@@ -360,7 +362,7 @@ namespace SpiceSharp.Components.JFETs
         /// <param name="check">If set to <c>true</c>, the voltages were limited to avoid blowing up of the currents.</param>
         protected void Initialize(out double vgs, out double vgd, out bool check)
         {
-            var state = BiasingState;
+            IBiasingSimulationState state = BiasingState;
 
             // Initialization
             check = true;

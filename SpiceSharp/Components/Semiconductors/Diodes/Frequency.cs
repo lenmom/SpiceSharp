@@ -1,10 +1,9 @@
 ﻿using SpiceSharp.Algebra;
-using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
-using SpiceSharp.Simulations;
-using System.Numerics;
-using System;
 using SpiceSharp.Attributes;
+using SpiceSharp.Behaviors;
+using SpiceSharp.Simulations;
+using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -36,7 +35,7 @@ namespace SpiceSharp.Components.Diodes
         {
             get
             {
-                var geq = LocalCapacitance * _complex.Laplace + LocalConductance;
+                Complex geq = LocalCapacitance * _complex.Laplace + LocalConductance;
                 return ComplexVoltage * geq * Parameters.ParallelMultiplier;
             }
         }
@@ -67,7 +66,7 @@ namespace SpiceSharp.Components.Diodes
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var state = _complex;
+            IComplexSimulationState state = _complex;
 
             var gspr = ModelTemperature.Conductance * Parameters.Area;
             var geq = LocalConductance;

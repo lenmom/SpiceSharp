@@ -94,7 +94,7 @@ namespace SpiceSharp.Simulations
         {
             base.Execute();
             var cstate = (ComplexSimulationState)GetState<IComplexSimulationState>();
-            var noiseconfig = NoiseParameters;
+            NoiseParameters noiseconfig = NoiseParameters;
             var exportargs = new ExportDataEventArgs(this);
 
             // Find the output nodes
@@ -102,9 +102,9 @@ namespace SpiceSharp.Simulations
             var negOutNode = noiseconfig.OutputRef != null ? cstate.Map[cstate.GetSharedVariable(noiseconfig.OutputRef)] : 0;
 
             // We only want to enable the source that is flagged as the input
-            var source = EntityBehaviors[NoiseParameters.InputSource];
+            IBehaviorContainer source = EntityBehaviors[NoiseParameters.InputSource];
             var originalParameters = new List<Tuple<IndependentSourceParameters, double, double>>();
-            foreach (var container in EntityBehaviors)
+            foreach (IBehaviorContainer container in EntityBehaviors)
             {
                 if (container.TryGetParameterSet(out IndependentSourceParameters parameters))
                 {
@@ -125,7 +125,7 @@ namespace SpiceSharp.Simulations
             try
             {
                 // Initialize
-                var freq = FrequencyParameters.Frequencies.GetEnumerator();
+                IEnumerator<double> freq = FrequencyParameters.Frequencies.GetEnumerator();
                 if (!freq.MoveNext())
                     return;
                 cstate.Laplace = 0;
@@ -133,7 +133,7 @@ namespace SpiceSharp.Simulations
 
                 // Initialize all devices for small-signal analysis and reset all noise contributions
                 InitializeAcParameters();
-                foreach (var behavior in _noiseBehaviors)
+                foreach (INoiseBehavior behavior in _noiseBehaviors)
                     behavior.Initialize();
 
                 // Loop through noise figures
@@ -143,7 +143,7 @@ namespace SpiceSharp.Simulations
                     cstate.Laplace = new Complex(0.0, 2.0 * Math.PI * freq.Current);
                     AcIterate();
 
-                    var val = cstate.Solution[posOutNode] - cstate.Solution[negOutNode];
+                    Complex val = cstate.Solution[posOutNode] - cstate.Solution[negOutNode];
                     var inverseGainSquared = 1.0 / Math.Max(val.Real * val.Real + val.Imaginary * val.Imaginary, 1e-20);
                     _state.SetCurrentPoint(new NoisePoint(freq.Current, inverseGainSquared));
 
@@ -152,7 +152,7 @@ namespace SpiceSharp.Simulations
 
                     // Now we use the adjoint system to calculate the noise
                     // contributions of each generator in the circuit
-                    foreach (var behavior in _noiseBehaviors)
+                    foreach (INoiseBehavior behavior in _noiseBehaviors)
                     {
                         behavior.Compute();
                         _state.Add(behavior);
@@ -165,7 +165,7 @@ namespace SpiceSharp.Simulations
             }
             finally
             {
-                foreach (var parameters in originalParameters)
+                foreach (Tuple<IndependentSourceParameters, double, double> parameters in originalParameters)
                 {
                     parameters.Item1.AcMagnitude = parameters.Item2;
                     parameters.Item1.AcPhase = parameters.Item3;
@@ -186,8 +186,8 @@ namespace SpiceSharp.Simulations
         /// </remarks>
         private void NzIterate(int posDrive, int negDrive)
         {
-            var cstate = GetState<IComplexSimulationState>();
-            var solver = cstate.Solver;
+            IComplexSimulationState cstate = GetState<IComplexSimulationState>();
+            Algebra.ISparsePivotingSolver<Complex> solver = cstate.Solver;
 
             // Clear out the right hand side vector
             solver.Precondition((matrix, rhs) =>

@@ -26,11 +26,11 @@ namespace SpiceSharp.Components.ParallelComponents
         public Convergence(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IConvergenceBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IConvergenceBehavior), out IWorkDistributor dist) && dist != null)
             {
                 _convergenceWorkload = new Workload<bool>((IWorkDistributor<bool>)dist, parameters.Entities.Count);
-                if (context.TryGetState<IIterationSimulationState>(out var parent))
+                if (context.TryGetState<IIterationSimulationState>(out IIterationSimulationState parent))
                 {
                     if (!(parent is IterationSimulationState))
                         context.AddLocalState<IIterationSimulationState>(new IterationSimulationState(parent));
@@ -45,7 +45,7 @@ namespace SpiceSharp.Components.ParallelComponents
             _convergenceBehaviors = context.GetBehaviors<IConvergenceBehavior>();
             if (_convergenceWorkload != null)
             {
-                foreach (var behavior in _convergenceBehaviors)
+                foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
                     _convergenceWorkload.Functions.Add(behavior.IsConvergent);
             }
         }
@@ -58,7 +58,7 @@ namespace SpiceSharp.Components.ParallelComponents
             else
             {
                 var convergence = true;
-                foreach (var behavior in _convergenceBehaviors)
+                foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
                     convergence &= behavior.IsConvergent();
                 return convergence;
             }

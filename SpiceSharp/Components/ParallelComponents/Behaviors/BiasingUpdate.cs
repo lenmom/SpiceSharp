@@ -1,5 +1,5 @@
-﻿using SpiceSharp.Behaviors;
-using SpiceSharp.Attributes;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -23,8 +23,8 @@ namespace SpiceSharp.Components.ParallelComponents
         public BiasingUpdate(ParallelBindingContext context)
             : base(context)
         {
-            var parameters = context.GetParameterSet<Parameters>();
-            if (parameters.WorkDistributors.TryGetValue(typeof(IBiasingUpdateBehavior), out var dist) && dist != null)
+            Parameters parameters = context.GetParameterSet<Parameters>();
+            if (parameters.WorkDistributors.TryGetValue(typeof(IBiasingUpdateBehavior), out IWorkDistributor dist) && dist != null)
             {
                 _updateWorkload = new Workload(dist, parameters.Entities.Count);
             }
@@ -36,7 +36,7 @@ namespace SpiceSharp.Components.ParallelComponents
             _updateBehaviors = context.GetBehaviors<IBiasingUpdateBehavior>();
             if (_updateWorkload != null)
             {
-                foreach (var behavior in _updateBehaviors)
+                foreach (IBiasingUpdateBehavior behavior in _updateBehaviors)
                     _updateWorkload.Actions.Add(behavior.Update);
             }
         }
@@ -48,7 +48,7 @@ namespace SpiceSharp.Components.ParallelComponents
                 _updateWorkload.Execute();
             else
             {
-                foreach (var behavior in _updateBehaviors)
+                foreach (IBiasingUpdateBehavior behavior in _updateBehaviors)
                     behavior.Update();
             }
         }

@@ -38,11 +38,11 @@ namespace SpiceSharp.Simulations
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         protected override void Initialize(object sender, EventArgs e)
         {
-            if (Simulation.EntityBehaviors.TryGetBehaviors(Source, out var ebd))
+            if (Simulation.EntityBehaviors.TryGetBehaviors(Source, out Behaviors.IBehaviorContainer ebd))
             {
-                if (ebd.TryGetValue<IBranchedBehavior<double>>(out var behavior))
+                if (ebd.TryGetValue<IBranchedBehavior<double>>(out IBranchedBehavior<double> behavior))
                 {
-                    var branch = behavior.Branch;
+                    IVariable<double> branch = behavior.Branch;
                     Extractor = () => branch.Value;
                 }
             }

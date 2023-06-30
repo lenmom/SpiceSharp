@@ -27,7 +27,7 @@ namespace SpiceSharp.Components.Switches
         public CurrentSwitchBindingContext(ICurrentControllingComponent component, ISimulation simulation, IBehaviorContainer behaviors)
             : base(component, simulation, behaviors)
         {
-            var branch = ControlBehaviors.GetValue<IBranchedBehavior<double>>().Branch;
+            IVariable<double> branch = ControlBehaviors.GetValue<IBranchedBehavior<double>>().Branch;
             ControlValue = () => branch.Value;
         }
     }

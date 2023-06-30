@@ -35,7 +35,7 @@ namespace SpiceSharp.Algebra
             var order = Size - Degeneracy;
 
             // Scramble
-            var rhsElement = Vector.GetFirstInVector();
+            ISparseVectorElement<double> rhsElement = Vector.GetFirstInVector();
             var index = 0;
             while (rhsElement != null && rhsElement.Index <= order)
             {
@@ -58,10 +58,10 @@ namespace SpiceSharp.Algebra
                 var temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
-                    var pivot = Matrix.FindDiagonalElement(i);
+                    ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
                     temp *= pivot.Value;
                     _intermediate[i] = temp;
-                    var element = pivot.Below;
+                    ISparseMatrixElement<double> element = pivot.Below;
                     while (element != null && element.Row <= order)
                     {
                         _intermediate[element.Row] -= temp * element.Value;
@@ -74,8 +74,8 @@ namespace SpiceSharp.Algebra
             for (var i = order; i > 0; i--)
             {
                 var temp = _intermediate[i];
-                var pivot = Matrix.FindDiagonalElement(i);
-                var element = pivot.Right;
+                ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
+                ISparseMatrixElement<double> element = pivot.Right;
                 while (element != null)
                 {
                     temp -= element.Value * _intermediate[element.Column];
@@ -102,7 +102,7 @@ namespace SpiceSharp.Algebra
             var order = Size - Degeneracy;
 
             // Scramble
-            var rhsElement = Vector.GetFirstInVector();
+            ISparseVectorElement<double> rhsElement = Vector.GetFirstInVector();
             for (var i = 0; i <= order; i++)
                 _intermediate[i] = 0.0;
             while (rhsElement != null && rhsElement.Index <= order)
@@ -118,7 +118,7 @@ namespace SpiceSharp.Algebra
                 var temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
-                    var element = Matrix.FindDiagonalElement(i).Right;
+                    ISparseMatrixElement<double> element = Matrix.FindDiagonalElement(i).Right;
                     while (element != null && element.Column <= order)
                     {
                         _intermediate[element.Column] -= temp * element.Value;
@@ -131,8 +131,8 @@ namespace SpiceSharp.Algebra
             for (var i = order; i > 0; i--)
             {
                 var temp = _intermediate[i];
-                var pivot = Matrix.FindDiagonalElement(i);
-                var element = pivot.Below;
+                ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
+                ISparseMatrixElement<double> element = pivot.Below;
                 while (element != null && element.Row <= order)
                 {
                     temp -= _intermediate[element.Row] * element.Value;
@@ -153,15 +153,15 @@ namespace SpiceSharp.Algebra
                 throw new ArgumentException(Properties.Resources.Algebra_InvalidPivot.FormatString(pivot.Row));
             pivot.Value = 1.0 / pivot.Value;
 
-            var upper = pivot.Right;
+            ISparseMatrixElement<double> upper = pivot.Right;
             while (upper != null)
             {
                 // Calculate upper triangular element
                 // upper = upper / pivot
                 upper.Value *= pivot.Value;
 
-                var sub = upper.Below;
-                var lower = pivot.Below;
+                ISparseMatrixElement<double> sub = upper.Below;
+                ISparseMatrixElement<double> lower = pivot.Below;
                 while (lower != null)
                 {
                     var row = lower.Row;

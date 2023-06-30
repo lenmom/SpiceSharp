@@ -43,11 +43,11 @@ namespace SpiceSharp.Simulations
             e.ThrowIfNull(nameof(e));
 
             Func<Complex> extractor = null;
-            var eb = Simulation.EntityBehaviors[EntityName];
+            IBehaviorContainer eb = Simulation.EntityBehaviors[EntityName];
 
             // Get the necessary behaviors in order of importance
             // 1) First the frequency analysis analysis
-            if (eb.TryGetValue<IFrequencyBehavior>(out var behavior))
+            if (eb.TryGetValue<IFrequencyBehavior>(out IFrequencyBehavior behavior))
                 extractor = behavior.CreatePropertyGetter<Complex>(PropertyName);
 
             // There are currently no other behaviors that export complex numbers

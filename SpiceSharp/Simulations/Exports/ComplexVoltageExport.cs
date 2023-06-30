@@ -36,7 +36,7 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                var result = Value;
+                Complex result = Value;
                 return 10.0 * Math.Log10(result.Real * result.Real + result.Imaginary * result.Imaginary);
             }
         }
@@ -48,7 +48,7 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                var result = Value;
+                Complex result = Value;
                 return Math.Atan2(result.Imaginary, result.Real);
             }
         }
@@ -91,14 +91,14 @@ namespace SpiceSharp.Simulations
         {
             if (Simulation is ISimulation<IVariable<Complex>> sim)
             {
-                if (sim.Solved.TryGetValue(PosNode, out var _node))
+                if (sim.Solved.TryGetValue(PosNode, out IVariable<Complex> _node))
                 {
-                    var posNode = _node;
+                    IVariable<Complex> posNode = _node;
                     if (NegNode == null)
                         Extractor = () => posNode.Value;
                     else if (sim.Solved.TryGetValue(NegNode, out _node))
                     {
-                        var negNode = _node;
+                        IVariable<Complex> negNode = _node;
                         Extractor = () => posNode.Value - negNode.Value;
                     }
                 }

@@ -41,7 +41,7 @@ namespace SpiceSharp.Validation
         {
             get
             {
-                foreach (var pair in _dcGroups)
+                foreach (KeyValuePair<IVariable, Group> pair in _dcGroups)
                 {
                     ConductionTypes type = ConductionTypes.None;
                     if (pair.Value == _representative)
@@ -87,7 +87,10 @@ namespace SpiceSharp.Validation
         /// <returns>
         ///   <c>true</c> if the specified variable was encountered; otherwise, <c>false</c>.
         /// </returns>
-        public bool Contains(Variable variable) => _dcGroups.ContainsKey(variable);
+        public bool Contains(Variable variable)
+        {
+            return _dcGroups.ContainsKey(variable);
+        }
 
         /// <summary>
         /// Applies the specified variables as being connected by a conductive path.
@@ -111,7 +114,7 @@ namespace SpiceSharp.Validation
                 return;
             if (variables.Length == 1 || type == ConductionTypes.None)
             {
-                foreach (var variable in variables)
+                foreach (IVariable variable in variables)
                 {
                     Add(variable, _dcGroups, ref _dcGroupCount);
                     Add(variable, _acGroups, ref _acGroupCount);
@@ -163,8 +166,8 @@ namespace SpiceSharp.Validation
         private void Connect(IVariable a, IVariable b, Dictionary<IVariable, Group> groups, ref int counter)
         {
             // Add to DC group
-            var hasA = groups.TryGetValue(a, out var groupA);
-            var hasB = groups.TryGetValue(b, out var groupB);
+            var hasA = groups.TryGetValue(a, out Group groupA);
+            var hasB = groups.TryGetValue(b, out Group groupB);
             if (hasA && hasB)
             {
                 // Join the groups
@@ -172,25 +175,25 @@ namespace SpiceSharp.Validation
                 {
                     if (groupA == _representative)
                     {
-                        foreach (var variable in groupB)
+                        foreach (IVariable variable in groupB)
                             groups[variable] = _representative;
                     }
                     else if (groupB == _representative)
                     {
-                        foreach (var variable in groupA)
+                        foreach (IVariable variable in groupA)
                             groups[variable] = _representative;
                     }
                     else
                     {
                         if (groupA.Count < groupB.Count)
                         {
-                            foreach (var variable in groupA)
+                            foreach (IVariable variable in groupA)
                                 groups[variable] = groupB;
                             groupB.Join(groupA);
                         }
                         else
                         {
-                            foreach (var variable in groupB)
+                            foreach (IVariable variable in groupB)
                                 groups[variable] = groupA;
                             groupA.Join(groupB);
                         }

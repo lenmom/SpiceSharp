@@ -1,6 +1,5 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Simulations.IntegrationMethods;
 using System;
@@ -82,7 +81,7 @@ namespace SpiceSharp.Components.Mosfets
             _behavior = context.Behaviors.GetValue<IMosfetBiasingBehavior>();
             _mp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
             _bp = context.GetParameterSet<Parameters>();
-            var method = context.GetState<IIntegrationMethod>();
+            IIntegrationMethod method = context.GetState<IIntegrationMethod>();
             _vgs = new StateValue<double>(2); method.RegisterState(_vgs);
             _vds = new StateValue<double>(2); method.RegisterState(_vds);
             _vbs = new StateValue<double>(2); method.RegisterState(_vbs);
@@ -132,7 +131,7 @@ namespace SpiceSharp.Components.Mosfets
         {
             if (_time.UseDc)
                 return;
-            var c = args.Contributions;
+            Contributions<double> c = args.Contributions;
             var vgs = _behavior.Vgs;
             var vds = _behavior.Vds;
             var vbs = _behavior.Vbs;
@@ -176,7 +175,7 @@ namespace SpiceSharp.Components.Mosfets
             _qgb.Value = (vgb1 - vgb1) * capgb + _qgb.GetPreviousValue(1);
 
             _qgs.Derive();
-            var info = _qgs.GetContributions(capgs, vgs);
+            JacobianInfo info = _qgs.GetContributions(capgs, vgs);
             c.Gs.G += info.Jacobian;
             c.Gs.C += info.Rhs;
 

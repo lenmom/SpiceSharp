@@ -2,10 +2,9 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.Capacitors
 {
@@ -37,8 +36,8 @@ namespace SpiceSharp.Components.Capacitors
         {
             get
             {
-                var conductance = _complex.Laplace * Capacitance;
-                var voltage = ComplexVoltage;
+                Complex conductance = _complex.Laplace * Capacitance;
+                Complex voltage = ComplexVoltage;
                 return voltage * Complex.Conjugate(voltage * conductance);
             }
         }
@@ -65,7 +64,7 @@ namespace SpiceSharp.Components.Capacitors
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var val = _complex.Laplace * Capacitance;
+            Complex val = _complex.Laplace * Capacitance;
             _elements.Add(val, -val, -val, val);
         }
     }

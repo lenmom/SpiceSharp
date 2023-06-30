@@ -11,7 +11,9 @@ namespace SpiceSharp.Algebra.Solve
     {
         /// <inheritdoc/>
         public override MarkowitzSearchStrategy<T> Clone()
-            => new MarkowitzSingleton<T>();
+        {
+            return new MarkowitzSingleton<T>();
+        }
 
         /// <inheritdoc/>
         public override Pivot<ISparseMatrixElement<T>> FindPivot(Markowitz<T> markowitz, ISparseMatrix<T> matrix, int eliminationStep, int max)
@@ -84,7 +86,7 @@ namespace SpiceSharp.Algebra.Solve
                     }
 
                     // First find the biggest magnitude in the column, not counting the pivot candidate
-                    var element = chosen.Above;
+                    ISparseMatrixElement<T> element = chosen.Above;
                     var largest = 0.0;
                     while (element != null && element.Row >= eliminationStep)
                     {

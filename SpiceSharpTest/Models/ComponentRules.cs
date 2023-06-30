@@ -43,7 +43,7 @@ namespace SpiceSharpTest.Models
         public ComponentRules(ComponentRuleParameters parameters, params IRule[] rules)
         {
             Parameters = parameters.ThrowIfNull(nameof(parameters));
-            foreach (var rule in rules)
+            foreach (IRule rule in rules)
                 _rules.Add(rule);
         }
 
@@ -52,7 +52,7 @@ namespace SpiceSharpTest.Models
         /// </summary>
         public void Reset()
         {
-            foreach (var rule in _rules)
+            foreach (IRule rule in _rules)
                 rule.Reset();
         }
 
@@ -65,7 +65,7 @@ namespace SpiceSharpTest.Models
         /// </returns>
         public IEnumerable<R> GetRules<R>() where R : IRule
         {
-            foreach (var rule in _rules)
+            foreach (IRule rule in _rules)
             {
                 if (rule is R r)
                     yield return r;
@@ -78,8 +78,14 @@ namespace SpiceSharpTest.Models
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IRule> GetEnumerator() => _rules.GetEnumerator();
+        public IEnumerator<IRule> GetEnumerator()
+        {
+            return _rules.GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

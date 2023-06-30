@@ -1,5 +1,4 @@
-﻿using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 
 namespace SpiceSharp.Components.Mosfets
 {
@@ -16,7 +15,7 @@ namespace SpiceSharp.Components.Mosfets
         /// <param name="mp">The model parameters.</param>
         public void Calculate(IMosfetBiasingBehavior behavior, ModelParameters mp)
         {
-            var tp = behavior.Properties;
+            TemperatureProperties tp = behavior.Properties;
             var vgs = behavior.Vgs;
             var vds = behavior.Vds;
             var vbs = behavior.Vbs;
@@ -38,7 +37,7 @@ namespace SpiceSharp.Components.Mosfets
                 {
                     if (vbs < tp.TempDepCap)
                     {
-                        double arg = 1 - vbs / tp.TempBulkPotential;
+                        var arg = 1 - vbs / tp.TempBulkPotential;
                         double sarg, sargsw;
                         /*
                          * the following block looks somewhat long and messy,
@@ -92,7 +91,7 @@ namespace SpiceSharp.Components.Mosfets
                 {
                     if (vbd < tp.TempDepCap)
                     {
-                        double arg = 1 - vbd / tp.TempBulkPotential;
+                        var arg = 1 - vbd / tp.TempBulkPotential;
                         double sarg, sargsw;
                         /*
                          * the following block looks somewhat long and messy,

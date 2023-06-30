@@ -96,9 +96,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             protected override void Predict()
             {
                 // Use the two previous solutions to predict a new one (the one we're about to test)
-                var future = States.Value;
-                var current = States.GetPreviousValue(1);
-                var previous = States.GetPreviousValue(2);
+                SpiceIntegrationState future = States.Value;
+                SpiceIntegrationState current = States.GetPreviousValue(1);
+                SpiceIntegrationState previous = States.GetPreviousValue(2);
 
                 // Predict a solution
                 switch (Order)
@@ -114,7 +114,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                     case 2:
                         // Adams-Bashforth method (second order for variable timesteps)
-                        var second = States.GetPreviousValue(3);
+                        SpiceIntegrationState second = States.GetPreviousValue(3);
                         var b = -future.Delta / (2.0 * current.Delta);
                         var a = 1 - b;
                         for (var i = 1; i <= Prediction.Length; i++)

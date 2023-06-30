@@ -3,8 +3,6 @@ using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpiceSharp.Components
 {
@@ -149,7 +147,7 @@ namespace SpiceSharp.Components
         {
             return "sffm({0} {1} {2} {3} {4} {5} {6})".FormatString(
                 Offset,
-                Amplitude, 
+                Amplitude,
                 CarrierFrequency.Value,
                 ModulationIndex,
                 SignalFrequency.Value,

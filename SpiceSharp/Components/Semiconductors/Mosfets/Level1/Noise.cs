@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -60,10 +59,10 @@ namespace SpiceSharp.Components.Mosfets.Level1
         {
             _state = context.GetState<INoiseSimulationState>();
             _properties = context.ModelBehaviors.GetValue<ModelTemperature>().Properties;
-            var d = Variables.Drain;
-            var s = Variables.Source;
-            var dp = Variables.DrainPrime;
-            var sp = Variables.SourcePrime;
+            IVariable<System.Numerics.Complex> d = Variables.Drain;
+            IVariable<System.Numerics.Complex> s = Variables.Source;
+            IVariable<System.Numerics.Complex> dp = Variables.DrainPrime;
+            IVariable<System.Numerics.Complex> sp = Variables.SourcePrime;
 
             _rd = new NoiseThermal("rd", d, dp);
             _rs = new NoiseThermal("rs", s, sp);

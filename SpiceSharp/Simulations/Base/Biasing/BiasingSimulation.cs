@@ -163,9 +163,9 @@ namespace SpiceSharp.Simulations
 
             // Set up nodesets for nodes that were referenced by an entity
             _nodesets.Clear();
-            foreach (var ns in BiasingParameters.Nodesets)
+            foreach (KeyValuePair<string, double> ns in BiasingParameters.Nodesets)
             {
-                if (_state.TryGetValue(ns.Key, out var variable))
+                if (_state.TryGetValue(ns.Key, out IVariable<double> variable))
                     _nodesets.Add(new ConvergenceAid(variable, _state, ns.Value));
                 else
                     SpiceSharpWarning.Warning(this, Properties.Resources.Simulations_ConvergenceAidVariableNotFound.FormatString(ns.Key));
@@ -197,7 +197,7 @@ namespace SpiceSharp.Simulations
         {
             var args = new TemperatureStateEventArgs(_temperature);
             OnBeforeTemperature(args);
-            foreach (var behavior in _temperatureBehaviors)
+            foreach (ITemperatureBehavior behavior in _temperatureBehaviors)
                 behavior.Temperature();
             OnAfterTemperature(args);
         }
@@ -311,7 +311,10 @@ namespace SpiceSharp.Simulations
             // We'll hack into the loading algorithm to apply our diagonal contributions
             var diagonalGmin = Math.Min(Iteration.Gmin, 1e-12);
             void ApplyGminStep(object sender, LoadStateEventArgs args)
-                => _state.Solver.Precondition((matrix, vector) => ModifiedNodalAnalysisHelper<double>.ApplyDiagonalGmin(matrix, diagonalGmin));
+            {
+                _state.Solver.Precondition((matrix, vector) => ModifiedNodalAnalysisHelper<double>.ApplyDiagonalGmin(matrix, diagonalGmin));
+            }
+
             AfterLoad += ApplyGminStep;
 
             // We could've ended up with some crazy value, so let's reset it
@@ -361,7 +364,7 @@ namespace SpiceSharp.Simulations
                 _state.Solution[i] = 0.0;
 
             // Start SRC stepping
-            bool success = true;
+            var success = true;
             Iteration.Mode = IterationModes.Junction;
             for (var i = 0; i <= steps; i++)
             {
@@ -390,7 +393,7 @@ namespace SpiceSharp.Simulations
         /// <exception cref="SingularException">Thrown if the equation matrix is singular.</exception>
         protected virtual bool Iterate(int maxIterations)
         {
-            var solver = _state.Solver;
+            ISparsePivotingSolver<double> solver = _state.Solver;
             var pass = false;
             var iterno = 0;
 
@@ -472,7 +475,7 @@ namespace SpiceSharp.Simulations
                     _state.OldSolution[0] = 0.0;
 
                     // Update 
-                    foreach (var behavior in _updateBehaviors)
+                    foreach (IBiasingUpdateBehavior behavior in _updateBehaviors)
                         behavior.Update();
 
                     // Exceeded maximum number of iterations
@@ -526,7 +529,10 @@ namespace SpiceSharp.Simulations
         /// <summary>
         /// Stores the solution.
         /// </summary>
-        protected void StoreSolution() => _state.StoreSolution();
+        protected void StoreSolution()
+        {
+            _state.StoreSolution();
+        }
 
         /// <summary>
         /// Load the current simulation state solver.
@@ -541,7 +547,7 @@ namespace SpiceSharp.Simulations
             {
                 // Clear rhs and matrix
                 _state.Solver.Reset();
-                foreach (var behavior in _loadBehaviors)
+                foreach (IBiasingBehavior behavior in _loadBehaviors)
                     behavior.Load();
             }
             finally
@@ -564,7 +570,7 @@ namespace SpiceSharp.Simulations
                 return;
 
             // Aid in convergence
-            foreach (var aid in _nodesets)
+            foreach (ConvergenceAid aid in _nodesets)
                 aid.Aid();
         }
 
@@ -578,9 +584,9 @@ namespace SpiceSharp.Simulations
         protected bool IsConvergent()
         {
             // Check convergence for each node
-            foreach (var v in _state.Map)
+            foreach (KeyValuePair<IVariable, int> v in _state.Map)
             {
-                var node = v.Key;
+                IVariable node = v.Key;
                 var n = _state.Solution[v.Value];
                 var o = _state.OldSolution[v.Value];
 
@@ -608,7 +614,7 @@ namespace SpiceSharp.Simulations
             }
 
             // Device-level convergence tests
-            foreach (var behavior in _convergenceBehaviors)
+            foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
             {
                 if (!behavior.IsConvergent())
                 {
@@ -647,29 +653,41 @@ namespace SpiceSharp.Simulations
         /// Raises the <see cref="BeforeLoad" /> event.
         /// </summary>
         /// <param name="args">The <see cref="LoadStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeLoad(LoadStateEventArgs args) => BeforeLoad?.Invoke(this, args);
+        protected virtual void OnBeforeLoad(LoadStateEventArgs args)
+        {
+            BeforeLoad?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterLoad" /> event.
         /// </summary>
         /// <param name="args">The <see cref="LoadStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterLoad(LoadStateEventArgs args) => AfterLoad?.Invoke(this, args);
+        protected virtual void OnAfterLoad(LoadStateEventArgs args)
+        {
+            AfterLoad?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="BeforeTemperature" /> event.
         /// </summary>
         /// <param name="args">The <see cref="TemperatureStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeTemperature(TemperatureStateEventArgs args) => BeforeTemperature?.Invoke(this, args);
+        protected virtual void OnBeforeTemperature(TemperatureStateEventArgs args)
+        {
+            BeforeTemperature?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterTemperature" /> event.
         /// </summary>
         /// <param name="args">The <see cref="TemperatureStateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterTemperature(TemperatureStateEventArgs args) => AfterTemperature?.Invoke(this, args);
+        protected virtual void OnAfterTemperature(TemperatureStateEventArgs args)
+        {
+            AfterTemperature?.Invoke(this, args);
+        }
 
         #endregion
 
-#if DEBUG        
+#if DEBUG
         /// <summary>
         /// Prints the current solver to the output stream. If <c>null</c>, the console output is used instead.
         /// </summary>
@@ -681,7 +699,7 @@ namespace SpiceSharp.Simulations
             var variables = new string[_state.Solver.Size + 1];
             var columnWidths = new int[_state.Solver.Size + 1];
             var leadWidth = 0;
-            foreach (var p in _state.Map)
+            foreach (KeyValuePair<IVariable, int> p in _state.Map)
             {
                 if (p.Key.Unit == Units.Volt)
                     variables[p.Value] = @"V({0})".FormatString(p.Key.Name);
@@ -705,11 +723,11 @@ namespace SpiceSharp.Simulations
                 writer.Write($"{{0,{leadWidth + 1}}}".FormatString(variables[row]));
                 for (var col = 1; col < variables.Length; col++)
                 {
-                    var elt = _state.Solver.FindElement(new MatrixLocation(row, col));
+                    Element<double> elt = _state.Solver.FindElement(new MatrixLocation(row, col));
                     var value = elt?.Value.ToString("g6") ?? ".";
                     writer.Write($"{{0,{columnWidths[col] + 1}:g}}".FormatString(value));
                 }
-                var rhsElt = _state.Solver.FindElement(row);
+                Element<double> rhsElt = _state.Solver.FindElement(row);
                 var rhsValue = rhsElt?.Value.ToString("g6") ?? ".";
                 writer.WriteLine("{0,7}".FormatString(rhsValue));
             }

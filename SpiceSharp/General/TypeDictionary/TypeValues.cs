@@ -73,7 +73,7 @@ namespace SpiceSharp.General
         {
             get
             {
-                var elt = _first;
+                Node elt = _first;
                 while (elt != null)
                 {
                     yield return elt.Value;
@@ -150,8 +150,8 @@ namespace SpiceSharp.General
             }
             else
             {
-                var previous = _first;
-                var elt = _first.Next;
+                Node previous = _first;
+                Node elt = _first.Next;
                 while (elt != null)
                 {
                     if (elt.Value.Equals(value))

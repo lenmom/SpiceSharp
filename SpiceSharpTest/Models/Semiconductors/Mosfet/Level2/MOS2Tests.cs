@@ -374,7 +374,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var dc = new DC("dc", "V1", 0.0, 5.0, 0.1);
             dc.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new RealVoltageExport(dc, "out") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(dc, "out") };
             Compare(dc, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -395,7 +395,7 @@ namespace SpiceSharpTest.Models
                 CreateMOS2("M2r", "outr", "inr", "0", "0", "NFET")
                     .SetParameter("l", 6e-6)
                     .SetParameter("w", 1e-6),
-                
+
                 new VoltageSource("V1a", "ina", "0", new Pulse(1, 5, 1e-6, 1e-9, 0.5e-6, 2e-6, 6e-6)),
                 new VoltageSource("Vsupplya", "vdda", "0", 5),
                 new Resistor("R1a", "outa", "vdda", 1.0e3),
@@ -490,7 +490,7 @@ namespace SpiceSharpTest.Models
             // Create simulation
             var ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new ComplexVoltageExport(ac, "out") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

@@ -45,6 +45,8 @@ namespace SpiceSharp.Validation
         /// anyway.
         /// </remarks>
         public ComponentRuleParameters Clone()
-            => (ComponentRuleParameters)MemberwiseClone();
+        {
+            return (ComponentRuleParameters)MemberwiseClone();
+        }
     }
 }

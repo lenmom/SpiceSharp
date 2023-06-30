@@ -39,10 +39,10 @@ namespace SpiceSharp.Simulations
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         protected override void Initialize(object sender, EventArgs e)
         {
-            var state = Simulation.GetState<IComplexSimulationState>();
-            if (Simulation.EntityBehaviors.TryGetBehaviors(Source, out var ebd))
+            IComplexSimulationState state = Simulation.GetState<IComplexSimulationState>();
+            if (Simulation.EntityBehaviors.TryGetBehaviors(Source, out Behaviors.IBehaviorContainer ebd))
             {
-                if (ebd.TryGetValue<IBranchedBehavior<Complex>>(out var behavior))
+                if (ebd.TryGetValue<IBranchedBehavior<Complex>>(out IBranchedBehavior<Complex> behavior))
                 {
                     Index = state.Map[behavior.Branch];
                     Extractor = () => state.Solution[Index];

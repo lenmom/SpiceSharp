@@ -1,8 +1,8 @@
-﻿using SpiceSharp.ParameterSets;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
+using SpiceSharp.Simulations;
 using System;
 using System.Collections.Generic;
-using SpiceSharp.Simulations;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.SamplerBehaviors
 {

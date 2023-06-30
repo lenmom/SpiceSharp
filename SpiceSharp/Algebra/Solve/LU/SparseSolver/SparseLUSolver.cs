@@ -64,7 +64,7 @@ namespace SpiceSharp.Algebra.Solve
             var order = Size - Degeneracy;
             for (var step = 1; step <= order; step++)
             {
-                var pivot = Matrix.FindDiagonalElement(step);
+                ISparseMatrixElement<T> pivot = Matrix.FindDiagonalElement(step);
 
                 // We don't consult the pivoting strategy, we just need to know if we can eliminate this row
                 if (pivot == null || Parameters.Magnitude(pivot.Value).Equals(0.0))
@@ -79,7 +79,7 @@ namespace SpiceSharp.Algebra.Solve
         public override int OrderAndFactor()
         {
             IsFactored = false;
-            int step = 1;
+            var step = 1;
             var order = Size - Degeneracy;
             int max = Size - PivotSearchReduction;
 
@@ -88,7 +88,7 @@ namespace SpiceSharp.Algebra.Solve
                 // Matrix has been factored before, and reordering is not required
                 for (step = 1; step <= order; step++)
                 {
-                    var pivot = Matrix.FindDiagonalElement(step);
+                    ISparseMatrixElement<T> pivot = Matrix.FindDiagonalElement(step);
                     if (Parameters.IsValidPivot(pivot, max))
                         Eliminate(pivot);
                     else
@@ -115,14 +115,14 @@ namespace SpiceSharp.Algebra.Solve
                     pivot = Parameters.FindPivot(Matrix, step, max);
                 else
                 {
-                    var elt = Matrix.FindDiagonalElement(step);
+                    ISparseMatrixElement<T> elt = Matrix.FindDiagonalElement(step);
                     pivot = new Pivot<ISparseMatrixElement<T>>(elt, elt != null ? PivotInfo.Good : PivotInfo.None);
                 }
                 if (pivot.Info == PivotInfo.None)
                     return step - 1;
                 else if (pivot.Info == PivotInfo.Bad)
                 {
-                    var loc = InternalToExternal(new MatrixLocation(step, step));
+                    MatrixLocation loc = InternalToExternal(new MatrixLocation(step, step));
                     SpiceSharpWarning.Warning(this, Properties.Resources.Algebra_BadlyConditioned.FormatString(loc.Row, loc.Column));
                 }
                 MovePivot(pivot.Element, step);
@@ -157,22 +157,28 @@ namespace SpiceSharp.Algebra.Solve
             index.GreaterThanOrEquals(nameof(index), 0);
             if (index > Size)
                 return null;
-            int row = Row[index];
-            int column = Column[index];
+            var row = Row[index];
+            var column = Column[index];
             return Matrix.FindElement(new MatrixLocation(row, column));
         }
 
         /// <inheritdoc/>
-        public Element<T> FindElement(MatrixLocation location) => Matrix.FindElement(ExternalToInternal(location));
+        public Element<T> FindElement(MatrixLocation location)
+        {
+            return Matrix.FindElement(ExternalToInternal(location));
+        }
 
         /// <inheritdoc/>
-        public Element<T> FindElement(int row) => Vector.FindElement(Row[row]);
+        public Element<T> FindElement(int row)
+        {
+            return Vector.FindElement(Row[row]);
+        }
 
         /// <inheritdoc/>
         public Element<T> GetElement(MatrixLocation location)
         {
             location = ExternalToInternal(location);
-            var elt = Matrix.GetElement(location);
+            Element<T> elt = Matrix.GetElement(location);
 
             // If we created a new row or column, let's move to the front
             // to keep the same equations that are linearly dependent
@@ -199,7 +205,7 @@ namespace SpiceSharp.Algebra.Solve
             if (row < 0)
                 throw new ArgumentOutOfRangeException(nameof(row));
             row = Row[row];
-            var elt = Vector.GetElement(row);
+            Element<T> elt = Vector.GetElement(row);
 
             // If we created a new row, let's move it back to still have the same equations that are considered linearly dependent
             if (Degeneracy > 0)

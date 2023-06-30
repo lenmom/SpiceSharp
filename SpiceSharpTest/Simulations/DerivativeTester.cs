@@ -22,7 +22,9 @@ namespace SpiceSharpTest.Simulations
         }
 
         public override IEntity Clone()
-            => (IEntity)MemberwiseClone();
+        {
+            return (IEntity)MemberwiseClone();
+        }
 
         public override void CreateBehaviors(ISimulation simulation)
         {

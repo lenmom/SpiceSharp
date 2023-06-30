@@ -1,8 +1,8 @@
 ﻿using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
+using SpiceSharp.General;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using SpiceSharp.General;
 using System;
 using System.Collections.Generic;
 
@@ -74,10 +74,10 @@ namespace SpiceSharp.Components.Common
         {
             void BehaviorsNotFound(object sender, BehaviorsNotFoundEventArgs args)
             {
-                if (entities.TryGetEntity(args.Name, out var entity))
+                if (entities.TryGetEntity(args.Name, out IEntity entity))
                 {
                     entity.CreateBehaviors(this);
-                    if (EntityBehaviors.TryGetBehaviors(entity.Name, out var container))
+                    if (EntityBehaviors.TryGetBehaviors(entity.Name, out IBehaviorContainer container))
                         args.Behaviors = container;
                 }
                 else
@@ -87,7 +87,7 @@ namespace SpiceSharp.Components.Common
             }
             EntityBehaviors.BehaviorsNotFound += BehaviorsNotFound;
 
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
             {
                 if (!EntityBehaviors.Contains(entity.Name))
                     entity.CreateBehaviors(this);
@@ -127,7 +127,9 @@ namespace SpiceSharp.Components.Common
         /// </returns>
         /// <exception cref="ArgumentException">Thrown if the simulation state is not defined.</exception>
         public S GetParentState<S>() where S : ISimulationState
-            => Parent.GetState<S>();
+        {
+            return Parent.GetState<S>();
+        }
 
         /// <summary>
         /// Tries the state of the get parent simulatio nof the specified type, bypassing any local states.
@@ -138,40 +140,74 @@ namespace SpiceSharp.Components.Common
         ///   <c>true</c> if the simulation state exists; otherwise <c>false</c>.
         /// </returns>
         public bool TryGetParentState<S>(out S state) where S : ISimulationState
-            => Parent.TryGetState(out state);
+        {
+            return Parent.TryGetState(out state);
+        }
 
         /// <inheritdoc/>
-        public bool UsesState<S>() where S : ISimulationState => Parent.UsesState<S>();
+        public bool UsesState<S>() where S : ISimulationState
+        {
+            return Parent.UsesState<S>();
+        }
 
         /// <inheritdoc/>
-        public bool UsesBehaviors<B>() where B : IBehavior => Parent.UsesBehaviors<B>();
+        public bool UsesBehaviors<B>() where B : IBehavior
+        {
+            return Parent.UsesBehaviors<B>();
+        }
 
         /// <inheritdoc/>
-        public bool UsesBehavior(Type behaviorType) => Parent.UsesBehavior(behaviorType);
+        public bool UsesBehavior(Type behaviorType)
+        {
+            return Parent.UsesBehavior(behaviorType);
+        }
 
         /// <inheritdoc/>
-        public virtual P GetParameterSet<P>() where P : IParameterSet, ICloneable<P> => Parent.GetParameterSet<P>();
+        public virtual P GetParameterSet<P>() where P : IParameterSet, ICloneable<P>
+        {
+            return Parent.GetParameterSet<P>();
+        }
 
         /// <inheritdoc/>
         public virtual bool TryGetParameterSet<P>(out P value) where P : IParameterSet, ICloneable<P>
-            => Parent.TryGetParameterSet(out value);
+        {
+            return Parent.TryGetParameterSet(out value);
+        }
 
         /// <inheritdoc/>
-        public virtual void SetParameter<P>(string name, P value) => Parent.SetParameter(name, value);
+        public virtual void SetParameter<P>(string name, P value)
+        {
+            Parent.SetParameter(name, value);
+        }
 
         /// <inheritdoc/>
-        public virtual bool TrySetParameter<P>(string name, P value) => Parent.TrySetParameter(name, value);
+        public virtual bool TrySetParameter<P>(string name, P value)
+        {
+            return Parent.TrySetParameter(name, value);
+        }
 
         /// <inheritdoc/>
-        public virtual P GetProperty<P>(string name) => Parent.GetProperty<P>(name);
+        public virtual P GetProperty<P>(string name)
+        {
+            return Parent.GetProperty<P>(name);
+        }
 
         /// <inheritdoc/>
-        public virtual bool TryGetProperty<P>(string name, out P value) => Parent.TryGetProperty(name, out value);
+        public virtual bool TryGetProperty<P>(string name, out P value)
+        {
+            return Parent.TryGetProperty(name, out value);
+        }
 
         /// <inheritdoc/>
-        public virtual Action<P> CreateParameterSetter<P>(string name) => Parent.CreateParameterSetter<P>(name);
+        public virtual Action<P> CreateParameterSetter<P>(string name)
+        {
+            return Parent.CreateParameterSetter<P>(name);
+        }
 
         /// <inheritdoc/>
-        public virtual Func<P> CreatePropertyGetter<P>(string name) => Parent.CreatePropertyGetter<P>(name);
+        public virtual Func<P> CreatePropertyGetter<P>(string name)
+        {
+            return Parent.CreatePropertyGetter<P>(name);
+        }
     }
 }

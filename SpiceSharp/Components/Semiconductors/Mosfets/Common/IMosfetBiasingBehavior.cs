@@ -1,7 +1,7 @@
-﻿using SpiceSharp.Behaviors;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using System;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Mosfets
 {

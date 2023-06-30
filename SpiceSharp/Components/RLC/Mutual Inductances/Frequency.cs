@@ -2,8 +2,8 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Numerics;
 using System;
+using System.Numerics;
 
 namespace SpiceSharp.Components.MutualInductances
 {
@@ -25,7 +25,7 @@ namespace SpiceSharp.Components.MutualInductances
         /// </summary>
         /// <param name="context">The context.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
-        public Frequency(BindingContext context) 
+        public Frequency(BindingContext context)
             : base(context)
         {
             _complex = context.GetState<IComplexSimulationState>();
@@ -47,7 +47,7 @@ namespace SpiceSharp.Components.MutualInductances
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var value = _complex.Laplace * Factor;
+            Complex value = _complex.Laplace * Factor;
             _elements.Add(-value, -value);
         }
     }

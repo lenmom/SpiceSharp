@@ -41,13 +41,22 @@ namespace SpiceSharp.Algebra.Solve
             }
 
             /// <inheritdoc/>
-            public void CopyTo(IVector<T> target) => _parent.Vector.CopyTo(target);
+            public void CopyTo(IVector<T> target)
+            {
+                _parent.Vector.CopyTo(target);
+            }
 
             /// <inheritdoc/>
-            public void Reset() => _parent.Vector.Reset();
+            public void Reset()
+            {
+                _parent.Vector.Reset();
+            }
 
             /// <inheritdoc/>
-            public void Clear() => _parent.Vector.Clear();
+            public void Clear()
+            {
+                _parent.Vector.Clear();
+            }
 
             /// <summary>
             /// Converts to string.
@@ -55,7 +64,10 @@ namespace SpiceSharp.Algebra.Solve
             /// <returns>
             /// A <see cref="string" /> that represents this instance.
             /// </returns>
-            public override string ToString() => _parent.Vector.ToString();
+            public override string ToString()
+            {
+                return _parent.Vector.ToString();
+            }
         }
     }
 }

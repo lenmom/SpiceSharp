@@ -303,7 +303,7 @@ namespace SpiceSharpTest.Models
         {
             // Create voltage source
             var s = new VoltageSwitch("SW 1");
-            var p = s.Parameters;
+            SpiceSharp.Components.Switches.Parameters p = s.Parameters;
 
             // Check on
             s.SetParameter("on", true);
@@ -323,9 +323,9 @@ namespace SpiceSharpTest.Models
 
             // Make the simulation and run it
             var op = new OP("op");
-            var ex = Assert.Throws<ValidationFailedException>(() => op.Run(ckt));
+            ValidationFailedException ex = Assert.Throws<ValidationFailedException>(() => op.Run(ckt));
             Assert.AreEqual(1, ex.Rules.ViolationCount);
-            var violation = ex.Rules.Violations.First();
+            IRuleViolation violation = ex.Rules.Violations.First();
             Assert.IsInstanceOf<FloatingNodeRuleViolation>(violation);
             Assert.AreEqual("in", ((FloatingNodeRuleViolation)violation).FloatingVariable.Name);
         }
@@ -352,7 +352,7 @@ namespace SpiceSharpTest.Models
                 );
 
             var dc = new DC("dc", "V1", 0.0, 1.0, 0.1);
-            var exports = new[] { new RealVoltageExport(dc, "out") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(dc, "out") };
             Compare(dc, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -379,7 +379,7 @@ namespace SpiceSharpTest.Models
                 );
 
             var ac = new AC("ac", new DecadeSweep(1, 1e6, 2));
-            var exports = new[] { new ComplexVoltageExport(ac, "out") };
+            ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

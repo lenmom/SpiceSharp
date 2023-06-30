@@ -1,9 +1,9 @@
-﻿using SpiceSharp.Entities;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using SpiceSharp.Attributes;
 using System.Linq;
 
 namespace SpiceSharp.Components
@@ -47,6 +47,8 @@ namespace SpiceSharp.Components
 
         /// <inheritdoc/>
         public ISubcircuitDefinition Clone()
-            => new SubcircuitDefinition(Entities.Clone(), Pins.ToArray());
+        {
+            return new SubcircuitDefinition(Entities.Clone(), Pins.ToArray());
+        }
     }
 }

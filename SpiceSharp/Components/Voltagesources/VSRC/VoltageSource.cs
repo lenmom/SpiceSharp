@@ -67,11 +67,11 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         void IRuleSubject.Apply(IRules rules)
         {
-            var p = rules.GetParameterSet<ComponentRuleParameters>();
-            var nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
-            foreach (var rule in rules.GetRules<IConductiveRule>())
+            ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
+            Simulations.IVariable[] nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
+            foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
                 rule.AddPath(this, nodes[0], nodes[1]);
-            foreach (var rule in rules.GetRules<IAppliedVoltageRule>())
+            foreach (IAppliedVoltageRule rule in rules.GetRules<IAppliedVoltageRule>())
                 rule.Fix(this, nodes[0], nodes[1]);
         }
     }

@@ -47,7 +47,7 @@ namespace SpiceSharp.Simulations
             /// <inheritdoc/>
             public IVariable<Complex> GetSharedVariable(string name)
             {
-                if (TryGetValue(name, out var result))
+                if (TryGetValue(name, out IVariable<Complex> result))
                     return result;
 
                 // We create a private variable and then make it shared

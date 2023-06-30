@@ -76,7 +76,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode() => _fraction.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _fraction.GetHashCode();
+        }
 
         /// <summary>
         /// Determines whether the specified <see cref="object" />, is equal to this instance.
@@ -99,7 +102,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
         /// </returns>
-        public bool Equals(Fraction other) => _fraction == other._fraction;
+        public bool Equals(Fraction other)
+        {
+            return _fraction == other._fraction;
+        }
 
         /// <summary>
         /// Converts to string.
@@ -147,14 +153,20 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static explicit operator sbyte(Fraction fraction) => fraction._fraction;
+        public static explicit operator sbyte(Fraction fraction)
+        {
+            return fraction._fraction;
+        }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="int"/> to <see cref="Fraction"/>. The denominator is 1.
         /// </summary>
         /// <param name="numerator">The numerator.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator Fraction(int numerator) => new Fraction(numerator, 1);
+        public static implicit operator Fraction(int numerator)
+        {
+            return new Fraction(numerator, 1);
+        }
 
         /// <summary>
         /// Implements the operator ==.
@@ -164,7 +176,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator ==(Fraction left, Fraction right) => left.Equals(right);
+        public static bool operator ==(Fraction left, Fraction right)
+        {
+            return left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator !=.
@@ -174,7 +189,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static bool operator !=(Fraction left, Fraction right) => !left.Equals(right);
+        public static bool operator !=(Fraction left, Fraction right)
+        {
+            return !left.Equals(right);
+        }
 
         /// <summary>
         /// Implements the operator *.
@@ -184,7 +202,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Fraction operator *(Fraction left, Fraction right) => new Fraction(left.Numerator * right.Numerator, left.Denominator * right.Denominator);
+        public static Fraction operator *(Fraction left, Fraction right)
+        {
+            return new Fraction(left.Numerator * right.Numerator, left.Denominator * right.Denominator);
+        }
 
         /// <summary>
         /// Implements the operator /.
@@ -194,7 +215,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Fraction operator /(Fraction left, Fraction right) => new Fraction(left.Numerator * right.Denominator, left.Denominator * right.Numerator);
+        public static Fraction operator /(Fraction left, Fraction right)
+        {
+            return new Fraction(left.Numerator * right.Denominator, left.Denominator * right.Numerator);
+        }
 
         /// <summary>
         /// Implements the operator +.
@@ -204,7 +228,10 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Fraction operator +(Fraction left, Fraction right) => new Fraction(left.Numerator * right.Denominator + left.Denominator * right.Numerator, left.Denominator * right.Denominator);
+        public static Fraction operator +(Fraction left, Fraction right)
+        {
+            return new Fraction(left.Numerator * right.Denominator + left.Denominator * right.Numerator, left.Denominator * right.Denominator);
+        }
 
         /// <summary>
         /// Implements the operator -.
@@ -214,6 +241,9 @@ namespace SpiceSharp.Simulations.Variables
         /// <returns>
         /// The result of the operator.
         /// </returns>
-        public static Fraction operator -(Fraction left, Fraction right) => new Fraction(left.Numerator * right.Denominator - left.Denominator * right.Numerator, left.Denominator * right.Denominator);
+        public static Fraction operator -(Fraction left, Fraction right)
+        {
+            return new Fraction(left.Numerator * right.Denominator - left.Denominator * right.Numerator, left.Denominator * right.Denominator);
+        }
     }
 }

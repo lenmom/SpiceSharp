@@ -109,11 +109,15 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
             /// <inheritdoc/>
             public IVector<double> GetPreviousSolution(int index)
-                => States.GetPreviousValue(index).Solution;
+            {
+                return States.GetPreviousValue(index).Solution;
+            }
 
             /// <inheritdoc/>
             public double GetPreviousTimestep(int index)
-                => States.GetPreviousValue(index).Delta;
+            {
+                return States.GetPreviousValue(index).Delta;
+            }
 
             /// <inheritdoc/>
             public void RegisterState(IIntegrationState state)
@@ -214,7 +218,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 // When just starting out, we want to copy all the states to the previous states.
                 if (BaseTime.Equals(0.0))
                 {
-                    foreach (var istate in States)
+                    foreach (SpiceIntegrationState istate in States)
                     {
                         istate.Delta = Parameters.MaxStep;
                         States.Value.State.CopyTo(istate.State);
@@ -222,7 +226,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 }
 
                 // Accept all the registered states
-                foreach (var state in RegisteredStates)
+                foreach (IIntegrationState state in RegisteredStates)
                     state.Accept();
 
                 // Clear the breakpoints
@@ -270,7 +274,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                     newDelta = double.PositiveInfinity;
 
                     // Truncate the timestep
-                    foreach (var truncatable in TruncatableStates)
+                    foreach (ITruncatable truncatable in TruncatableStates)
                         newDelta = Math.Min(newDelta, truncatable.Truncate());
                     if (newDelta <= 0.0)
                         throw new TimestepTooSmallException(newDelta, BaseTime);
@@ -284,7 +288,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                             // Truncate the timestep using the higher order
                             newDelta = double.PositiveInfinity;
-                            foreach (var truncatable in TruncatableStates)
+                            foreach (ITruncatable truncatable in TruncatableStates)
                                 newDelta = Math.Min(newDelta, truncatable.Truncate());
                             if (newDelta <= 0.0)
                                 throw new TimestepTooSmallException(newDelta, BaseTime);

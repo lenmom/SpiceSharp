@@ -31,19 +31,19 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// </returns>
                 public double Truncate()
                 {
-                    var parameters = _method.Parameters;
+                    SpiceMethod parameters = _method.Parameters;
                     var timetmp = double.PositiveInfinity;
-                    var state = _method.State;
-                    var prediction = _method.Prediction;
-                    var states = _method.States;
+                    IBiasingSimulationState state = _method.State;
+                    Algebra.IVector<double> prediction = _method.Prediction;
+                    IHistory<SpiceIntegrationState> states = _method.States;
 
                     var delsum = 0.0;
                     for (var i = 0; i <= _method.Order; i++)
                         delsum += states.GetPreviousValue(i).Delta;
 
-                    foreach (var v in state.Map)
+                    foreach (System.Collections.Generic.KeyValuePair<IVariable, int> v in state.Map)
                     {
-                        var node = v.Key;
+                        IVariable node = v.Key;
                         var index = v.Value;
                         var tol = Math.Max(Math.Abs(state.Solution[index]), Math.Abs(prediction[index])) * parameters.RelativeTolerance + parameters.AbsoluteTolerance;
                         var diff = state.Solution[index] - prediction[index];

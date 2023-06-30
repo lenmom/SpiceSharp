@@ -1,9 +1,6 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -20,7 +17,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// </summary>
         /// <typeparam name="S">The simulation state type.</typeparam>
         /// <returns>The simulation state.</returns>
-        public S GetState<S>() where S : ISimulationState => _context.GetState<S>();
+        public S GetState<S>() where S : ISimulationState
+        {
+            return _context.GetState<S>();
+        }
 
         /// <summary>
         /// Tries to get a simulation state from the used simulation.
@@ -28,7 +28,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// <typeparam name="S">The simulation state type.</typeparam>
         /// <param name="state">The simulation state.</param>
         /// <returns><c>true</c> if the state was found; otherwise, <c>false</c>.</returns>
-        public bool TryGetState<S>(out S state) where S : ISimulationState => _context.TryGetState(out state);
+        public bool TryGetState<S>(out S state) where S : ISimulationState
+        {
+            return _context.TryGetState(out state);
+        }
 
         /// <summary>
         /// Gets the local simulation behaviors.

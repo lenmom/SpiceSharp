@@ -13,7 +13,7 @@ namespace SpiceSharpTest.Models
         /// Creates a circuit with a resistor and a voltage source which is connected to IN
         /// node and a ground node
         /// </summary>
-        static Circuit CreateResistorCircuit(double current, double resistance)
+        private static Circuit CreateResistorCircuit(double current, double resistance)
         {
             var ckt = new Circuit(
                 new CurrentSource("I1", "0", "IN", current),
@@ -30,7 +30,7 @@ namespace SpiceSharpTest.Models
              * 1) a current through resistor is 10A
              * 2) the voltage across the current source is 1000V
              */
-            var ckt = CreateResistorCircuit(10, 1.0e3);
+            Circuit ckt = CreateResistorCircuit(10, 1.0e3);
 
             // Create simulation, exports and references
             var op = new OP("op");
@@ -55,7 +55,7 @@ namespace SpiceSharpTest.Models
         /// <param name="current">Current (A)</param>
         /// <param name="resistance">Resistance (Ohm)</param>
         /// <returns></returns>
-        static Circuit CreateResistorsInSeriesCircuit(int count, double current, double resistance)
+        private static Circuit CreateResistorsInSeriesCircuit(int count, double current, double resistance)
         {
             Assert.IsTrue(count > 1);
             var ckt = new Circuit(
@@ -82,7 +82,7 @@ namespace SpiceSharpTest.Models
             var currentInAmp = 100;
             var resistanceInOhms = 10;
             var resistorCount = 500;
-            var ckt = CreateResistorsInSeriesCircuit(resistorCount, currentInAmp, resistanceInOhms);
+            Circuit ckt = CreateResistorsInSeriesCircuit(resistorCount, currentInAmp, resistanceInOhms);
             var op = new OP("op");
 
             // Create exports
@@ -131,8 +131,8 @@ namespace SpiceSharpTest.Models
 
             // Check
             Assert.AreEqual(isrc.Name, clone.Name);
-            var origNodes = isrc.Nodes;
-            var cloneNodes = clone.Nodes;
+            IReadOnlyList<string> origNodes = isrc.Nodes;
+            IReadOnlyList<string> cloneNodes = clone.Nodes;
             Assert.AreEqual(origNodes[0], cloneNodes[0]);
             Assert.AreEqual(origNodes[1], cloneNodes[1]);
             var waveform = (Pulse)clone.GetProperty<IWaveformDescription>("waveform");
@@ -156,7 +156,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "out", "0", 1.0));
 
             var op = new OP("op");
-            var exports = new[] { new RealVoltageExport(op, "out") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(op, "out") };
             Compare(op, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -177,7 +177,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "ref", "0", 1.0));
 
             var op = new OP("op");
-            var exports = new[] { new RealVoltageExport(op, "ref") };
+            RealVoltageExport[] exports = new[] { new RealVoltageExport(op, "ref") };
             Compare(op, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

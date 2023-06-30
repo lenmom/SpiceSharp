@@ -31,18 +31,18 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// </returns>
                 public double Truncate()
                 {
-                    var parameters = _method.Parameters;
+                    SpiceMethod parameters = _method.Parameters;
                     double tol, diff, tmp;
                     var timetemp = double.PositiveInfinity;
                     int index;
-                    var state = _method.State;
-                    var prediction = _method.Prediction;
+                    IBiasingSimulationState state = _method.State;
+                    Algebra.IVector<double> prediction = _method.Prediction;
 
                     // In my opinion, the original Spice method is kind of bugged and can be much better...
                     switch (_method.Order)
                     {
                         case 1:
-                            foreach (var node in state.Map)
+                            foreach (System.Collections.Generic.KeyValuePair<IVariable, int> node in state.Map)
                             {
                                 if (node.Key.Unit != Units.Volt)
                                     continue;
@@ -62,7 +62,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                             break;
 
                         case 2:
-                            foreach (var node in state.Map)
+                            foreach (System.Collections.Generic.KeyValuePair<IVariable, int> node in state.Map)
                             {
                                 if (node.Key.Unit != Units.Volt)
                                     continue;

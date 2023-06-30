@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -43,11 +42,11 @@ namespace SpiceSharp.Components.Inductors
         /// </summary>
         /// <param name="context">The context.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
-        public Biasing(IComponentBindingContext context) 
+        public Biasing(IComponentBindingContext context)
             : base(context)
         {
             context.Nodes.CheckNodes(2);
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _variables = new OnePort<double>(state, context);
             Branch = state.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
 

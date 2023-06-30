@@ -32,14 +32,14 @@ namespace SpiceSharpGenerator
             var names = new List<string>(4);
             while (parameters != null)
             {
-                foreach (var member in parameters.GetMembers())
+                foreach (ISymbol member in parameters.GetMembers())
                 {
                     if (member.DeclaredAccessibility != Accessibility.Public)
                         continue;
 
                     // Extract the names of the member
                     names.Clear();
-                    foreach (var attribute in member.GetAttributes())
+                    foreach (AttributeData attribute in member.GetAttributes())
                     {
                         if (attribute.IsAttribute("ParameterNameAttribute"))
                             names.Add(attribute.ConstructorArguments[0].Value.ToString());
@@ -82,9 +82,9 @@ namespace SpiceSharpGenerator
                     }
 
                     // Get the parameters and properties for this type
-                    foreach (var type in GetMemberTypes(btype))
+                    foreach (ITypeSymbol type in GetMemberTypes(btype))
                     {
-                        if (!_members.TryGetValue(type, out var pp))
+                        if (!_members.TryGetValue(type, out TypeParametersAndProperties pp))
                         {
                             pp = new TypeParametersAndProperties();
                             _members.Add(type, pp);
@@ -94,7 +94,7 @@ namespace SpiceSharpGenerator
 
                         foreach (var name in names)
                         {
-                            if (pp.TryGetValue(name, out var gs))
+                            if (pp.TryGetValue(name, out (string Setter, string Getter) gs))
                             {
                                 pp[name] = (
                                     gs.Setter ?? setter,
@@ -108,13 +108,13 @@ namespace SpiceSharpGenerator
                     }
                 }
 
-                if (generatedProperties.TryGetValue(parameters, out var generated))
+                if (generatedProperties.TryGetValue(parameters, out GeneratedPropertyCollection generated))
                 {
-                    foreach (var extra in generated)
+                    foreach (GeneratedProperty extra in generated)
                     {
                         // Extract the names of the member
                         names.Clear();
-                        foreach (var attribute in extra.Field.GetAttributes())
+                        foreach (AttributeData attribute in extra.Field.GetAttributes())
                         {
                             if (attribute.IsAttribute("ParameterNameAttribute"))
                                 names.Add(attribute.ConstructorArguments[0].Value.ToString());
@@ -122,10 +122,10 @@ namespace SpiceSharpGenerator
                         if (names.Count == 0)
                             continue;
 
-                        foreach (var type in GetMemberTypes(extra.Field.Type))
+                        foreach (ITypeSymbol type in GetMemberTypes(extra.Field.Type))
                         {
                             // Get the parameters and properties for this type
-                            if (!_members.TryGetValue(type, out var pp))
+                            if (!_members.TryGetValue(type, out TypeParametersAndProperties pp))
                             {
                                 pp = new TypeParametersAndProperties
                                 {
@@ -159,7 +159,7 @@ namespace SpiceSharpGenerator
 
         private IEnumerable<string> GetInterfaces()
         {
-            foreach (var pair in _members)
+            foreach (KeyValuePair<ITypeSymbol, TypeParametersAndProperties> pair in _members)
             {
                 if (pair.Value.HasImport)
                     yield return $"IImportParameterSet<{pair.Key}>";
@@ -173,12 +173,12 @@ namespace SpiceSharpGenerator
             // Create the dictionary
             yield return "private static Dictionary<string, int> _namedMap = new Dictionary<string, int>(SpiceSharp.Constants.DefaultComparer)";
             yield return "{";
-            foreach (var pair in _nameMap)
+            foreach (KeyValuePair<string, int> pair in _nameMap)
                 yield return $"\t{{ \"{pair.Key}\", {pair.Value} }},";
             yield return "};";
 
             // Create a method for setting parameters
-            foreach (var pair in _members)
+            foreach (KeyValuePair<ITypeSymbol, TypeParametersAndProperties> pair in _members)
             {
                 if (pair.Value.HasImport)
                 {
@@ -190,7 +190,7 @@ namespace SpiceSharpGenerator
                     yield return "\t{";
                     yield return "\t\tswitch (id)";
                     yield return "\t\t{";
-                    foreach (var pp in pair.Value)
+                    foreach (KeyValuePair<string, (string Setter, string Getter)> pp in pair.Value)
                     {
                         if (pp.Value.Setter == null)
                             continue;
@@ -213,7 +213,7 @@ namespace SpiceSharpGenerator
                     yield return "\t{";
                     yield return "\t\tswitch (id)";
                     yield return "\t\t{";
-                    foreach (var pp in pair.Value)
+                    foreach (KeyValuePair<string, (string Setter, string Getter)> pp in pair.Value)
                     {
                         if (pp.Value.Getter == null)
                             continue;

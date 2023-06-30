@@ -37,7 +37,7 @@ namespace SpiceSharp.Validation.Components
             _first = new Node(first);
             _last = _first;
             Count = 1;
-            foreach (var variable in variables)
+            foreach (IVariable variable in variables)
             {
                 _last.Next = new Node(variable);
                 _last = _last.Next;
@@ -76,7 +76,7 @@ namespace SpiceSharp.Validation.Components
         /// </returns>
         public IEnumerator<IVariable> GetEnumerator()
         {
-            var elt = _first;
+            Node elt = _first;
             while (elt != null)
             {
                 yield return elt.Variable;
@@ -90,6 +90,9 @@ namespace SpiceSharp.Validation.Components
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

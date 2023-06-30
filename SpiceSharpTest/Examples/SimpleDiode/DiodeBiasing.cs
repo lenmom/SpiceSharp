@@ -21,7 +21,7 @@ namespace SpiceSharpTest.DiodeBehaviors
         public DiodeBiasing(IComponentBindingContext context)
             : base(context)
         {
-            var biasingState = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState biasingState = context.GetState<IBiasingSimulationState>();
 
             // Get the variables that our diode is connected to
             _variableA = biasingState.GetSharedVariable(context.Nodes[0]);
@@ -53,12 +53,12 @@ namespace SpiceSharpTest.DiodeBehaviors
         public void Load()
         {
             // Let us calculate the derivatives and the current
-            double voltage = _variableA.Value - _variableB.Value;
-            double current = Parameters.Iss * (Math.Exp(voltage / Vte) - 1.0);
-            double derivative = current / Vte;
+            var voltage = _variableA.Value - _variableB.Value;
+            var current = Parameters.Iss * (Math.Exp(voltage / Vte) - 1.0);
+            var derivative = current / Vte;
 
             // Load the Y-matrix and RHS vector
-            double rhs = current - voltage * derivative;
+            var rhs = current - voltage * derivative;
             _elements.Add(
                 // Y-matrix contributions
                 derivative, -derivative,

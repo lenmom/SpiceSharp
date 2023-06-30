@@ -26,9 +26,9 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                foreach (var i in InterfaceCache.Get(GetType()))
+                foreach (Type i in InterfaceCache.Get(GetType()))
                 {
-                    var info = i.GetTypeInfo();
+                    TypeInfo info = i.GetTypeInfo();
                     if (info.IsGenericType && info.GetGenericTypeDefinition() == typeof(IStateful<>))
                         yield return info.GetGenericArguments()[0];
                 }
@@ -40,10 +40,10 @@ namespace SpiceSharp.Simulations
         {
             get
             {
-                var ifs = GetType().GetTypeInfo().GetInterfaces();
-                foreach (var i in ifs)
+                Type[] ifs = GetType().GetTypeInfo().GetInterfaces();
+                foreach (Type i in ifs)
                 {
-                    var info = i.GetTypeInfo();
+                    TypeInfo info = i.GetTypeInfo();
                     if (info.IsGenericType && info.GetGenericTypeDefinition() == typeof(IBehavioral<>))
                         yield return info.GetGenericArguments()[0];
                 }
@@ -272,10 +272,10 @@ namespace SpiceSharp.Simulations
             // Automatically create the behaviors of entities that need priority
             void BehaviorsNotFound(object sender, BehaviorsNotFoundEventArgs args)
             {
-                if (entities.TryGetEntity(args.Name, out var entity))
+                if (entities.TryGetEntity(args.Name, out IEntity entity))
                 {
                     entity.CreateBehaviors(this);
-                    if (EntityBehaviors.TryGetBehaviors(entity.Name, out var container))
+                    if (EntityBehaviors.TryGetBehaviors(entity.Name, out IBehaviorContainer container))
                         args.Behaviors = container;
                 }
             }
@@ -285,7 +285,7 @@ namespace SpiceSharp.Simulations
             Statistics.BehaviorCreationTime.Start();
             try
             {
-                foreach (var entity in entities)
+                foreach (IEntity entity in entities)
                 {
                     if (!EntityBehaviors.Contains(entity.Name))
                         entity.CreateBehaviors(this);
@@ -319,13 +319,13 @@ namespace SpiceSharp.Simulations
                 return;
             if (entities != null)
             {
-                foreach (var entity in entities)
+                foreach (IEntity entity in entities)
                 {
                     if (entity is IRuleSubject subject)
                         subject.Apply(rules);
                 }
             }
-            foreach (var behavior in EntityBehaviors.SelectMany(p => p))
+            foreach (IBehavior behavior in EntityBehaviors.SelectMany(p => p))
             {
                 if (behavior is IRuleSubject subject)
                     subject.Apply(rules);
@@ -356,7 +356,10 @@ namespace SpiceSharp.Simulations
         }
 
         /// <inheritdoc/>
-        public virtual bool UsesBehavior(Type behaviorType) => Behaviors.Any(b => b.Equals(behaviorType));
+        public virtual bool UsesBehavior(Type behaviorType)
+        {
+            return Behaviors.Any(b => b.Equals(behaviorType));
+        }
 
         /// <inheritdoc/>
         public virtual S GetState<S>() where S : ISimulationState
@@ -380,62 +383,91 @@ namespace SpiceSharp.Simulations
 
         /// <inheritdoc/>
         public virtual bool UsesState<S>() where S : ISimulationState
-            => this is IStateful<S>;
+        {
+            return this is IStateful<S>;
+        }
 
         #region Methods for raising events
         /// <summary>
         /// Raises the <see cref="ExportSimulationData" /> event.
         /// </summary>
         /// <param name="args">The <see cref="ExportDataEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnExport(ExportDataEventArgs args) => ExportSimulationData?.Invoke(this, args);
+        protected virtual void OnExport(ExportDataEventArgs args)
+        {
+            ExportSimulationData?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="BeforeSetup" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeSetup(EventArgs args) => BeforeSetup?.Invoke(this, args);
+        protected virtual void OnBeforeSetup(EventArgs args)
+        {
+            BeforeSetup?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="BeforeExecute" /> event.
         /// </summary>
         /// <param name="args">The <see cref="BeforeExecuteEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeExecute(BeforeExecuteEventArgs args) => BeforeExecute?.Invoke(this, args);
+        protected virtual void OnBeforeExecute(BeforeExecuteEventArgs args)
+        {
+            BeforeExecute?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterSetup" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterSetup(EventArgs args) => AfterSetup?.Invoke(this, args);
+        protected virtual void OnAfterSetup(EventArgs args)
+        {
+            AfterSetup?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="BeforeValidation" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeValidation(EventArgs args) => BeforeValidation?.Invoke(this, args);
+        protected virtual void OnBeforeValidation(EventArgs args)
+        {
+            BeforeValidation?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterValidation" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterValidation(EventArgs args) => AfterValidation?.Invoke(this, args);
+        protected virtual void OnAfterValidation(EventArgs args)
+        {
+            AfterValidation?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterSetup" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterExecute(AfterExecuteEventArgs args) => AfterExecute?.Invoke(this, args);
+        protected virtual void OnAfterExecute(AfterExecuteEventArgs args)
+        {
+            AfterExecute?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="BeforeUnsetup" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnBeforeUnsetup(EventArgs args) => BeforeUnsetup?.Invoke(this, args);
+        protected virtual void OnBeforeUnsetup(EventArgs args)
+        {
+            BeforeUnsetup?.Invoke(this, args);
+        }
 
         /// <summary>
         /// Raises the <see cref="AfterUnsetup" /> event.
         /// </summary>
         /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAfterUnsetup(EventArgs args) => AfterUnsetup?.Invoke(this, args);
+        protected virtual void OnAfterUnsetup(EventArgs args)
+        {
+            AfterUnsetup?.Invoke(this, args);
+        }
         #endregion
     }
 }

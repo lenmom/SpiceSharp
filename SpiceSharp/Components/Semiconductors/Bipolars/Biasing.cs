@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -417,7 +416,10 @@ namespace SpiceSharp.Components.Bipolars
         }
 
         /// <inheritdoc/>
-        void IBiasingBehavior.Load() => Load();
+        void IBiasingBehavior.Load()
+        {
+            Load();
+        }
 
         /// <summary>
         /// Excess phase calculation.
@@ -437,7 +439,7 @@ namespace SpiceSharp.Components.Bipolars
         /// <param name="vbc">The base-collector voltage.</param>
         protected virtual void Initialize(out double vbe, out double vbc)
         {
-            var state = BiasingState;
+            IBiasingSimulationState state = BiasingState;
 
             // Initialization
             if (Iteration.Mode == IterationModes.Junction && !Parameters.Off)
@@ -469,7 +471,7 @@ namespace SpiceSharp.Components.Bipolars
         /// <inheritdoc/>
         bool IConvergenceBehavior.IsConvergent()
         {
-            var state = BiasingState;
+            IBiasingSimulationState state = BiasingState;
             var vbe = ModelParameters.BipolarType * (state.Solution[_basePrimeNode] - state.Solution[_emitterPrimeNode]);
             var vbc = ModelParameters.BipolarType * (state.Solution[_basePrimeNode] - state.Solution[_collectorPrimeNode]);
             var delvbe = vbe - VoltageBe;

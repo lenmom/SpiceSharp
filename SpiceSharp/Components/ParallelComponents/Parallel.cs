@@ -40,7 +40,7 @@ namespace SpiceSharp.Components
             get
             {
                 var list = new List<string>();
-                foreach (var entity in Parameters.Entities)
+                foreach (IEntity entity in Parameters.Entities)
                 {
                     if (entity is IComponent component)
                         list.AddRange(component.Nodes);
@@ -76,7 +76,7 @@ namespace SpiceSharp.Components
             : base(name)
         {
             var collection = new EntityCollection();
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
                 collection.Add(entity);
             Parameters.Entities = collection;
         }
@@ -91,7 +91,7 @@ namespace SpiceSharp.Components
             : base(name)
         {
             var collection = new EntityCollection();
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
                 collection.Add(entity);
             Parameters.Entities = collection;
         }
@@ -123,7 +123,7 @@ namespace SpiceSharp.Components
                 localSim.Run(Parameters.Entities);
 
                 // Allow the behaviors to fetch the behaviors if they want
-                foreach (var behavior in behaviors)
+                foreach (IBehavior behavior in behaviors)
                 {
                     if (behavior is IParallelBehavior parallelBehavior)
                         parallelBehavior.FetchBehaviors(context);
@@ -135,7 +135,7 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         public void Apply(IRules rules)
         {
-            foreach (var entity in Parameters.Entities)
+            foreach (IEntity entity in Parameters.Entities)
             {
                 if (entity is IRuleSubject subject)
                     subject.Apply(rules);

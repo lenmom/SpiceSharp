@@ -78,21 +78,36 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <summary>
         /// Resets all elements in the common solver.
         /// </summary>
-        public void Reset() => _solver.Reset();
+        public void Reset()
+        {
+            _solver.Reset();
+        }
 
         /// <summary>
         /// Applies the changes to the common solver.
         /// </summary>
-        public void Apply() => _solver.Apply();
+        public void Apply()
+        {
+            _solver.Apply();
+        }
 
         /// <inheritdoc/>
-        public IVariable<T> GetSharedVariable(string name) => Parent.GetSharedVariable(name);
+        public IVariable<T> GetSharedVariable(string name)
+        {
+            return Parent.GetSharedVariable(name);
+        }
 
         /// <inheritdoc/>
-        public IVariable<T> CreatePrivateVariable(string name, IUnit unit) => Parent.CreatePrivateVariable(name, unit);
+        public IVariable<T> CreatePrivateVariable(string name, IUnit unit)
+        {
+            return Parent.CreatePrivateVariable(name, unit);
+        }
 
         /// <inheritdoc/>
-        public void Add(string id, IVariable<T> variable) => Parent.Add(id, variable);
+        public void Add(string id, IVariable<T> variable)
+        {
+            Parent.Add(id, variable);
+        }
 
         /// <summary>
         /// Determines whether the dictionary contains an element that has the specified key.
@@ -102,7 +117,10 @@ namespace SpiceSharp.Components.ParallelComponents
         ///   <c>true</c> if the dictionary contains an element that has the specified key; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="key"/> is <c>null</c>.</exception>
-        public bool ContainsKey(string key) => Parent.ContainsKey(key);
+        public bool ContainsKey(string key)
+        {
+            return Parent.ContainsKey(key);
+        }
 
         /// <summary>
         /// Gets the value that is associated with the specified key.
@@ -113,7 +131,10 @@ namespace SpiceSharp.Components.ParallelComponents
         ///   <c>true</c> if the dictionary contains a variable that has the specified key; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="key"/> is <c>null</c>.</exception>
-        public bool TryGetValue(string key, out IVariable<T> value) => Parent.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out IVariable<T> value)
+        {
+            return Parent.TryGetValue(key, out value);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -121,7 +142,10 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<string, IVariable<T>>> GetEnumerator() => Parent.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, IVariable<T>>> GetEnumerator()
+        {
+            return Parent.GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -129,6 +153,9 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

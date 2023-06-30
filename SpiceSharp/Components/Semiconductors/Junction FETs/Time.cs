@@ -44,7 +44,7 @@ namespace SpiceSharp.Components.JFETs
         public Time(IComponentBindingContext context) : base(context)
         {
             _time = context.GetState<ITimeSimulationState>();
-            var method = context.GetState<IIntegrationMethod>();
+            IIntegrationMethod method = context.GetState<IIntegrationMethod>();
             _qgs = method.CreateDerivative();
             _qgd = method.CreateDerivative();
 

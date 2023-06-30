@@ -44,7 +44,7 @@ namespace SpiceSharp.Components.Subcircuits
                     return;
 
                 // We need to keep track of the old solution
-                var tmp = OldSolution;
+                IVector<double> tmp = OldSolution;
                 OldSolution = LocalSolution;
                 LocalSolution = tmp;
 

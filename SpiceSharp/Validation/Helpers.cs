@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Entities;
 using SpiceSharp.Simulations.Variables;
 using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Validation
 {
@@ -25,7 +24,9 @@ namespace SpiceSharp.Validation
         ///   <c>true</c> if the specified entities are valid; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsValid(this IEntityCollection entities)
-            => Validate(entities).ViolationCount > 0;
+        {
+            return Validate(entities).ViolationCount > 0;
+        }
 
         /// <summary>
         /// Validates the collection of entities using the default rules.
@@ -36,8 +37,8 @@ namespace SpiceSharp.Validation
         /// </returns>
         public static IRules Validate(this IEntityCollection entities)
         {
-            var rules = _defaultRules();
-            foreach (var entity in entities)
+            IRules rules = _defaultRules();
+            foreach (IEntity entity in entities)
             {
                 if (entity is IRuleSubject subject)
                     subject.Apply(rules);
@@ -56,7 +57,7 @@ namespace SpiceSharp.Validation
         public static IRules Validate(this IEntityCollection entities, IRules rules)
         {
             rules.ThrowIfNull(nameof(rules));
-            foreach (var entity in entities)
+            foreach (IEntity entity in entities)
             {
                 if (entity is IRuleSubject subject)
                     subject.Apply(rules);

@@ -27,12 +27,13 @@ namespace SpiceSharpTest.Models
                 {
                     context.ThrowIfNull(nameof(context));
                     _nodes = nodes;
-                    var state = context.GetState<IBiasingSimulationState>();
+                    IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
                     _nodes.Select(name => state.GetSharedVariable(name));
                 }
                 void IBiasingBehavior.Load() { }
             }
-            readonly List<string> _nodes = new List<string>();
+
+            private readonly List<string> _nodes = new List<string>();
             public NodeMapper(params string[] nodes) : base("Mapper")
             {
                 _nodes.AddRange(nodes);
@@ -50,7 +51,9 @@ namespace SpiceSharpTest.Models
             }
 
             public override IEntity Clone()
-                => (IEntity)MemberwiseClone();
+            {
+                return (IEntity)MemberwiseClone();
+            }
         }
 
         /// <summary>
@@ -107,7 +110,7 @@ namespace SpiceSharpTest.Models
             {
                 for (var i = 0; i < n; i++)
                 {
-                    var clone = factory("entity" + j.ToString() + "_" + i.ToString());
+                    IComponent clone = factory("entity" + j.ToString() + "_" + i.ToString());
                     string a, b;
                     if (i == 0)
                         a = ca;
@@ -135,13 +138,13 @@ namespace SpiceSharpTest.Models
             var results = new List<double>();
             void StoreResults(object sender, ExportDataEventArgs args)
             {
-                foreach (var export in exports)
+                foreach (IExport<double> export in exports)
                     results.Add(export.Value);
             }
             var index = 0;
             void CompareResults(object sender, ExportDataEventArgs args)
             {
-                foreach (var export in exports)
+                foreach (IExport<double> export in exports)
                 {
                     var expected = results[index++];
                     var actual = export.Value;
@@ -173,16 +176,16 @@ namespace SpiceSharpTest.Models
             var results = new List<Complex>();
             void StoreResults(object sender, ExportDataEventArgs args)
             {
-                foreach (var export in exports)
+                foreach (IExport<Complex> export in exports)
                     results.Add(export.Value);
             }
             var index = 0;
             void CompareResults(object sender, ExportDataEventArgs args)
             {
-                foreach (var export in exports)
+                foreach (IExport<Complex> export in exports)
                 {
-                    var expected = results[index++];
-                    var actual = export.Value;
+                    Complex expected = results[index++];
+                    Complex actual = export.Value;
                     var tol = Math.Max(Math.Abs(expected.Real), Math.Abs(actual.Real)) * CompareRelTol + CompareAbsTol;
                     Assert.AreEqual(expected.Real, actual.Real, tol);
                     tol = Math.Max(Math.Abs(expected.Imaginary), Math.Abs(actual.Imaginary)) * CompareRelTol + CompareAbsTol;
@@ -217,8 +220,8 @@ namespace SpiceSharpTest.Models
 
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportIt = exports.GetEnumerator();
+                using IEnumerator<double> referencesIt = references.GetEnumerator();
                 while (exportIt.MoveNext() && referencesIt.MoveNext())
                 {
                     var actual = exportIt.Current?.Value ?? throw new ArgumentNullException();
@@ -247,8 +250,8 @@ namespace SpiceSharpTest.Models
             var index = 0;
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportIt = exports.GetEnumerator();
+                using IEnumerator<double[]> referencesIt = references.GetEnumerator();
                 while (exportIt.MoveNext() && referencesIt.MoveNext())
                 {
                     var actual = exportIt.Current?.Value ?? double.NaN;
@@ -261,11 +264,11 @@ namespace SpiceSharpTest.Models
                     }
                     catch (Exception ex)
                     {
-                        var sweeps = sim.DCParameters.Sweeps;
+                        ICollection<ISweep> sweeps = sim.DCParameters.Sweeps;
                         var values = sim.GetCurrentSweepValue();
                         var msg = ex.Message + " at ";
                         var index = 0;
-                        foreach (var sweep in sweeps)
+                        foreach (ISweep sweep in sweeps)
                             msg += "{0}={1}".FormatString(sweep.Name, values[index++]) + ", ";
                         throw new Exception(msg, ex);
                     }
@@ -287,8 +290,8 @@ namespace SpiceSharpTest.Models
         {
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportIt = exports.GetEnumerator();
+                using IEnumerator<Func<double, double>> referencesIt = references.GetEnumerator();
                 while (exportIt.MoveNext() && referencesIt.MoveNext())
                 {
                     var actual = exportIt.Current?.Value ?? throw new ArgumentNullException();
@@ -301,11 +304,11 @@ namespace SpiceSharpTest.Models
                     }
                     catch (Exception ex)
                     {
-                        var sweeps = sim.DCParameters.Sweeps;
+                        ICollection<ISweep> sweeps = sim.DCParameters.Sweeps;
                         var values = sim.GetCurrentSweepValue();
                         var msg = ex.Message + " at ";
                         var index = 0;
-                        foreach (var sweep in sweeps)
+                        foreach (ISweep sweep in sweeps)
                             msg += "{0}={1}".FormatString(sweep.Name, values[index++]) + ", ";
                         throw new Exception(msg, ex);
                     }
@@ -326,8 +329,8 @@ namespace SpiceSharpTest.Models
             var index = 0;
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<double[]> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     // Test export
@@ -363,13 +366,13 @@ namespace SpiceSharpTest.Models
             var index = 0;
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<Complex>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<Complex[]> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     // Test export
-                    var actual = exportsIt.Current?.Value ?? throw new ArgumentNullException();
-                    var expected = referencesIt.Current?[index] ?? throw new ArgumentNullException();
+                    Complex actual = exportsIt.Current?.Value ?? throw new ArgumentNullException();
+                    Complex expected = referencesIt.Current?[index] ?? throw new ArgumentNullException();
 
                     // Test real part
                     var rtol = Math.Max(Math.Abs(actual.Real), Math.Abs(expected.Real)) * RelTol + AbsTol;
@@ -404,13 +407,13 @@ namespace SpiceSharpTest.Models
         {
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<Complex>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<Func<double, Complex>> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     // Test export
-                    var actual = exportsIt.Current?.Value ?? throw new ArgumentNullException();
-                    var expected = referencesIt.Current?.Invoke(data.Frequency) ?? throw new ArgumentNullException();
+                    Complex actual = exportsIt.Current?.Value ?? throw new ArgumentNullException();
+                    Complex expected = referencesIt.Current?.Invoke(data.Frequency) ?? throw new ArgumentNullException();
 
                     // Test real part
                     var rtol = Math.Max(Math.Abs(actual.Real), Math.Abs(expected.Real)) * RelTol + AbsTol;
@@ -444,8 +447,8 @@ namespace SpiceSharpTest.Models
             var index = 0;
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<double[]> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     var actual = exportsIt.Current?.Value ?? throw new ArgumentNullException();
@@ -479,8 +482,8 @@ namespace SpiceSharpTest.Models
         {
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<Func<double, double>> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     var t = data.Time;
@@ -514,8 +517,8 @@ namespace SpiceSharpTest.Models
             var index = 0;
             sim.ExportSimulationData += (sender, data) =>
             {
-                using var exportsIt = exports.GetEnumerator();
-                using var referencesIt = references.GetEnumerator();
+                using IEnumerator<IExport<double>> exportsIt = exports.GetEnumerator();
+                using IEnumerator<double[]> referencesIt = references.GetEnumerator();
                 while (exportsIt.MoveNext() && referencesIt.MoveNext())
                 {
                     // Test export
@@ -551,7 +554,7 @@ namespace SpiceSharpTest.Models
         /// <param name="exports">The exports.</param>
         protected static void WriteExportsToConsole(Simulation sim, Circuit ckt, IEnumerable<IExport<double>> exports)
         {
-            var arr = exports.ToArray();
+            IExport<double>[] arr = exports.ToArray();
             var output = new List<string>[arr.Length];
             for (var i = 0; i < arr.Length; i++)
                 output[i] = new List<string>();
@@ -575,7 +578,7 @@ namespace SpiceSharpTest.Models
         /// <param name="exports">The exports.</param>
         protected static void DestroyExports<T>(IEnumerable<IExport<T>> exports)
         {
-            foreach (var export in exports)
+            foreach (IExport<T> export in exports)
                 export.Destroy();
         }
 
@@ -586,8 +589,8 @@ namespace SpiceSharpTest.Models
         /// <param name="ckt">The circuit.</param>
         protected static void DumpTransientState(Transient tran, Circuit ckt)
         {
-            var state = tran.GetState<IIntegrationMethod>();
-            var rstate = tran.GetState<IBiasingSimulationState>();
+            IIntegrationMethod state = tran.GetState<IIntegrationMethod>();
+            IBiasingSimulationState rstate = tran.GetState<IBiasingSimulationState>();
 
             Console.WriteLine("----------- Dumping transient information -------------");
             Console.WriteLine($"Base time: {state.BaseTime}");
@@ -602,7 +605,7 @@ namespace SpiceSharpTest.Models
 
             // Dump the circuit contents
             Console.WriteLine("- Circuit contents");
-            foreach (var entity in ckt)
+            foreach (IEntity entity in ckt)
             {
                 Console.Write(entity.Name);
                 if (entity is Component c)
@@ -617,11 +620,11 @@ namespace SpiceSharpTest.Models
             // Dump the current iteration solution
             Console.WriteLine("- Solutions");
             var variables = new Dictionary<int, string>();
-            foreach (var variable in rstate.Map)
+            foreach (KeyValuePair<IVariable, int> variable in rstate.Map)
                 variables.Add(variable.Value, $"{variable.Value} - {variable.Key.Name} ({variable.Key.Unit}): {rstate.Solution[variable.Value]}");
             for (var i = 0; i <= state.MaxOrder; i++)
             {
-                var oldsolution = state.GetPreviousSolution(i);
+                SpiceSharp.Algebra.IVector<double> oldsolution = state.GetPreviousSolution(i);
                 for (var k = 1; k <= variables.Count; k++)
                     variables[k] += $", {oldsolution[k]}";
             }

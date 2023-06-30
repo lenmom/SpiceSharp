@@ -1,6 +1,5 @@
-using SpiceSharp.ParameterSets;
-using System;
 using SpiceSharp.Attributes;
+using System;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -71,7 +70,7 @@ namespace SpiceSharp.Algebra.Solve
                     continue;
 
                 // Get the diagonal item
-                var diagonal = matrix.FindDiagonalElement(i);
+                ISparseMatrixElement<T> diagonal = matrix.FindDiagonalElement(i);
                 if (diagonal == null)
                     continue;
 
@@ -85,8 +84,8 @@ namespace SpiceSharp.Algebra.Solve
                 if (product == 1)
                 {
                     // Find the off-diagonal elements
-                    var otherInRow = diagonal.Right ?? diagonal.Left;
-                    var otherInColumn = diagonal.Below ?? diagonal.Above;
+                    ISparseMatrixElement<T> otherInRow = diagonal.Right ?? diagonal.Left;
+                    ISparseMatrixElement<T> otherInColumn = diagonal.Below ?? diagonal.Above;
 
                     // Accept diagonal as pivot if diagonal is larger than off-diagonals and
                     // the off-diagonals are placed symmetrically
@@ -133,7 +132,7 @@ namespace SpiceSharp.Algebra.Solve
             var maxRatio = 1.0 / markowitz.RelativePivotThreshold;
             for (var i = 0; i <= numberOfTies; i++)
             {
-                var diag = _tiedElements[i];
+                ISparseMatrixElement<T> diag = _tiedElements[i];
                 var mag = markowitz.Magnitude(diag.Value);
                 var largest = LargestOtherElementInColumn(markowitz, diag, eliminationStep, max);
                 var ratio = largest / mag;
@@ -151,7 +150,7 @@ namespace SpiceSharp.Algebra.Solve
         private double LargestOtherElementInColumn(Markowitz<T> markowitz, ISparseMatrixElement<T> chosen, int eliminationStep, int max)
         {
             // Find the biggest element above and below the pivot
-            var element = chosen.Below;
+            ISparseMatrixElement<T> element = chosen.Below;
             var largest = 0.0;
             while (element != null && element.Row <= max)
             {
@@ -169,6 +168,8 @@ namespace SpiceSharp.Algebra.Solve
 
         /// <inheritdoc/>
         public override MarkowitzSearchStrategy<T> Clone()
-            => new MarkowitzQuickDiagonal<T>();
+        {
+            return new MarkowitzQuickDiagonal<T>();
+        }
     }
 }

@@ -1,5 +1,5 @@
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Components.Mosfets
 {
@@ -344,7 +344,9 @@ namespace SpiceSharp.Components.Mosfets
 
         /// <inheritdoc/>
         public virtual ModelParameters Clone()
-            => (ModelParameters)Clone();
+        {
+            return (ModelParameters)Clone();
+        }
 
         /// <summary>
         /// Gets the name of the type.

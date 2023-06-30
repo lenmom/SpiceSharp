@@ -51,7 +51,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 public JacobianInfo GetContributions(double coefficient)
                 {
                     var h = _method.Slope;
-                    var s = _states.Value;
+                    IVector<double> s = _states.Value;
                     return new JacobianInfo(
                         h * coefficient,
                         s[_index + 1] - h * s[_index]);
@@ -59,17 +59,21 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                 /// <inheritdoc/>
                 public double GetPreviousDerivative(int index)
-                    => _states.GetPreviousValue(index)[_index + 1];
+                {
+                    return _states.GetPreviousValue(index)[_index + 1];
+                }
 
                 /// <inheritdoc/>
                 public double GetPreviousValue(int index)
-                    => _states.GetPreviousValue(index)[_index];
+                {
+                    return _states.GetPreviousValue(index)[_index];
+                }
 
                 /// <inheritdoc/>
                 public void Derive()
                 {
-                    var current = _states.Value;
-                    var previous = _states.GetPreviousValue(1);
+                    IVector<double> current = _states.Value;
+                    IVector<double> previous = _states.GetPreviousValue(1);
                     current[_index + 1] = (current[_index] - previous[_index]) * _method.Slope;
                 }
             }

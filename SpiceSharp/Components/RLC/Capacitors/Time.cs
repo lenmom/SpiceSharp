@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -51,7 +50,7 @@ namespace SpiceSharp.Components.Capacitors
             _elements = new ElementSet<double>(_biasing.Solver,
                 _variables.GetMatrixLocations(_biasing.Map),
                 _variables.GetRhsIndices(_biasing.Map));
-            var method = context.GetState<IIntegrationMethod>();
+            IIntegrationMethod method = context.GetState<IIntegrationMethod>();
             _qcap = method.CreateDerivative();
         }
 
@@ -76,7 +75,7 @@ namespace SpiceSharp.Components.Capacitors
             // Integrate
             _qcap.Value = Capacitance * vcap;
             _qcap.Derive();
-            var info = _qcap.GetContributions(Capacitance);
+            JacobianInfo info = _qcap.GetContributions(Capacitance);
             var geq = info.Jacobian;
             var ceq = info.Rhs;
 

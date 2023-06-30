@@ -13,8 +13,16 @@ namespace SpiceSharpTest.Models
             {
                 _dt = dt;
             }
-            public double GetPreviousValue(int index) => 0.0;
-            public double GetPreviousDerivative(int index) => 1.0;
+            public double GetPreviousValue(int index)
+            {
+                return 0.0;
+            }
+
+            public double GetPreviousDerivative(int index)
+            {
+                return 1.0;
+            }
+
             public JacobianInfo GetContributions(double coefficient, double currentValue)
             {
                 var g = coefficient / _dt;

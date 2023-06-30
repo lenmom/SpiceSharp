@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -114,7 +113,7 @@ namespace SpiceSharp.Components.Mosfets.Level2
         public Biasing(IComponentBindingContext context)
             : base(context)
         {
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _config = context.GetSimulationParameterSet<BiasingParameters>();
             _args = new MosfetContributionEventArgs(_contributions);
             context.TryGetState(out _time);
@@ -134,7 +133,7 @@ namespace SpiceSharp.Components.Mosfets.Level2
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var con = _contributions;
+            Contributions<double> con = _contributions;
             con.Reset();
 
             var vt = Constants.KOverQ * Parameters.Temperature;
@@ -210,12 +209,12 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double dbrgdb;
                 double eta;
                 double vbin;
-                double argd = 0.0;
-                double args = 0.0;
+                var argd = 0.0;
+                var args = 0.0;
                 double argss;
                 double argsd;
-                double argxs = 0.0;
-                double argxd = 0.0;
+                var argxs = 0.0;
+                var argxd = 0.0;
                 double daddb2;
                 double dasdb2;
                 double dbargd;
@@ -233,8 +232,8 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double vth;
                 double cfs;
                 double cdonco;
-                double xn = 0.0;
-                double argg = 0.0;
+                var xn = 0.0;
+                var argg = 0.0;
                 double vgst;
                 double sarg3;
                 double sbiarg;
@@ -242,9 +241,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double body;
                 double gdbdv;
                 double dodvbs;
-                double dodvds = 0.0;
-                double dxndvd = 0.0;
-                double dxndvb = 0.0;
+                var dodvds = 0.0;
+                var dxndvd = 0.0;
+                var dxndvb = 0.0;
                 double udenom;
                 double dudvgs;
                 double dudvds;
@@ -318,10 +317,10 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 /* 'local' variables - these switch d & s around appropriately
                  * so that we don't have to worry about vds < 0
                  */
-                double lvbs = Mode == 1 ? vbs : vbd;
-                double lvds = Mode * vds;
-                double lvgs = Mode == 1 ? vgs : vgd;
-                double phiMinVbs = Properties.TempPhi - lvbs;
+                var lvbs = Mode == 1 ? vbs : vbd;
+                var lvds = Mode * vds;
+                var lvgs = Mode == 1 ? vgs : vgd;
+                var phiMinVbs = Properties.TempPhi - lvbs;
                 double tmp; /* a temporary variable, not used for more than */
                 /* about 10 lines at a time */
                 int iknt;

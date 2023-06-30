@@ -1,7 +1,7 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SpiceSharpGenerator
@@ -20,7 +20,7 @@ namespace SpiceSharpGenerator
         {
             // Find the namespace by going outward
             var name = "";
-            var parent = @class.Parent;
+            SyntaxNode parent = @class.Parent;
             while (parent != null)
             {
                 if (parent is NamespaceDeclarationSyntax @namespace)
@@ -139,7 +139,7 @@ namespace SpiceSharpGenerator
             if (implemented.TypeKind == TypeKind.Class)
             {
                 // Check any base type
-                var baseType = toCheck;
+                INamedTypeSymbol baseType = toCheck;
                 while (baseType != null)
                 {
                     if (string.CompareOrdinal(baseType.Name, implemented.Name) == 0 &&
@@ -163,16 +163,16 @@ namespace SpiceSharpGenerator
         /// <returns>The attributes.</returns>
         public static IEnumerable<AttributeData> GetAllAttributes(this INamedTypeSymbol symbol)
         {
-            foreach (var attribute in symbol.GetAttributes())
+            foreach (AttributeData attribute in symbol.GetAttributes())
                 yield return attribute;
             symbol = symbol.BaseType;
             while (symbol != null)
             {
                 // Go through all attributes and find those that can be inherited
-                foreach (var attribute in symbol.GetAttributes())
+                foreach (AttributeData attribute in symbol.GetAttributes())
                 {
                     // Get the AttributeUsageAttribute
-                    var usage = attribute.AttributeClass.GetAttributes().FirstOrDefault(a => a.IsAttribute("AttributeUsageAttribute", "System"));
+                    AttributeData usage = attribute.AttributeClass.GetAttributes().FirstOrDefault(a => a.IsAttribute("AttributeUsageAttribute", "System"));
                     if (usage != null && usage.NamedArguments.Any(pair => string.CompareOrdinal(pair.Key, "Inherited") == 0 && pair.Value.Value.Equals(false)))
                         continue;
                     yield return attribute;

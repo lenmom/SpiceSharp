@@ -102,7 +102,7 @@ namespace SpiceSharp.Components.Switches
             ModelTemperature = context.ModelBehaviors.GetValue<ModelTemperature>();
             Parameters = context.GetParameterSet<Parameters>();
 
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _variables = new OnePort<double>(state.GetSharedVariable(context.Nodes[0]), state.GetSharedVariable(context.Nodes[1]));
             _elements = new ElementSet<double>(state.Solver, _variables.GetMatrixLocations(state.Map));
         }

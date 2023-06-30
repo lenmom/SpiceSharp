@@ -26,7 +26,7 @@ namespace SpiceSharp.Components.Subcircuits
         {
             get
             {
-                foreach (var ps in _parent.ParameterSets)
+                foreach (IParameterSet ps in _parent.ParameterSets)
                 {
                     if (ps == _parentValidationParameters)
                         yield return _validationParameters;
@@ -51,7 +51,10 @@ namespace SpiceSharp.Components.Subcircuits
         }
 
         /// <inheritdoc/>
-        public void Reset() => _parent.Reset();
+        public void Reset()
+        {
+            _parent.Reset();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -59,7 +62,10 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// An enumerator that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<IRule> GetEnumerator() => _parent.GetEnumerator();
+        public IEnumerator<IRule> GetEnumerator()
+        {
+            return _parent.GetEnumerator();
+        }
 
         /// <inheritdoc/>
         public override P GetParameterSet<P>()
@@ -70,7 +76,10 @@ namespace SpiceSharp.Components.Subcircuits
         }
 
         /// <inheritdoc/>
-        public IEnumerable<R> GetRules<R>() where R : IRule => _parent.GetRules<R>();
+        public IEnumerable<R> GetRules<R>() where R : IRule
+        {
+            return _parent.GetRules<R>();
+        }
 
         /// <inheritdoc/>
         public override bool TryGetParameterSet<P>(out P value)
@@ -89,6 +98,9 @@ namespace SpiceSharp.Components.Subcircuits
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

@@ -64,7 +64,7 @@ namespace SpiceSharp.Simulations.Histories
 
             // Create a cycle
             var first = new Node();
-            var current = first;
+            Node current = first;
             for (var i = 1; i < length; i++)
             {
                 current.Next = new Node
@@ -89,7 +89,7 @@ namespace SpiceSharp.Simulations.Histories
 
             // Create a cycle
             var first = new Node();
-            var current = first;
+            Node current = first;
             for (var i = 1; i < length; i++)
             {
                 current.Next = new Node
@@ -119,7 +119,7 @@ namespace SpiceSharp.Simulations.Histories
             {
                 Value = generator(0)
             };
-            var current = first;
+            Node current = first;
             for (var i = 1; i < length; i++)
             {
                 current.Next = new Node
@@ -156,7 +156,7 @@ namespace SpiceSharp.Simulations.Histories
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             // Find the matching node
-            var point = _currentPoint;
+            Node point = _currentPoint;
             for (var i = 0; i < index; i++)
                 point = point.Previous;
             return point.Value;
@@ -168,7 +168,7 @@ namespace SpiceSharp.Simulations.Histories
         /// <param name="value">The value.</param>
         public void Set(T value)
         {
-            var current = _currentPoint;
+            Node current = _currentPoint;
             for (var i = 0; i < Length; i++)
             {
                 current.Value = value;
@@ -183,7 +183,7 @@ namespace SpiceSharp.Simulations.Histories
         public void Set(Func<int, T> method)
         {
             method.ThrowIfNull(nameof(method));
-            var current = _currentPoint;
+            Node current = _currentPoint;
             for (var i = 0; i < Length; i++)
             {
                 current.Value = method(i);
@@ -199,7 +199,7 @@ namespace SpiceSharp.Simulations.Histories
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            var elt = _currentPoint;
+            Node elt = _currentPoint;
             for (var i = 0; i < Length; i++)
             {
                 yield return elt.Value;
@@ -213,6 +213,9 @@ namespace SpiceSharp.Simulations.Histories
         /// <returns>
         /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
         /// </returns>
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }

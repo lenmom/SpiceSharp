@@ -437,7 +437,7 @@ namespace SpiceSharpTest.Models
                 -1.032509398000000e-03, 1.253660286138167e-01, -1.032509398000000e-03, 1.578264791976486e-01,
                 -1.032509398000000e-03, 1.986917653159233e-01,
             };
-            var references = new[]
+            Complex[][] references = new[]
             {
                 new Complex[r1.Length / 2],
                 new Complex[r2.Length / 2]
@@ -658,7 +658,7 @@ namespace SpiceSharpTest.Models
 
             var op = new OP("op");
             op.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new RealCurrentExport(op, "V1"), new RealCurrentExport(op, "V2") };
+            RealCurrentExport[] exports = new[] { new RealCurrentExport(op, "V1"), new RealCurrentExport(op, "V2") };
             Compare(op, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -687,7 +687,7 @@ namespace SpiceSharpTest.Models
             // Create the simulation
             var ac = new AC("ac", new DecadeSweep(0.1, 10e9, 10));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new[] { new ComplexCurrentExport(ac, "V1"), new ComplexCurrentExport(ac, "V2") };
+            ComplexCurrentExport[] exports = new[] { new ComplexCurrentExport(ac, "V1"), new ComplexCurrentExport(ac, "V2") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }

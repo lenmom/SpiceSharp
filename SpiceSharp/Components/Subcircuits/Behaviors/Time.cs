@@ -1,6 +1,5 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using System;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -34,7 +33,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void ITimeBehavior.InitializeStates()
         {
-            foreach (var behavior in _behaviors)
+            foreach (ITimeBehavior behavior in _behaviors)
                 behavior.InitializeStates();
         }
     }

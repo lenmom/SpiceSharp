@@ -1,5 +1,5 @@
-﻿using SpiceSharp.Simulations;
-using SpiceSharp.Attributes;
+﻿using SpiceSharp.Attributes;
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Behaviors
 {

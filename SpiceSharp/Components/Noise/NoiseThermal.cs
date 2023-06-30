@@ -32,7 +32,7 @@ namespace SpiceSharp.Components.NoiseSources
         /// <param name="temperature">The temperature.</param>
         public void Compute(double conductance, double temperature)
         {
-            var val = _variables.Positive.Value - _variables.Negative.Value;
+            Complex val = _variables.Positive.Value - _variables.Negative.Value;
             var gain = val.Real * val.Real + val.Imaginary * val.Imaginary;
             OutputNoiseDensity = 4.0 * Constants.Boltzmann * temperature * conductance * gain;
         }

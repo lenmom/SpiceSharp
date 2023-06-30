@@ -2,7 +2,6 @@
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -89,7 +88,7 @@ namespace SpiceSharp.Components.Diodes
         {
             context.Nodes.CheckNodes(2);
 
-            var state = context.GetState<IBiasingSimulationState>();
+            IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             _iteration = context.GetState<IIterationSimulationState>();
 
             Variables = new DiodeVariables<double>(Name, state, context);
@@ -104,7 +103,7 @@ namespace SpiceSharp.Components.Diodes
             double cd, gd;
 
             // Get the current voltage across (one diode).
-            Initialize(out double vd, out bool check);
+            Initialize(out var vd, out var check);
 
             /* 
              * this routine loads diodes for dc and transient analyses.
@@ -163,7 +162,10 @@ namespace SpiceSharp.Components.Diodes
         }
 
         /// <inheritdoc/>
-        void IBiasingBehavior.Load() => Load();
+        void IBiasingBehavior.Load()
+        {
+            Load();
+        }
 
         /// <summary>
         /// Initialize the device based on the current iteration state.

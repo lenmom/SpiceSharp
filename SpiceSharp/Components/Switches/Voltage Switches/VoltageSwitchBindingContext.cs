@@ -27,9 +27,9 @@ namespace SpiceSharp.Components.Switches
         public VoltageSwitchBindingContext(IComponent component, ISimulation simulation, IBehaviorContainer behaviors)
             : base(component, simulation, behaviors)
         {
-            var state = GetState<IBiasingSimulationState>();
-            var a = state.GetSharedVariable(Nodes[2]);
-            var b = state.GetSharedVariable(Nodes[3]);
+            IBiasingSimulationState state = GetState<IBiasingSimulationState>();
+            IVariable<double> a = state.GetSharedVariable(Nodes[2]);
+            IVariable<double> b = state.GetSharedVariable(Nodes[3]);
             ControlValue = () => a.Value - b.Value;
         }
     }

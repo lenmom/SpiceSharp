@@ -1,7 +1,7 @@
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.Generic;
-using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations
 {
@@ -99,7 +99,7 @@ namespace SpiceSharp.Simulations
         {
             var clone = (TimeParameters)MemberwiseClone();
             clone.InitialConditions = new(InitialConditions.Comparer);
-            foreach (var ic in InitialConditions)
+            foreach (KeyValuePair<string, double> ic in InitialConditions)
                 clone.InitialConditions.Add(ic.Key, ic.Value);
             return clone;
         }

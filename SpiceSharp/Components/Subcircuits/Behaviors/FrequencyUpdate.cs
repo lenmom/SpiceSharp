@@ -26,7 +26,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         void IFrequencyUpdateBehavior.Update()
         {
-            foreach (var behavior in Behaviors)
+            foreach (IFrequencyUpdateBehavior behavior in Behaviors)
                 behavior.Update();
         }
     }

@@ -1,7 +1,6 @@
 ﻿using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
-using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using System;
 
@@ -43,7 +42,7 @@ namespace SpiceSharp.Components.Resistors
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="context"/> is <c>null</c>.</exception>
         public Noise(IComponentBindingContext context) : base(context)
         {
-            var state = context.GetState<IComplexSimulationState>();
+            IComplexSimulationState state = context.GetState<IComplexSimulationState>();
             _thermal = new NoiseThermal("r",
                 state.GetSharedVariable(context.Nodes[0]),
                 state.GetSharedVariable(context.Nodes[1]));

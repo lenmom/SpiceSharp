@@ -22,7 +22,7 @@ namespace SpiceSharpTest.Algebra
 
             // The second line tells us the dimensions
             var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
-            var match = Regex.Match(line, @"^(?<rows>\d+)\s+(?<columns>\d+)\s+(\d+)");
+            Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(?<columns>\d+)\s+(\d+)");
             var size = int.Parse(match.Groups["rows"].Value);
             if (int.Parse(match.Groups["columns"].Value) != size)
                 throw new Exception("Matrix is not square");
@@ -61,7 +61,7 @@ namespace SpiceSharpTest.Algebra
 
             // The second line tells us the dimensions
             var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
-            var match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
+            Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
             var size = int.Parse(match.Groups["rows"].Value);
 
             // All subsequent lines are of the format [row] [column] [value]
@@ -97,7 +97,7 @@ namespace SpiceSharpTest.Algebra
 
             // The second line tells us the dimensions
             var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
-            var match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
+            Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
             var size = int.Parse(match.Groups["rows"].Value);
 
             // All subsequent lines are of the format [row] [column] [value]
@@ -140,11 +140,11 @@ namespace SpiceSharpTest.Algebra
                         continue;
 
                     // Try to read an element
-                    var match = Regex.Match(line, @"^(?<row>\d+)\s+(?<col>\d+)\s+(?<value>[^\s]+)(\s+[^\s]+)?$");
+                    Match match = Regex.Match(line, @"^(?<row>\d+)\s+(?<col>\d+)\s+(?<value>[^\s]+)(\s+[^\s]+)?$");
                     if (match.Success)
                     {
-                        int row = int.Parse(match.Groups["row"].Value);
-                        int col = int.Parse(match.Groups["col"].Value);
+                        var row = int.Parse(match.Groups["row"].Value);
+                        var col = int.Parse(match.Groups["col"].Value);
                         var value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
                         solver.GetElement(new MatrixLocation(row, col)).Value = value;
                     }
