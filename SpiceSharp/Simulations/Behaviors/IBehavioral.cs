@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Behaviors;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Simulations
 {

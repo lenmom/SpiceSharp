@@ -1,12 +1,13 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Subcircuits;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace SpiceSharp.Components
 {
@@ -28,7 +29,13 @@ namespace SpiceSharp.Components
         public string Model { get; set; }
 
         /// <inheritdoc/>
-        public IReadOnlyList<string> Nodes => new ReadOnlyCollection<string>(_connections);
+        public IReadOnlyList<string> Nodes
+        {
+            get
+            {
+                return new ReadOnlyCollection<string>(_connections);
+            }
+        }
 
         /// <summary>
         /// Gets the node map.
@@ -42,16 +49,24 @@ namespace SpiceSharp.Components
             get
             {
                 if (Parameters.Definition == null)
+                {
                     return Array<Bridge<string>>.Empty();
+                }
 
                 // Make a list of node bridges
                 IReadOnlyList<string> pins = Parameters.Definition.Pins;
-                var outNodes = _connections;
+                string[] outNodes = _connections;
                 if ((outNodes == null && pins.Count > 0) || outNodes.Length != pins.Count)
+                {
                     throw new NodeMismatchException(pins.Count, outNodes?.Length ?? 0);
-                var nodes = new Bridge<string>[pins.Count];
-                for (var i = 0; i < pins.Count; i++)
+                }
+
+                Bridge<string>[] nodes = new Bridge<string>[pins.Count];
+                for (int i = 0; i < pins.Count; i++)
+                {
                     nodes[i] = new Bridge<string>(pins[i], outNodes[i]);
+                }
+
                 return nodes;
             }
         }
@@ -78,12 +93,12 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         public override void CreateBehaviors(ISimulation simulation)
         {
-            var behaviors = new BehaviorContainer(Name);
+            BehaviorContainer behaviors = new BehaviorContainer(Name);
             if (Parameters.Definition != null && Parameters.Definition.Entities.Count > 0)
             {
                 // Create our local simulation and binding context to allow our behaviors to do stuff
-                var localSim = new SubcircuitSimulation(Name, simulation, Parameters.Definition, NodeMap);
-                var context = new SubcircuitBindingContext(this, localSim, behaviors);
+                SubcircuitSimulation localSim = new SubcircuitSimulation(Name, simulation, Parameters.Definition, NodeMap);
+                SubcircuitBindingContext context = new SubcircuitBindingContext(this, localSim, behaviors);
 
                 // Add the necessary behaviors
                 behaviors.Add(new EntitiesBehavior(context));
@@ -104,7 +119,9 @@ namespace SpiceSharp.Components
                 foreach (IBehavior behavior in behaviors)
                 {
                     if (behavior is ISubcircuitBehavior subcktBehavior)
+                    {
                         subcktBehavior.FetchBehaviors(context);
+                    }
                 }
             }
             simulation.EntityBehaviors.Add(behaviors);
@@ -115,8 +132,11 @@ namespace SpiceSharp.Components
         {
             nodes.ThrowIfNull(nameof(nodes));
             _connections = new string[nodes.Length];
-            for (var i = 0; i < nodes.Length; i++)
+            for (int i = 0; i < nodes.Length; i++)
+            {
                 _connections[i] = nodes[i].ThrowIfNull($"node {0}".FormatString(i + 1));
+            }
+
             return this;
         }
 
@@ -124,16 +144,20 @@ namespace SpiceSharp.Components
         public void Apply(IRules rules)
         {
             if (Parameters.Definition == null)
+            {
                 return;
+            }
 
             ComponentRuleParameters crp = rules.GetParameterSet<ComponentRuleParameters>();
-            var newRules = new SubcircuitRules(rules, new ComponentRuleParameters(
+            SubcircuitRules newRules = new SubcircuitRules(rules, new ComponentRuleParameters(
                 new VariableFactory(Name, crp.Factory, NodeMap, crp.Comparer),
                 crp.Comparer));
             foreach (IEntity c in Parameters.Definition.Entities)
             {
                 if (c is IRuleSubject subject)
+                {
                     subject.Apply(newRules);
+                }
             }
         }
 

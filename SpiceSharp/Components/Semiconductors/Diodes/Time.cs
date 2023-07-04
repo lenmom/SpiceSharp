@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -25,7 +26,13 @@ namespace SpiceSharp.Components.Diodes
         /// The diode capacitor current.
         /// </value>
         [ParameterName("capcur"), ParameterInfo("Diode capacitor current")]
-        public double CapCurrent => _capCharge.Derivative;
+        public double CapCurrent
+        {
+            get
+            {
+                return _capCharge.Derivative;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Time"/> class.
@@ -43,7 +50,7 @@ namespace SpiceSharp.Components.Diodes
         /// <inheritdoc/>
         void ITimeBehavior.InitializeStates()
         {
-            var vd = _time.UseIc && Parameters.InitCond.Given ?
+            double vd = _time.UseIc && Parameters.InitCond.Given ?
                 Parameters.InitCond.Value / Parameters.SeriesMultiplier :
                 (Variables.PosPrime.Value - Variables.Negative.Value) / Parameters.SeriesMultiplier;
             CalculateCapacitance(vd);
@@ -55,11 +62,13 @@ namespace SpiceSharp.Components.Diodes
         {
             base.Load();
             if (_time.UseDc)
+            {
                 return;
+            }
 
             // Calculate the capacitance
-            var n = Parameters.SeriesMultiplier;
-            var m = Parameters.ParallelMultiplier;
+            double n = Parameters.SeriesMultiplier;
+            double m = Parameters.ParallelMultiplier;
             double vd = (Variables.PosPrime.Value - Variables.Negative.Value) / n;
             CalculateCapacitance(vd);
 
@@ -67,8 +76,8 @@ namespace SpiceSharp.Components.Diodes
             _capCharge.Value = LocalCapCharge;
             _capCharge.Derive();
             JacobianInfo info = _capCharge.GetContributions(LocalCapacitance, vd);
-            var geq = info.Jacobian * m / n;
-            var ceq = info.Rhs * m;
+            double geq = info.Jacobian * m / n;
+            double ceq = info.Rhs * m;
 
             // Store the current
             LocalCurrent += _capCharge.Derivative;

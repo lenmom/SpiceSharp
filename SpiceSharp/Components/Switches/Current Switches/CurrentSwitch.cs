@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Switches;
 using SpiceSharp.ParameterSets;
-using System;
 
 namespace SpiceSharp.Components
 {

@@ -32,8 +32,15 @@ namespace SpiceSharp.Algebra
         /// <inheritdoc/>
         public T this[int index]
         {
-            get => GetVectorValue(index);
-            set => SetVectorValue(index, value);
+            get
+            {
+                return GetVectorValue(index);
+            }
+
+            set
+            {
+                SetVectorValue(index, value);
+            }
         }
 
         /// <summary>
@@ -63,39 +70,59 @@ namespace SpiceSharp.Algebra
         {
             index.GreaterThanOrEquals(nameof(index), 0);
             if (index == 0)
+            {
                 return _trashCan;
+            }
 
             // Expand the vector if it is necessary
             if (index > Length)
+            {
                 Length = index;
+            }
 
             // Find the element
             Element element = _firstInVector, lastElement = null;
             while (element != null)
             {
                 if (element.Index > index)
+                {
                     break;
+                }
+
                 if (element.Index == index)
+                {
                     return element;
+                }
+
                 lastElement = element;
                 element = element.NextInVector;
             }
 
             // Create a new element
-            var result = new Element(index);
+            Element result = new Element(index);
 
             // Update links for last element
             if (lastElement == null)
+            {
                 _firstInVector = result;
+            }
             else
+            {
                 lastElement.NextInVector = result;
+            }
+
             result.PreviousInVector = lastElement;
 
             // Update links for next element
             if (element == null)
+            {
                 _lastInVector = result;
+            }
             else
+            {
                 element.PreviousInVector = result;
+            }
+
             result.NextInVector = element;
 
             ElementCount++;
@@ -106,21 +133,32 @@ namespace SpiceSharp.Algebra
         public bool RemoveElement(int index)
         {
             if (index < 1 || index > Length)
+            {
                 return false;
+            }
 
             // Find the element
             Element element = _firstInVector;
             while (element != null)
             {
                 if (element.Index == index)
+                {
                     break;
+                }
+
                 if (element.Index > index)
+                {
                     return false;
+                }
+
                 element = element.NextInVector;
             }
 
             if (element == null)
+            {
                 return false;
+            }
+
             Remove(element);
             return true;
         }
@@ -130,18 +168,29 @@ namespace SpiceSharp.Algebra
         {
             index.GreaterThanOrEquals(nameof(index), 0);
             if (index > Length)
+            {
                 return null;
+            }
+
             if (index == 0)
+            {
                 return _trashCan;
+            }
 
             // Find the element
             Element element = _firstInVector;
             while (element != null)
             {
                 if (element.Index == index)
+                {
                     return element;
+                }
+
                 if (element.Index > index)
+                {
                     return null;
+                }
+
                 element = element.NextInVector;
             }
             return null;
@@ -164,11 +213,19 @@ namespace SpiceSharp.Algebra
         {
             target.ThrowIfNull(nameof(target));
             if (Length != target.Length)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(target.Length, Length), nameof(target));
+            }
+
             if (target == this)
+            {
                 return;
-            for (var i = 1; i <= Length; i++)
+            }
+
+            for (int i = 1; i <= Length; i++)
+            {
                 target[i] = GetVectorValue(i);
+            }
         }
 
         /// <inheritdoc/>
@@ -177,10 +234,13 @@ namespace SpiceSharp.Algebra
             index1.GreaterThan(nameof(index1), 0);
             index2.GreaterThan(nameof(index2), 0);
             if (index1 == index2)
+            {
                 return;
+            }
+
             if (index2 < index1)
             {
-                var tmp = index1;
+                int tmp = index1;
                 index1 = index2;
                 index2 = tmp;
             }
@@ -193,9 +253,15 @@ namespace SpiceSharp.Algebra
             while (element != null)
             {
                 if (element.Index == index1)
+                {
                     first = element;
+                }
+
                 if (element.Index > index1)
+                {
                     break;
+                }
+
                 element = element.NextInVector;
             }
 
@@ -203,9 +269,15 @@ namespace SpiceSharp.Algebra
             while (element != null)
             {
                 if (element.Index == index2)
+                {
                     second = element;
+                }
+
                 if (element.Index > index2)
+                {
                     break;
+                }
+
                 element = element.NextInVector;
             }
 
@@ -250,7 +322,10 @@ namespace SpiceSharp.Algebra
         {
             Element<T> element = FindElement(index);
             if (element == null)
+            {
                 return default;
+            }
+
             return element.Value;
         }
         private void SetVectorValue(int index, T value)
@@ -260,7 +335,9 @@ namespace SpiceSharp.Algebra
                 // We don't need to create a new element unnecessarily
                 Element<T> element = FindElement(index);
                 if (element != null)
+                {
                     element.Value = default;
+                }
             }
             else
             {
@@ -272,7 +349,9 @@ namespace SpiceSharp.Algebra
         {
             // Nothing to do
             if (first == null && second == null)
+            {
                 return;
+            }
 
             // Swap the elements
             if (first == null)
@@ -288,13 +367,20 @@ namespace SpiceSharp.Algebra
                 Element element = second.PreviousInVector;
                 Remove(second);
                 while (element.PreviousInVector != null && element.PreviousInVector.Index > index1)
+                {
                     element = element.PreviousInVector;
+                }
 
                 // We now have the element below the insertion point
                 if (element.PreviousInVector == null)
+                {
                     _firstInVector = second;
+                }
                 else
+                {
                     element.PreviousInVector.NextInVector = second;
+                }
+
                 second.PreviousInVector = element.PreviousInVector;
                 element.PreviousInVector = second;
                 second.NextInVector = element;
@@ -313,13 +399,20 @@ namespace SpiceSharp.Algebra
                 Element element = first.NextInVector;
                 Remove(first);
                 while (element.NextInVector != null && element.NextInVector.Index < index2)
+                {
                     element = element.NextInVector;
+                }
 
                 // We now have the first element above the insertion point
                 if (element.NextInVector == null)
+                {
                     _lastInVector = first;
+                }
                 else
+                {
                     element.NextInVector.PreviousInVector = first;
+                }
+
                 first.NextInVector = element.NextInVector;
                 element.NextInVector = first;
                 first.PreviousInVector = element;
@@ -332,13 +425,22 @@ namespace SpiceSharp.Algebra
                 {
                     // Correct surrounding links
                     if (first.PreviousInVector == null)
+                    {
                         _firstInVector = second;
+                    }
                     else
+                    {
                         first.PreviousInVector.NextInVector = second;
+                    }
+
                     if (second.NextInVector == null)
+                    {
                         _lastInVector = first;
+                    }
                     else
+                    {
                         second.NextInVector.PreviousInVector = first;
+                    }
 
                     // Correct element links
                     first.NextInVector = second.NextInVector;
@@ -352,14 +454,24 @@ namespace SpiceSharp.Algebra
                 {
                     // Swap surrounding links
                     if (first.PreviousInVector == null)
+                    {
                         _firstInVector = second;
+                    }
                     else
+                    {
                         first.PreviousInVector.NextInVector = second;
+                    }
+
                     first.NextInVector.PreviousInVector = second;
                     if (second.NextInVector == null)
+                    {
                         _lastInVector = first;
+                    }
                     else
+                    {
                         second.NextInVector.PreviousInVector = first;
+                    }
+
                     second.PreviousInVector.NextInVector = first;
 
                     // Swap element links
@@ -380,13 +492,23 @@ namespace SpiceSharp.Algebra
         {
             // Update surrounding links
             if (element.PreviousInVector == null)
+            {
                 _firstInVector = element.NextInVector;
+            }
             else
+            {
                 element.PreviousInVector.NextInVector = element.NextInVector;
+            }
+
             if (element.NextInVector == null)
+            {
                 _lastInVector = element.PreviousInVector;
+            }
             else
+            {
                 element.NextInVector.PreviousInVector = element.PreviousInVector;
+            }
+
             ElementCount--;
         }
     }

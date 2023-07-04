@@ -94,7 +94,10 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         public void CalculateDefaults()
         {
             if (!Delay.Given)
+            {
                 Delay = new GivenParameter<double>(NormalizedLength / Frequency, false);
+            }
+
             Admittance = 1.0 / Impedance;
         }
     }

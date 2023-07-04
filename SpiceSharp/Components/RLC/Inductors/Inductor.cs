@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Inductors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Validation;
-using System;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {
@@ -55,9 +56,14 @@ namespace SpiceSharp.Components
             ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
             Simulations.IVariable[] nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
             foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
+            {
                 rule.AddPath(this, nodes[0], nodes[1]);
+            }
+
             foreach (IAppliedVoltageRule rule in rules.GetRules<IAppliedVoltageRule>())
+            {
                 rule.Fix(this, nodes[0], nodes[1]);
+            }
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations;
-using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations;
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -29,15 +30,33 @@ namespace SpiceSharp.Components.ParallelComponents
         /// </summary>
         /// <param name="name">The name of the variable.</param>
         /// <returns>The variable.</returns>
-        public IVariable<T> this[string name] => Parent[name];
+        public IVariable<T> this[string name]
+        {
+            get
+            {
+                return Parent[name];
+            }
+        }
 
         /// <summary>
         /// Gets the number of elements in the collection.
         /// </summary>
-        public int Count => Parent.Count;
+        public int Count
+        {
+            get
+            {
+                return Parent.Count;
+            }
+        }
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => Parent.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return Parent.Comparer;
+            }
+        }
 
         /// <summary>
         /// Gets an enumerable collection that contains the keys in the dictionary.
@@ -45,7 +64,13 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <value>
         /// The variable names.
         /// </value>
-        public IEnumerable<string> Keys => Parent.Keys;
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                return Parent.Keys;
+            }
+        }
 
         /// <summary>
         /// Gets an enumerable collection that contains the values in the dictionary.
@@ -53,16 +78,40 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <value>
         /// The variables.
         /// </value>
-        public IEnumerable<IVariable<T>> Values => Parent.Values;
+        public IEnumerable<IVariable<T>> Values
+        {
+            get
+            {
+                return Parent.Values;
+            }
+        }
 
         /// <inheritdoc/>
-        public ISparsePivotingSolver<T> Solver => _solver;
+        public ISparsePivotingSolver<T> Solver
+        {
+            get
+            {
+                return _solver;
+            }
+        }
 
         /// <inheritdoc/>
-        public IVector<T> Solution => Parent.Solution;
+        public IVector<T> Solution
+        {
+            get
+            {
+                return Parent.Solution;
+            }
+        }
 
         /// <inheritdoc/>
-        public IVariableMap Map => Parent.Map;
+        public IVariableMap Map
+        {
+            get
+            {
+                return Parent.Map;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParallelSolverState{T, S}"/> class.

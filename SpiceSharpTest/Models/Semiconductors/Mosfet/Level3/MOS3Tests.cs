@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharpTest.Models
 {
@@ -18,14 +20,14 @@ namespace SpiceSharpTest.Models
         private Mosfet3 CreateMOS3(string name, string d, string g, string s, string b, string model)
         {
             // Create transistor
-            var mos = new Mosfet3(name) { Model = model };
+            Mosfet3 mos = new Mosfet3(name) { Model = model };
             mos.Connect(d, g, s, b);
             return mos;
         }
 
         private Mosfet3Model CreateMOS3Model(string name, bool nmos, string parameters)
         {
-            var model = new Mosfet3Model(name, nmos);
+            Mosfet3Model model = new Mosfet3Model(name, nmos);
             ApplyParameters(model, parameters);
             return model;
         }
@@ -38,7 +40,7 @@ namespace SpiceSharpTest.Models
              * The current should match the references. References are simulation results by Spice 3f5.
              */
             // Create circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "0", "g", 0),
                 new VoltageSource("V2", "0", "d", 0),
                 CreateMOS3("M1", "d", "g", "0", "0", "DMOS")
@@ -48,7 +50,7 @@ namespace SpiceSharpTest.Models
             );
 
             // Create simulation
-            var dc = new DC("dc", new[] {
+            DC dc = new DC("dc", new[] {
                 new ParameterSweep("V2", new LinearSweep(0, 1.8, 0.3)),
                 new ParameterSweep("V1", new LinearSweep(0, 1.8, 0.3))
             });
@@ -57,7 +59,7 @@ namespace SpiceSharpTest.Models
             IExport<double>[] exports = { new RealPropertyExport(dc, "V2", "i") };
 
             // Create references
-            var references = new double[1][];
+            double[][] references = new double[1][];
             references[0] = new[]
             {
                 -1.262177448353619e-29, 0.000000000000000e+00, 0.000000000000000e+00, 0.000000000000000e+00,
@@ -88,7 +90,7 @@ namespace SpiceSharpTest.Models
              * Output voltage is expected to match the reference. Reference is simulated by Spice 3f5.
              */
             // Create circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("Vsupply", "vdd", "0", 1.8),
                 new VoltageSource("Vin", "in", "0", 0.0)
                     .SetParameter("acmag", 1.0),
@@ -102,7 +104,7 @@ namespace SpiceSharpTest.Models
                 );
 
             // Create simulation
-            var ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
+            AC ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
 
             // Create exports
             IExport<Complex>[] exports = { new ComplexVoltageExport(ac, "out") };
@@ -134,10 +136,12 @@ namespace SpiceSharpTest.Models
                 -2.704744460047443e+02, -4.652381575070101e-04, -2.704744460052259e+02, -2.935454324120037e-04,
                 -2.704744460054176e+02, -1.852146465190992e-04, -2.704744460054940e+02, -1.168625415265614e-04
             };
-            var references = new Complex[1][];
+            Complex[][] references = new Complex[1][];
             references[0] = new Complex[riref.Length / 2];
-            for (var i = 0; i < riref.Length; i += 2)
+            for (int i = 0; i < riref.Length; i += 2)
+            {
                 references[0][i / 2] = new Complex(riref[i], riref[i + 1]);
+            }
 
             // Run test
             AnalyzeAC(ac, ckt, exports, references);
@@ -148,7 +152,7 @@ namespace SpiceSharpTest.Models
         public void When_SwitchTransient_Expect_Spice3f5Reference()
         {
             // Create circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", new Pulse(0, 1.8, 1e-6, 1e-9, 0.5e-6, 2e-6, 6e-6)),
                 new VoltageSource("Vsupply", "vdd", "0", 1.8),
                 new Resistor("R1", "out", "0", 100e3),
@@ -159,13 +163,13 @@ namespace SpiceSharpTest.Models
                 );
 
             // Create simulation
-            var tran = new Transient("tran", 1e-9, 10e-6);
+            Transient tran = new Transient("tran", 1e-9, 10e-6);
 
             // Create exports
             IExport<double>[] exports = { new GenericExport<double>(tran, () => tran.GetState<IIntegrationMethod>().Time), new RealVoltageExport(tran, "out") };
 
             // Create references
-            var references = new double[2][];
+            double[][] references = new double[2][];
             references[0] = new[]
             {
                 0.000000000000000e+00, 1.000000000000000e-11, 2.000000000000000e-11, 4.000000000000000e-11,
@@ -236,7 +240,7 @@ namespace SpiceSharpTest.Models
         public void When_CommonSourceAmplifierNoise_Expect_Spice3f5Reference()
         {
             // Create circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 0),
                 new VoltageSource("Vsupply", "vdd", "0", 1.8),
                 new Resistor("R1", "out", "0", 100e3),
@@ -249,7 +253,7 @@ namespace SpiceSharpTest.Models
                 );
 
             // Make simulation, exports and references
-            var noise = new Noise("Noise", "V1", "out", new DecadeSweep(10.0, 10.0e9, 10));
+            Noise noise = new Noise("Noise", "V1", "out", new DecadeSweep(10.0, 10.0e9, 10));
             IExport<double>[] exports = { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
             double[][] references =
             {
@@ -314,7 +318,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplier_Expect_Reference()
         {
             // Create circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0),
                 new VoltageSource("Vsupply", "vdd", "0", 5),
                 new Resistor("R1", "out", "0", 1.0e3),
@@ -325,7 +329,7 @@ namespace SpiceSharpTest.Models
                     .SetParameter("w", 1e-6)
                     .SetParameter("l", 1e-6),
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0),
                 new VoltageSource("Vsupply", "vdd", "0", 5),
                 new Resistor("R1", "out", "0", 1.0e3),
@@ -336,7 +340,7 @@ namespace SpiceSharpTest.Models
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
 
             // Create simulation
-            var dc = new DC("op", "V1", 0.0, 5.0, 0.1);
+            DC dc = new DC("op", "V1", 0.0, 5.0, 0.1);
             dc.BiasingParameters.Gmin = 0.0; // May interfere with comparison
             RealVoltageExport[] exports = new[] { new RealVoltageExport(dc, "out") };
             Compare(dc, ckt_ref, ckt_act, exports);
@@ -349,7 +353,7 @@ namespace SpiceSharpTest.Models
             // Create circuit
             // WARNING: We simulate both possibilities together, because the
             // timestep varies if we split them due to different timestep truncation.
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1r", "inr", "0", new Pulse(1, 5, 1e-6, 1e-9, 0.5e-6, 2e-6, 6e-6)),
                 new VoltageSource("Vsupplyr", "vddr", "0", 5),
                 new Resistor("R1r", "outr", "0", 1.0e3),
@@ -370,13 +374,13 @@ namespace SpiceSharpTest.Models
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
 
             // Create simulation
-            var tran = new Transient("tran", 1e-9, 10e-6);
+            Transient tran = new Transient("tran", 1e-9, 10e-6);
             tran.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var v_ref = new RealVoltageExport(tran, "outr");
-            var v_act = new RealVoltageExport(tran, "outa");
+            RealVoltageExport v_ref = new RealVoltageExport(tran, "outr");
+            RealVoltageExport v_act = new RealVoltageExport(tran, "outa");
             tran.ExportSimulationData += (sender, args) =>
             {
-                var tol = Math.Max(Math.Abs(v_ref.Value), Math.Abs(v_act.Value)) * CompareRelTol + CompareAbsTol;
+                double tol = Math.Max(Math.Abs(v_ref.Value), Math.Abs(v_act.Value)) * CompareRelTol + CompareAbsTol;
                 Assert.AreEqual(v_ref.Value, v_act.Value, tol);
             };
             tran.Run(ckt);
@@ -388,7 +392,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplierNoise_Expect_Reference()
         {
             // Create circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0),
                 new VoltageSource("V2", "vdd", "0", 5.0),
                 new Resistor("R1", "0", "out", 10e3),
@@ -401,7 +405,7 @@ namespace SpiceSharpTest.Models
                     .SetParameter("w", 1e-6)
                     .SetParameter("l", 1e-6),
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0),
                 new VoltageSource("V2", "vdd", "0", 5.0),
                 new Resistor("R1", "0", "out", 10e3),
@@ -414,9 +418,9 @@ namespace SpiceSharpTest.Models
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
 
             // Create simulation, exports and references
-            var noise = new Noise("noise", "V1", "out", new DecadeSweep(10, 10e9, 10));
+            Noise noise = new Noise("noise", "V1", "out", new DecadeSweep(10, 10e9, 10));
             noise.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new IExport<double>[] { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
+            IExport<double>[] exports = new IExport<double>[] { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
             Compare(noise, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
         }
@@ -425,7 +429,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplierAC_Expect_Reference()
         {
             // Build circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "vdd", "0", 5.0),
@@ -439,7 +443,7 @@ namespace SpiceSharpTest.Models
                     .SetParameter("w", 1e-6)
                     .SetParameter("l", 1e-6),
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "vdd", "0", 5.0),
@@ -453,7 +457,7 @@ namespace SpiceSharpTest.Models
                 CreateMOS3Model("DMOS", false, "VTO = -0.7 KP = 3.8E+1 THETA = .25 VMAX = 3.5E5 KF=1e-24"));
 
             // Create simulation
-            var ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
+            AC ac = new AC("ac", new DecadeSweep(10, 10e9, 5));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
             ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);

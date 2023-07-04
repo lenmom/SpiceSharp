@@ -30,8 +30,15 @@ namespace SpiceSharp.Components.Diodes
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>

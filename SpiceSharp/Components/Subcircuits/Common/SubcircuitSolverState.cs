@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations;
-using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations;
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -54,7 +55,13 @@ namespace SpiceSharp.Components.Subcircuits
         public abstract IVariable<T> CreatePrivateVariable(string name, IUnit unit);
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => Parent.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return Parent.Comparer;
+            }
+        }
 
         /// <inheritdoc/>
         public void Add(string id, IVariable<T> variable)
@@ -74,7 +81,9 @@ namespace SpiceSharp.Components.Subcircuits
         {
             // Always have the ground node global
             if (Comparer.Equals(key, Constants.Ground))
+            {
                 return Parent.ContainsKey(key);
+            }
 
             return Parent.ContainsKey(Name.Combine(key));
         }
@@ -91,7 +100,10 @@ namespace SpiceSharp.Components.Subcircuits
         {
             // Always have the ground node global
             if (Comparer.Equals(key, Constants.Ground))
+            {
                 return Parent.TryGetValue(key, out value);
+            }
+
             return Parent.TryGetValue(Name.Combine(key), out value);
         }
 
@@ -109,7 +121,10 @@ namespace SpiceSharp.Components.Subcircuits
             {
                 // Always have a global ground
                 if (Comparer.Equals(key, Constants.Ground))
+                {
                     return Parent[key];
+                }
+
                 return Parent[Name.Combine(key)];
             }
         }
@@ -117,12 +132,24 @@ namespace SpiceSharp.Components.Subcircuits
         /// <summary>
         /// Gets an enumerable collection that contains the keys in the dictionary.
         /// </summary>
-        public IEnumerable<string> Keys => Parent.Keys;
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                return Parent.Keys;
+            }
+        }
 
         /// <summary>
         /// Gets an enumerable collection that contains the values in the dictionary.
         /// </summary>
-        public IEnumerable<IVariable<T>> Values => Parent.Values;
+        public IEnumerable<IVariable<T>> Values
+        {
+            get
+            {
+                return Parent.Values;
+            }
+        }
 
         /// <summary>
         /// Gets the number of elements in the collection.
@@ -130,7 +157,13 @@ namespace SpiceSharp.Components.Subcircuits
         /// <value>
         /// The number of elements in the collection.
         /// </value>
-        public int Count => Parent.Count;
+        public int Count
+        {
+            get
+            {
+                return Parent.Count;
+            }
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

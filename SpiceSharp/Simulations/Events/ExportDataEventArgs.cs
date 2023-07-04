@@ -23,7 +23,10 @@ namespace SpiceSharp.Simulations
             get
             {
                 if (_simulation.TryGetState(out IIntegrationMethod state))
+                {
                     return state.Time;
+                }
+
                 return double.NaN;
             }
         }
@@ -38,7 +41,10 @@ namespace SpiceSharp.Simulations
                 if (_simulation.TryGetState(out IComplexSimulationState state))
                 {
                     if (!state.Laplace.Real.Equals(0.0))
+                    {
                         return double.NaN;
+                    }
+
                     return state.Laplace.Imaginary / 2.0 / Math.PI;
                 }
                 return double.NaN;
@@ -53,7 +59,10 @@ namespace SpiceSharp.Simulations
             get
             {
                 if (_simulation.TryGetState(out IComplexSimulationState state))
+                {
                     return state.Laplace;
+                }
+
                 return double.NaN;
             }
         }
@@ -92,9 +101,12 @@ namespace SpiceSharp.Simulations
             positive.ThrowIfNull(nameof(positive));
             if (_simulation is ISimulation<IVariable<double>> sim)
             {
-                var voltage = sim.Solved[positive].Value;
+                double voltage = sim.Solved[positive].Value;
                 if (negative != null)
+                {
                     voltage -= sim.Solved[negative].Value;
+                }
+
                 return voltage;
             }
             return double.NaN;
@@ -129,7 +141,10 @@ namespace SpiceSharp.Simulations
             {
                 Complex voltage = sim.Solved[positive].Value;
                 if (negative != null)
+                {
                     voltage -= sim.Solved[negative].Value;
+                }
+
                 return voltage;
             }
             return double.NaN;
@@ -142,7 +157,10 @@ namespace SpiceSharp.Simulations
         public double[] GetSweepValues()
         {
             if (_simulation is DC dc)
+            {
                 return dc.GetCurrentSweepValue();
+            }
+
             return null;
         }
     }

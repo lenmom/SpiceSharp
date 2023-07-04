@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -33,7 +34,9 @@ namespace SpiceSharp.Components.Subcircuits
                 context.AddLocalState<IComplexSimulationState>(_state);
             }
             else
+            {
                 context.AddLocalState<IComplexSimulationState>(new FlatSimulationState(Name, parent, context.Bridges));
+            }
         }
 
         /// <inheritdoc/>
@@ -47,7 +50,9 @@ namespace SpiceSharp.Components.Subcircuits
         void IFrequencyBehavior.InitializeParameters()
         {
             foreach (IFrequencyBehavior behavior in Behaviors)
+            {
                 behavior.InitializeParameters();
+            }
         }
 
         /// <inheritdoc/>
@@ -61,14 +66,18 @@ namespace SpiceSharp.Components.Subcircuits
                     _state.IsConvergent = true;
                     _state.Solver.Reset();
                     foreach (IFrequencyBehavior behavior in Behaviors)
+                    {
                         behavior.Load();
+                    }
                 }
                 while (!_state.Apply());
             }
             else
             {
                 foreach (IFrequencyBehavior behavior in Behaviors)
+                {
                     behavior.Load();
+                }
             }
         }
     }

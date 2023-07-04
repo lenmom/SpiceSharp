@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.JFETs
 {
@@ -117,20 +118,23 @@ namespace SpiceSharp.Components.JFETs
         void ITemperatureBehavior.Temperature()
         {
             if (!Parameters.Temperature.Given)
+            {
                 Parameters.Temperature = new GivenParameter<double>(_temperature.Temperature, false);
-            var vt = Parameters.Temperature * Constants.KOverQ;
-            var fact2 = Parameters.Temperature / Constants.ReferenceTemperature;
-            var ratio1 = Parameters.Temperature / ModelParameters.NominalTemperature - 1;
+            }
+
+            double vt = Parameters.Temperature * Constants.KOverQ;
+            double fact2 = Parameters.Temperature / Constants.ReferenceTemperature;
+            double ratio1 = Parameters.Temperature / ModelParameters.NominalTemperature - 1;
             TempSaturationCurrent = ModelParameters.GateSaturationCurrent * Math.Exp(ratio1 * 1.11 / vt);
             TempCapGs = ModelParameters.CapGs * ModelTemperature.Cjfact;
             TempCapGd = ModelParameters.CapGd * ModelTemperature.Cjfact;
-            var kt = Constants.Boltzmann * Parameters.Temperature;
-            var egfet = 1.16 - (7.02e-4 * Parameters.Temperature * Parameters.Temperature) / (Parameters.Temperature + 1108);
-            var arg = -egfet / (kt + kt) + 1.1150877 / (Constants.Boltzmann * 2 * Constants.ReferenceTemperature);
-            var pbfact = -2 * vt * (1.5 * Math.Log(fact2) + Constants.Charge * arg);
+            double kt = Constants.Boltzmann * Parameters.Temperature;
+            double egfet = 1.16 - (7.02e-4 * Parameters.Temperature * Parameters.Temperature) / (Parameters.Temperature + 1108);
+            double arg = -egfet / (kt + kt) + 1.1150877 / (Constants.Boltzmann * 2 * Constants.ReferenceTemperature);
+            double pbfact = -2 * vt * (1.5 * Math.Log(fact2) + Constants.Charge * arg);
             TempGatePotential = fact2 * ModelTemperature.Pbo + pbfact;
-            var gmanew = (TempGatePotential - ModelTemperature.Pbo) / ModelTemperature.Pbo;
-            var cjfact1 = 1 + .5 * (4e-4 * (Parameters.Temperature - Constants.ReferenceTemperature) - gmanew);
+            double gmanew = (TempGatePotential - ModelTemperature.Pbo) / ModelTemperature.Pbo;
+            double cjfact1 = 1 + .5 * (4e-4 * (Parameters.Temperature - Constants.ReferenceTemperature) - gmanew);
             TempCapGs *= cjfact1;
             TempCapGd *= cjfact1;
 
@@ -139,7 +143,9 @@ namespace SpiceSharp.Components.JFETs
             Vcrit = vt * Math.Log(vt / (Constants.Root2 * TempSaturationCurrent));
 
             if (TempGatePotential.Equals(0.0))
+            {
                 throw new SpiceSharpException("{0}: {1}".FormatString(nameof(TempGatePotential), Properties.Resources.Parameters_IsZero));
+            }
         }
     }
 }

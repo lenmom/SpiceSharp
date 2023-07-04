@@ -42,12 +42,24 @@ namespace SpiceSharp.Entities
         }
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => _entities.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return _entities.Comparer;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="ICollection{T}" /> is read-only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Gets the number of entities in the collection
@@ -140,7 +152,9 @@ namespace SpiceSharp.Entities
             try
             {
                 if (!_entities.TryGetValue(name, out IEntity entity))
+                {
                     return false;
+                }
 
                 _lock.EnterWriteLock();
                 try
@@ -172,11 +186,13 @@ namespace SpiceSharp.Entities
         {
             item.ThrowIfNull(nameof(item));
             _lock.EnterUpgradeableReadLock();
-            var success = false;
+            bool success = false;
             try
             {
                 if (!_entities.TryGetValue(item.Name, out IEntity result) || result != item)
+                {
                     return false;
+                }
 
                 _lock.EnterWriteLock();
                 try
@@ -228,7 +244,10 @@ namespace SpiceSharp.Entities
             try
             {
                 if (_entities.TryGetValue(item.Name, out IEntity result))
+                {
                     return result == item;
+                }
+
                 return false;
             }
             finally
@@ -260,7 +279,9 @@ namespace SpiceSharp.Entities
                 foreach (IEntity entity in _entities.Values)
                 {
                     if (entity is E e)
+                    {
                         yield return e;
+                    }
                 }
             }
             finally
@@ -290,7 +311,9 @@ namespace SpiceSharp.Entities
 
             // Enumerate
             foreach (IEntity entity in result)
+            {
                 yield return entity;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -302,12 +325,19 @@ namespace SpiceSharp.Entities
         {
             array.ThrowIfNull(nameof(array));
             if (arrayIndex < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+            }
+
             if (array.Length < arrayIndex + Count)
+            {
                 throw new ArgumentException(Properties.Resources.NotEnoughElements);
+            }
 
             foreach (IEntity item in _entities.Values)
+            {
                 array[arrayIndex++] = item;
+            }
         }
 
         /// <summary>
@@ -329,9 +359,12 @@ namespace SpiceSharp.Entities
         /// <inheritdoc/>
         public IEntityCollection Clone()
         {
-            var clone = new ConcurrentEntityCollection(_entities.Comparer);
+            ConcurrentEntityCollection clone = new ConcurrentEntityCollection(_entities.Comparer);
             foreach (IEntity pair in _entities.Values)
+            {
                 clone.Add(pair.Clone());
+            }
+
             return clone;
         }
     }

@@ -1,5 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -31,7 +32,10 @@ namespace SpiceSharpGenerator
         {
             INamedTypeSymbol result = null;
             while (entityType != null && !_map.TryGetValue(entityType, out result))
+            {
                 entityType = entityType.BaseType;
+            }
+
             return result;
         }
     }

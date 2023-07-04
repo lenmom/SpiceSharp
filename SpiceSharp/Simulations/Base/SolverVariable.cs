@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Simulations
 {
@@ -17,7 +18,13 @@ namespace SpiceSharp.Simulations
         public string Name { get; }
 
         /// <inheritdoc/>
-        public T Value => _state.Solution[_index];
+        public T Value
+        {
+            get
+            {
+                return _state.Solution[_index];
+            }
+        }
 
         /// <inheritdoc/>
         public IUnit Unit { get; }

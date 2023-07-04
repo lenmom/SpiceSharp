@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations.Histories;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations.Histories;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -20,8 +21,15 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         /// </value>
         public T Value
         {
-            get => _history.Value;
-            set => _history.Value = value;
+            get
+            {
+                return _history.Value;
+            }
+
+            set
+            {
+                _history.Value = value;
+            }
         }
 
         /// <summary>
@@ -32,11 +40,18 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         public StateValue(int length)
         {
             if (length < 1)
+            {
                 throw new ArgumentException(Properties.Resources.Simulations_History_InvalidLength);
+            }
+
             if (length <= 3)
+            {
                 _history = new ArrayHistory<T>(length);
+            }
             else
+            {
                 _history = new NodeHistory<T>(length);
+            }
         }
 
         /// <summary>

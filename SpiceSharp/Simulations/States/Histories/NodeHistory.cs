@@ -42,8 +42,15 @@ namespace SpiceSharp.Simulations.Histories
         /// </summary>
         public T Value
         {
-            get => _currentPoint.Value;
-            set => _currentPoint.Value = value;
+            get
+            {
+                return _currentPoint.Value;
+            }
+
+            set
+            {
+                _currentPoint.Value = value;
+            }
         }
 
         /// <summary>
@@ -63,9 +70,9 @@ namespace SpiceSharp.Simulations.Histories
             Length = length;
 
             // Create a cycle
-            var first = new Node();
+            Node first = new Node();
             Node current = first;
-            for (var i = 1; i < length; i++)
+            for (int i = 1; i < length; i++)
             {
                 current.Next = new Node
                 {
@@ -88,9 +95,9 @@ namespace SpiceSharp.Simulations.Histories
             Length = length;
 
             // Create a cycle
-            var first = new Node();
+            Node first = new Node();
             Node current = first;
-            for (var i = 1; i < length; i++)
+            for (int i = 1; i < length; i++)
             {
                 current.Next = new Node
                 {
@@ -115,12 +122,12 @@ namespace SpiceSharp.Simulations.Histories
             Length = length;
 
             // Create a cycle
-            var first = new Node
+            Node first = new Node
             {
                 Value = generator(0)
             };
             Node current = first;
-            for (var i = 1; i < length; i++)
+            for (int i = 1; i < length; i++)
             {
                 current.Next = new Node
                 {
@@ -153,12 +160,17 @@ namespace SpiceSharp.Simulations.Histories
         public T GetPreviousValue(int index)
         {
             if (index < 0 || index >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
 
             // Find the matching node
             Node point = _currentPoint;
-            for (var i = 0; i < index; i++)
+            for (int i = 0; i < index; i++)
+            {
                 point = point.Previous;
+            }
+
             return point.Value;
         }
 
@@ -169,7 +181,7 @@ namespace SpiceSharp.Simulations.Histories
         public void Set(T value)
         {
             Node current = _currentPoint;
-            for (var i = 0; i < Length; i++)
+            for (int i = 0; i < Length; i++)
             {
                 current.Value = value;
                 current = current.Previous;
@@ -184,7 +196,7 @@ namespace SpiceSharp.Simulations.Histories
         {
             method.ThrowIfNull(nameof(method));
             Node current = _currentPoint;
-            for (var i = 0; i < Length; i++)
+            for (int i = 0; i < Length; i++)
             {
                 current.Value = method(i);
                 current = current.Previous;
@@ -200,7 +212,7 @@ namespace SpiceSharp.Simulations.Histories
         public IEnumerator<T> GetEnumerator()
         {
             Node elt = _currentPoint;
-            for (var i = 0; i < Length; i++)
+            for (int i = 0; i < Length; i++)
             {
                 yield return elt.Value;
                 elt = elt.Previous;

@@ -41,7 +41,9 @@ namespace SpiceSharp.Simulations
             e.ThrowIfNull(nameof(e));
             Behaviors.IBehaviorContainer eb = Simulation.EntityBehaviors[EntityName];
             if (eb != null)
+            {
                 Extractor = eb.CreatePropertyGetter<double>(PropertyName);
+            }
         }
     }
 }

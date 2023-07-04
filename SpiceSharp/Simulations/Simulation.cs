@@ -1,12 +1,13 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.General;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace SpiceSharp.Simulations
 {
@@ -30,7 +31,9 @@ namespace SpiceSharp.Simulations
                 {
                     TypeInfo info = i.GetTypeInfo();
                     if (info.IsGenericType && info.GetGenericTypeDefinition() == typeof(IStateful<>))
+                    {
                         yield return info.GetGenericArguments()[0];
+                    }
                 }
             }
         }
@@ -45,7 +48,9 @@ namespace SpiceSharp.Simulations
                 {
                     TypeInfo info = i.GetTypeInfo();
                     if (info.IsGenericType && info.GetGenericTypeDefinition() == typeof(IBehavioral<>))
+                    {
                         yield return info.GetGenericArguments()[0];
+                    }
                 }
             }
         }
@@ -139,8 +144,8 @@ namespace SpiceSharp.Simulations
 
             // Execute the simulation
             Status = SimulationStatus.Running;
-            var beforeArgs = new BeforeExecuteEventArgs(false);
-            var afterArgs = new AfterExecuteEventArgs();
+            BeforeExecuteEventArgs beforeArgs = new BeforeExecuteEventArgs(false);
+            AfterExecuteEventArgs afterArgs = new AfterExecuteEventArgs();
             do
             {
                 // Before execution
@@ -163,7 +168,9 @@ namespace SpiceSharp.Simulations
 
                 // We're going to repeat the simulation, change the event arguments
                 if (afterArgs.Repeat)
+                {
                     beforeArgs = new BeforeExecuteEventArgs(true);
+                }
             } while (afterArgs.Repeat);
 
             // Clean up the circuit
@@ -188,8 +195,8 @@ namespace SpiceSharp.Simulations
         {
             // Execute the simulation
             Status = SimulationStatus.Running;
-            var beforeArgs = new BeforeExecuteEventArgs(false);
-            var afterArgs = new AfterExecuteEventArgs();
+            BeforeExecuteEventArgs beforeArgs = new BeforeExecuteEventArgs(false);
+            AfterExecuteEventArgs afterArgs = new AfterExecuteEventArgs();
             do
             {
                 // Before execution
@@ -212,7 +219,9 @@ namespace SpiceSharp.Simulations
 
                 // We're going to repeat the simulation, change the event arguments
                 if (afterArgs.Repeat)
+                {
                     beforeArgs = new BeforeExecuteEventArgs(true);
+                }
             } while (afterArgs.Repeat);
 
             // Clean up the circuit
@@ -276,7 +285,9 @@ namespace SpiceSharp.Simulations
                 {
                     entity.CreateBehaviors(this);
                     if (EntityBehaviors.TryGetBehaviors(entity.Name, out IBehaviorContainer container))
+                    {
                         args.Behaviors = container;
+                    }
                 }
             }
             EntityBehaviors.BehaviorsNotFound += BehaviorsNotFound;
@@ -288,7 +299,9 @@ namespace SpiceSharp.Simulations
                 foreach (IEntity entity in entities)
                 {
                     if (!EntityBehaviors.Contains(entity.Name))
+                    {
                         entity.CreateBehaviors(this);
+                    }
                 }
             }
             finally
@@ -316,24 +329,33 @@ namespace SpiceSharp.Simulations
         protected void Validate(IRules rules, IEntityCollection entities)
         {
             if (rules == null)
+            {
                 return;
+            }
+
             if (entities != null)
             {
                 foreach (IEntity entity in entities)
                 {
                     if (entity is IRuleSubject subject)
+                    {
                         subject.Apply(rules);
+                    }
                 }
             }
             foreach (IBehavior behavior in EntityBehaviors.SelectMany(p => p))
             {
                 if (behavior is IRuleSubject subject)
+                {
                     subject.Apply(rules);
+                }
             }
 
             // Are there still violated rules?
             if (rules.ViolationCount > 0)
+            {
                 throw new ValidationFailedException(this, rules);
+            }
         }
 
         /// <summary>
@@ -351,7 +373,10 @@ namespace SpiceSharp.Simulations
         public virtual bool UsesBehaviors<B>() where B : IBehavior
         {
             if (this is IBehavioral<B>)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -365,7 +390,10 @@ namespace SpiceSharp.Simulations
         public virtual S GetState<S>() where S : ISimulationState
         {
             if (this is IStateful<S> stateful)
+            {
                 return stateful.State;
+            }
+
             throw new TypeNotFoundException(typeof(S), Properties.Resources.Stateful_NotDefined.FormatString(typeof(S).FullName));
         }
 

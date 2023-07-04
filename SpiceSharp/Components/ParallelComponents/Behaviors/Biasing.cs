@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -30,9 +31,14 @@ namespace SpiceSharp.Components.ParallelComponents
             {
                 _loadWorkload = new Workload(dist, parameters.Entities.Count);
                 if (context.TryGetState(out IBiasingSimulationState bparent))
+                {
                     context.AddLocalState<IBiasingSimulationState>(_state = new BiasingSimulationState(bparent));
+                }
+
                 if (context.TryGetState(out IIterationSimulationState cparent))
+                {
                     context.AddLocalState<IIterationSimulationState>(new IterationSimulationState(cparent));
+                }
             }
         }
 
@@ -43,7 +49,9 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_loadWorkload != null)
             {
                 foreach (IBiasingBehavior behavior in _biasingBehaviors)
+                {
                     _loadWorkload.Actions.Add(behavior.Load);
+                }
             }
         }
 
@@ -59,7 +67,9 @@ namespace SpiceSharp.Components.ParallelComponents
             else
             {
                 foreach (IBiasingBehavior behavior in _biasingBehaviors)
+                {
                     behavior.Load();
+                }
             }
         }
     }

@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -22,13 +23,31 @@ namespace SpiceSharp.Components.Diodes
         private readonly NoiseGain _flicker;
 
         /// <inheritdoc/>
-        public double OutputNoiseDensity => _rs.OutputNoiseDensity + _id.OutputNoiseDensity + _flicker.OutputNoiseDensity;
+        public double OutputNoiseDensity
+        {
+            get
+            {
+                return _rs.OutputNoiseDensity + _id.OutputNoiseDensity + _flicker.OutputNoiseDensity;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalOutputNoise => _rs.TotalOutputNoise + _id.TotalOutputNoise + _flicker.TotalOutputNoise;
+        public double TotalOutputNoise
+        {
+            get
+            {
+                return _rs.TotalOutputNoise + _id.TotalOutputNoise + _flicker.TotalOutputNoise;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalInputNoise => _rs.TotalInputNoise + _id.TotalInputNoise + _flicker.TotalInputNoise;
+        public double TotalInputNoise
+        {
+            get
+            {
+                return _rs.TotalInputNoise + _id.TotalInputNoise + _flicker.TotalInputNoise;
+            }
+        }
 
         /// <summary>
         /// Gets the thermal noise source of the series resistance.
@@ -37,7 +56,13 @@ namespace SpiceSharp.Components.Diodes
         /// The thermal noise source.
         /// </value>
         [ParameterName("rs"), ParameterInfo("The thermal noise of the resistance")]
-        public INoiseSource ThermalResistance => _rs;
+        public INoiseSource ThermalResistance
+        {
+            get
+            {
+                return _rs;
+            }
+        }
 
         /// <summary>
         /// Gets the shot noise source of the diode current.
@@ -46,7 +71,13 @@ namespace SpiceSharp.Components.Diodes
         /// The shot noise source.
         /// </value>
         [ParameterName("id"), ParameterInfo("The shot noise of the diode current")]
-        public INoiseSource ShotCurrent => _id;
+        public INoiseSource ShotCurrent
+        {
+            get
+            {
+                return _id;
+            }
+        }
 
         /// <summary>
         /// Gets the flicker noise source.
@@ -55,7 +86,13 @@ namespace SpiceSharp.Components.Diodes
         /// The flicker noise source.
         /// </value>
         [ParameterName("flicker"), ParameterInfo("The flicker noise")]
-        public INoiseSource Flicker => _flicker;
+        public INoiseSource Flicker
+        {
+            get
+            {
+                return _flicker;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Noise"/> class.
@@ -82,8 +119,8 @@ namespace SpiceSharp.Components.Diodes
         /// <inheritdoc/>
         void INoiseBehavior.Compute()
         {
-            var m = Parameters.ParallelMultiplier;
-            var n = Parameters.SeriesMultiplier;
+            double m = Parameters.ParallelMultiplier;
+            double n = Parameters.SeriesMultiplier;
 
             _rs.Compute(ModelTemperature.Conductance * m / n * Parameters.Area, Parameters.Temperature);
             _id.Compute(LocalCurrent * m / n);

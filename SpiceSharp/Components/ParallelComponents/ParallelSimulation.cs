@@ -37,7 +37,10 @@ namespace SpiceSharp.Components.ParallelComponents
         public override S GetState<S>()
         {
             if (LocalStates.TryGetValue(out S result))
+            {
                 return result;
+            }
+
             return Parent.GetState<S>();
         }
     }

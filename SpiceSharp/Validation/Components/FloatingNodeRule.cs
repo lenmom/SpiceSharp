@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Simulations;
-using SpiceSharp.Validation.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Simulations;
+using SpiceSharp.Validation.Components;
 
 namespace SpiceSharp.Validation
 {
@@ -29,7 +30,13 @@ namespace SpiceSharp.Validation
         /// <value>
         /// The violation count.
         /// </value>
-        public int ViolationCount => Math.Max(_dcGroupCount, _acGroupCount) - 1;
+        public int ViolationCount
+        {
+            get
+            {
+                return Math.Max(_dcGroupCount, _acGroupCount) - 1;
+            }
+        }
 
         /// <summary>
         /// Gets the violations.
@@ -45,11 +52,19 @@ namespace SpiceSharp.Validation
                 {
                     ConductionTypes type = ConductionTypes.None;
                     if (pair.Value == _representative)
+                    {
                         type |= ConductionTypes.Dc;
+                    }
+
                     if (_acGroups[pair.Key] == _representative)
+                    {
                         type |= ConductionTypes.Ac;
+                    }
+
                     if (type != ConductionTypes.All)
+                    {
                         yield return new FloatingNodeRuleViolation(this, pair.Key, FixedVariable, type);
+                    }
                 }
             }
         }
@@ -111,7 +126,10 @@ namespace SpiceSharp.Validation
         public void AddPath(IRuleSubject subject, ConductionTypes type, params IVariable[] variables)
         {
             if (variables == null || variables.Length == 0)
+            {
                 return;
+            }
+
             if (variables.Length == 1 || type == ConductionTypes.None)
             {
                 foreach (IVariable variable in variables)
@@ -122,10 +140,12 @@ namespace SpiceSharp.Validation
             }
             else
             {
-                for (var i = 0; i < variables.Length; i++)
+                for (int i = 0; i < variables.Length; i++)
                 {
-                    for (var j = i + 1; j < variables.Length; j++)
+                    for (int j = i + 1; j < variables.Length; j++)
+                    {
                         AddPath(variables[i], variables[j], type);
+                    }
                 }
             }
         }
@@ -139,16 +159,23 @@ namespace SpiceSharp.Validation
         private void AddPath(IVariable a, IVariable b, ConductionTypes type)
         {
             if (type == ConductionTypes.None)
+            {
                 throw new SpiceSharpException("Invalid path");
+            }
+
             if ((type & ConductionTypes.Dc) != 0)
+            {
                 Connect(a, b, _dcGroups, ref _dcGroupCount);
+            }
             else
             {
                 Add(a, _dcGroups, ref _dcGroupCount);
                 Add(b, _dcGroups, ref _dcGroupCount);
             }
             if ((type & ConductionTypes.Ac) != 0)
+            {
                 Connect(a, b, _acGroups, ref _acGroupCount);
+            }
             else
             {
                 Add(a, _acGroups, ref _acGroupCount);
@@ -166,8 +193,8 @@ namespace SpiceSharp.Validation
         private void Connect(IVariable a, IVariable b, Dictionary<IVariable, Group> groups, ref int counter)
         {
             // Add to DC group
-            var hasA = groups.TryGetValue(a, out Group groupA);
-            var hasB = groups.TryGetValue(b, out Group groupB);
+            bool hasA = groups.TryGetValue(a, out Group groupA);
+            bool hasB = groups.TryGetValue(b, out Group groupB);
             if (hasA && hasB)
             {
                 // Join the groups
@@ -176,25 +203,35 @@ namespace SpiceSharp.Validation
                     if (groupA == _representative)
                     {
                         foreach (IVariable variable in groupB)
+                        {
                             groups[variable] = _representative;
+                        }
                     }
                     else if (groupB == _representative)
                     {
                         foreach (IVariable variable in groupA)
+                        {
                             groups[variable] = _representative;
+                        }
                     }
                     else
                     {
                         if (groupA.Count < groupB.Count)
                         {
                             foreach (IVariable variable in groupA)
+                            {
                                 groups[variable] = groupB;
+                            }
+
                             groupB.Join(groupA);
                         }
                         else
                         {
                             foreach (IVariable variable in groupB)
+                            {
                                 groups[variable] = groupA;
+                            }
+
                             groupA.Join(groupB);
                         }
                     }
@@ -205,17 +242,21 @@ namespace SpiceSharp.Validation
             {
                 groups.Add(b, groupA);
                 if (groupA != _representative)
+                {
                     groupA.Add(b);
+                }
             }
             else if (hasB)
             {
                 groups.Add(a, groupB);
                 if (groupB != _representative)
+                {
                     groupB.Add(a);
+                }
             }
             else
             {
-                var group = new Group(a, b);
+                Group group = new Group(a, b);
                 groups[a] = group;
                 groups[b] = group;
                 counter++;
@@ -231,7 +272,10 @@ namespace SpiceSharp.Validation
         private static void Add(IVariable a, Dictionary<IVariable, Group> groups, ref int counter)
         {
             if (groups.ContainsKey(a))
+            {
                 return;
+            }
+
             groups.Add(a, new Group(a));
             counter++;
         }

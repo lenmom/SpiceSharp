@@ -1,5 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
+
+using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -52,9 +53,15 @@ namespace SpiceSharpGenerator
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, this))
+            {
                 return true;
+            }
+
             if (obj is BehaviorData other)
+            {
                 return Equals(other);
+            }
+
             return false;
         }
 
@@ -62,7 +69,10 @@ namespace SpiceSharpGenerator
         public bool Equals(BehaviorData other)
         {
             if (!SymbolEqualityComparer.Default.Equals(Behavior, other.Behavior))
+            {
                 return false;
+            }
+
             return true;
         }
 

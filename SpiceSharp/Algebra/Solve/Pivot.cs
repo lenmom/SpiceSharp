@@ -45,7 +45,10 @@ namespace SpiceSharp.Algebra.Solve
         public override bool Equals(object obj)
         {
             if (obj is Pivot<P> pivot)
+            {
                 return Equals(pivot);
+            }
+
             return false;
         }
 
@@ -59,9 +62,15 @@ namespace SpiceSharp.Algebra.Solve
         public bool Equals(Pivot<P> pivot)
         {
             if (!Element.Equals(pivot.Element))
+            {
                 return false;
+            }
+
             if (!Info.Equals(pivot.Info))
+            {
                 return false;
+            }
+
             return true;
         }
 

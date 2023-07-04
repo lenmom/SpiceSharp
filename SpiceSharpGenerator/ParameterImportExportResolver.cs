@@ -1,7 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
+using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -29,23 +30,29 @@ namespace SpiceSharpGenerator
         public ParameterImportExportResolver(INamedTypeSymbol parameters, Dictionary<INamedTypeSymbol, GeneratedPropertyCollection> generatedProperties = null)
         {
             _parameters = parameters;
-            var names = new List<string>(4);
+            List<string> names = new List<string>(4);
             while (parameters != null)
             {
                 foreach (ISymbol member in parameters.GetMembers())
                 {
                     if (member.DeclaredAccessibility != Accessibility.Public)
+                    {
                         continue;
+                    }
 
                     // Extract the names of the member
                     names.Clear();
                     foreach (AttributeData attribute in member.GetAttributes())
                     {
                         if (attribute.IsAttribute("ParameterNameAttribute"))
+                        {
                             names.Add(attribute.ConstructorArguments[0].Value.ToString());
+                        }
                     }
                     if (names.Count == 0)
+                    {
                         continue;
+                    }
 
                     ITypeSymbol btype;
                     string setter = null, getter = null;
@@ -54,9 +61,15 @@ namespace SpiceSharpGenerator
                         case IPropertySymbol property:
                             btype = property.Type;
                             if (property.GetMethod != null && property.GetMethod.DeclaredAccessibility == Accessibility.Public)
+                            {
                                 getter = property.Name;
+                            }
+
                             if (property.SetMethod != null && property.SetMethod.DeclaredAccessibility == Accessibility.Public)
+                            {
                                 setter = $"{property.Name} = value";
+                            }
+
                             break;
                         case IFieldSymbol field:
                             btype = field.Type;
@@ -65,7 +78,10 @@ namespace SpiceSharpGenerator
                             break;
                         case IMethodSymbol method:
                             if (method.Parameters.Length > 1)
+                            {
                                 continue;
+                            }
+
                             if (method.Parameters.Length == 0)
                             {
                                 btype = method.ReturnType;
@@ -92,7 +108,7 @@ namespace SpiceSharpGenerator
                         pp.HasExport |= getter != null;
                         pp.HasImport |= setter != null;
 
-                        foreach (var name in names)
+                        foreach (string name in names)
                         {
                             if (pp.TryGetValue(name, out (string Setter, string Getter) gs))
                             {
@@ -101,9 +117,14 @@ namespace SpiceSharpGenerator
                                     gs.Getter ?? getter);
                             }
                             else
+                            {
                                 pp.Add(name, (setter, getter));
-                            if (!_nameMap.TryGetValue(name, out var mapped))
+                            }
+
+                            if (!_nameMap.TryGetValue(name, out int mapped))
+                            {
                                 _nameMap.Add(name, _nameMap.Count + 1);
+                            }
                         }
                     }
                 }
@@ -117,10 +138,14 @@ namespace SpiceSharpGenerator
                         foreach (AttributeData attribute in extra.Field.GetAttributes())
                         {
                             if (attribute.IsAttribute("ParameterNameAttribute"))
+                            {
                                 names.Add(attribute.ConstructorArguments[0].Value.ToString());
+                            }
                         }
                         if (names.Count == 0)
+                        {
                             continue;
+                        }
 
                         foreach (ITypeSymbol type in GetMemberTypes(extra.Field.Type))
                         {
@@ -134,11 +159,13 @@ namespace SpiceSharpGenerator
                                 };
                                 _members.Add(type, pp);
                             }
-                            foreach (var name in names)
+                            foreach (string name in names)
                             {
                                 pp.Add(name, ($"{extra.Variable} = value", extra.Variable));
-                                if (!_nameMap.TryGetValue(name, out var mapped))
+                                if (!_nameMap.TryGetValue(name, out int mapped))
+                                {
                                     _nameMap.Add(name, _nameMap.Count + 1);
+                                }
                             }
                         }
                     }
@@ -152,7 +179,9 @@ namespace SpiceSharpGenerator
             if (type is INamedTypeSymbol ntype)
             {
                 if (ntype.IsGenericType && string.CompareOrdinal(ntype.Name, "GivenParameter") == 0)
+                {
                     yield return ntype.TypeArguments[0];
+                }
             }
             yield return type;
         }
@@ -162,9 +191,14 @@ namespace SpiceSharpGenerator
             foreach (KeyValuePair<ITypeSymbol, TypeParametersAndProperties> pair in _members)
             {
                 if (pair.Value.HasImport)
+                {
                     yield return $"IImportParameterSet<{pair.Key}>";
+                }
+
                 if (pair.Value.HasExport)
+                {
                     yield return $"IExportPropertySet<{pair.Key}>";
+                }
             }
         }
 
@@ -174,7 +208,10 @@ namespace SpiceSharpGenerator
             yield return "private static Dictionary<string, int> _namedMap = new Dictionary<string, int>(SpiceSharp.Constants.DefaultComparer)";
             yield return "{";
             foreach (KeyValuePair<string, int> pair in _nameMap)
+            {
                 yield return $"\t{{ \"{pair.Key}\", {pair.Value} }},";
+            }
+
             yield return "};";
 
             // Create a method for setting parameters
@@ -193,7 +230,10 @@ namespace SpiceSharpGenerator
                     foreach (KeyValuePair<string, (string Setter, string Getter)> pp in pair.Value)
                     {
                         if (pp.Value.Setter == null)
+                        {
                             continue;
+                        }
+
                         yield return $"\t\t\tcase {_nameMap[pp.Key]}:";
                         yield return $"\t\t\t\treturn value => {pp.Value.Setter};";
                     }
@@ -216,7 +256,10 @@ namespace SpiceSharpGenerator
                     foreach (KeyValuePair<string, (string Setter, string Getter)> pp in pair.Value)
                     {
                         if (pp.Value.Getter == null)
+                        {
                             continue;
+                        }
+
                         yield return $"\t\t\tcase {_nameMap[pp.Key]}:";
                         yield return $"\t\t\t\treturn () => {pp.Value.Getter};";
                     }
@@ -237,9 +280,11 @@ namespace SpiceSharpGenerator
         public string Create()
         {
             if (_members.Count == 0)
+            {
                 return "";
+            }
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine($@"using System;
 using System.Collections.Generic;
 using SpiceSharp.Diagnostics;

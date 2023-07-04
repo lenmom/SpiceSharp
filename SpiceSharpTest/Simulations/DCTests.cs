@@ -1,11 +1,14 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
+
 using SpiceSharpTest.Models;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharpTest.Simulations
 {
@@ -14,14 +17,14 @@ namespace SpiceSharpTest.Simulations
     {
         private Diode CreateDiode(string name, string anode, string cathode, string model)
         {
-            var d = new Diode(name) { Model = model };
+            Diode d = new Diode(name) { Model = model };
             d.Connect(anode, cathode);
             return d;
         }
 
         private DiodeModel CreateDiodeModel(string name, string parameters)
         {
-            var model = new DiodeModel(name);
+            DiodeModel model = new DiodeModel(name);
             ApplyParameters(model, parameters);
             return model;
         }
@@ -30,14 +33,14 @@ namespace SpiceSharpTest.Simulations
         public void When_DCSweepResistorParameter_Expect_Reference()
         {
             // Create the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 0),
                 new Resistor("R1", "in", "out", 1.0e4),
                 new Resistor("R2", "out", "0", 1.0e4)
                 );
 
             // Do a DC sweep where one of the sweeps is a parameter
-            var dc = new DC("DC 1");
+            DC dc = new DC("DC 1");
             dc.DCParameters.Sweeps.Add(new ParameterSweep("R2", "resistance", new LinearSweep(0.0, 1e4, 1e3), container =>
             {
                 container.GetValue<ITemperatureBehavior>().Temperature();
@@ -47,9 +50,9 @@ namespace SpiceSharpTest.Simulations
             // Run simulation
             dc.ExportSimulationData += (sender, args) =>
             {
-                var resistance = Math.Max(dc.GetCurrentSweepValue()[0], SpiceSharp.Components.Resistors.Parameters.MinimumResistance);
-                var voltage = dc.GetCurrentSweepValue()[1];
-                var expected = voltage * resistance / (resistance + 1.0e4);
+                double resistance = Math.Max(dc.GetCurrentSweepValue()[0], SpiceSharp.Components.Resistors.Parameters.MinimumResistance);
+                double voltage = dc.GetCurrentSweepValue()[1];
+                double expected = voltage * resistance / (resistance + 1.0e4);
                 Assert.AreEqual(expected, args.GetVoltage("out"), 1e-12);
             };
             dc.Run(ckt);
@@ -64,7 +67,7 @@ namespace SpiceSharpTest.Simulations
              * in order to make sure we're use states, extra equations, etc.
              */
 
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 CreateDiode("D1", "OUT", "0", "1N914"),
                 CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9"),
@@ -72,21 +75,21 @@ namespace SpiceSharpTest.Simulations
             };
 
             // Create simulations
-            var dc = new DC("DC 1", "V1", -1, 1, 10e-3);
-            var op = new OP("OP 1");
+            DC dc = new DC("DC 1", "V1", -1, 1, 10e-3);
+            OP op = new OP("OP 1");
 
             // Create exports
-            var dcExportV1 = new RealPropertyExport(dc, "V1", "i");
-            var dcExportV12 = new RealPropertyExport(dc, "V1", "i");
+            RealPropertyExport dcExportV1 = new RealPropertyExport(dc, "V1", "i");
+            RealPropertyExport dcExportV12 = new RealPropertyExport(dc, "V1", "i");
             dc.ExportSimulationData += (sender, args) =>
             {
-                var v1 = dcExportV1.Value;
-                var v12 = dcExportV12.Value;
+                double v1 = dcExportV1.Value;
+                double v12 = dcExportV12.Value;
             };
-            var opExportV1 = new RealPropertyExport(op, "V1", "i");
+            RealPropertyExport opExportV1 = new RealPropertyExport(op, "V1", "i");
             op.ExportSimulationData += (sender, args) =>
             {
-                var v1 = opExportV1.Value;
+                double v1 = opExportV1.Value;
             };
 
             // Run DC and op
@@ -97,7 +100,7 @@ namespace SpiceSharpTest.Simulations
         [Test]
         public void When_DiodeDCRerun_Expect_Same()
         {
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 CreateDiode("D1", "OUT", "0", "1N914"),
                 CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9"),
@@ -105,13 +108,13 @@ namespace SpiceSharpTest.Simulations
             };
 
             // Create simulations
-            var dc = new DC("DC 1", "V1", -1, 1, 10e-3);
+            DC dc = new DC("DC 1", "V1", -1, 1, 10e-3);
 
             // Create exports
-            var dcExportV1 = new RealPropertyExport(dc, "V1", "i");
+            RealPropertyExport dcExportV1 = new RealPropertyExport(dc, "V1", "i");
 
             // First run: build the reference
-            var r = new List<double>();
+            List<double> r = new List<double>();
             void BuildReference(object sender, ExportDataEventArgs args)
             {
                 r.Add(dcExportV1.Value);
@@ -122,7 +125,7 @@ namespace SpiceSharpTest.Simulations
             dc.ExportSimulationData -= BuildReference;
 
             // Rerun: check with reference
-            var index = 0;
+            int index = 0;
             void CheckReference(object sender, ExportDataEventArgs args)
             {
                 Assert.AreEqual(dcExportV1.Value, r[index++], 1e-20);
@@ -140,24 +143,28 @@ namespace SpiceSharpTest.Simulations
              * We test if the simulation can run twice on different circuits with
              * different number of equations.
              */
-            var cktA = new Circuit(
+            Circuit cktA = new Circuit(
                 new VoltageSource("V1", "in", "0", 0),
                 new Resistor("R1", "in", "out", 1e3),
                 new Resistor("R2", "out", "0", 1e3));
-            var cktB = new Circuit(
+            Circuit cktB = new Circuit(
                 new VoltageSource("V1", "in", "0", 0),
                 new Resistor("R1", "in", "out", 1e3),
                 new Resistor("R2", "out", "int", 1e3),
                 new Resistor("R3", "int", "0", 1e3));
 
-            var dc = new DC("dc", "V1", -2, 2, 0.1);
-            var a = true;
+            DC dc = new DC("dc", "V1", -2, 2, 0.1);
+            bool a = true;
             dc.ExportSimulationData += (sender, args) =>
             {
                 if (a)
+                {
                     Assert.AreEqual(args.GetVoltage("in") * 0.5, args.GetVoltage("out"), 1e-12);
+                }
                 else
+                {
                     Assert.AreEqual(args.GetVoltage("in") * 2.0 / 3.0, args.GetVoltage("out"), 1e-12);
+                }
             };
             a = false; // Doing second circuit
             dc.Run(cktB);

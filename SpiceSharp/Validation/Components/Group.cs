@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Simulations;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Validation.Components
 {

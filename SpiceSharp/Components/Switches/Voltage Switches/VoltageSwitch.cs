@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Switches;
 using SpiceSharp.Validation;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {

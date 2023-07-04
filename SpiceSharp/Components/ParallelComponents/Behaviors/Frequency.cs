@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -31,7 +32,9 @@ namespace SpiceSharp.Components.ParallelComponents
                 _initWorkload = new Workload(dist, parameters.Entities.Count);
                 _loadWorkload = new Workload(dist, parameters.Entities.Count);
                 if (context.TryGetState(out IComplexSimulationState parent))
+                {
                     context.AddLocalState<IComplexSimulationState>(_state = new ComplexSimulationState(parent));
+                }
             }
         }
 
@@ -42,12 +45,16 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_initWorkload != null)
             {
                 foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+                {
                     _initWorkload.Actions.Add(behavior.InitializeParameters);
+                }
             }
             if (_loadWorkload != null)
             {
                 foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+                {
                     _loadWorkload.Actions.Add(behavior.Load);
+                }
             }
         }
 
@@ -55,11 +62,15 @@ namespace SpiceSharp.Components.ParallelComponents
         void IFrequencyBehavior.InitializeParameters()
         {
             if (_initWorkload != null)
+            {
                 _initWorkload.Execute();
+            }
             else
             {
                 foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+                {
                     behavior.InitializeParameters();
+                }
             }
         }
 
@@ -75,7 +86,9 @@ namespace SpiceSharp.Components.ParallelComponents
             else
             {
                 foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+                {
                     behavior.Load();
+                }
             }
         }
     }

@@ -43,8 +43,8 @@ namespace SpiceSharp.Components.Mosfets
             ModelParameters mp,
             TemperatureProperties tp)
         {
-            var vbd = vbs - vds;
-            var vgd = vgs - vds;
+            double vbd = vbs - vds;
+            double vgd = vgs - vds;
             double arg, sarg, sargsw;
 
             /*
@@ -79,7 +79,9 @@ namespace SpiceSharp.Components.Mosfets
                     if (mp.BulkJunctionBotGradingCoefficient.Equals(mp.BulkJunctionSideGradingCoefficient))
                     {
                         if (mp.BulkJunctionBotGradingCoefficient.Equals(0.5))
+                        {
                             sarg = sargsw = 1 / Math.Sqrt(arg);
+                        }
                         else
                         {
                             sarg = sargsw =
@@ -149,14 +151,18 @@ namespace SpiceSharp.Components.Mosfets
                     else
                     {
                         if (mp.BulkJunctionBotGradingCoefficient == .5)
+                        {
                             sarg = 1 / Math.Sqrt(arg);
+                        }
                         else
                         {
                             sarg = Math.Exp(-mp.BulkJunctionBotGradingCoefficient *
                                    Math.Log(arg));
                         }
                         if (mp.BulkJunctionSideGradingCoefficient == .5)
+                        {
                             sargsw = 1 / Math.Sqrt(arg);
+                        }
                         else
                         {
                             sargsw = Math.Exp(-mp.BulkJunctionSideGradingCoefficient *
@@ -186,9 +192,14 @@ namespace SpiceSharp.Components.Mosfets
             // Calculate Meyer capacitances
             double cgs, cgd, cgb;
             if (mode > 0)
+            {
                 Transistor.MeyerCharges(vgs, vgd, von, vdsat, out cgs, out cgd, out cgb, tp.TempPhi, tp.OxideCap);
+            }
             else
+            {
                 Transistor.MeyerCharges(vgd, vgs, von, vdsat, out cgd, out cgs, out cgb, tp.TempPhi, tp.OxideCap);
+            }
+
             Cgs = cgs;
             Cgd = cgd;
             Cgb = cgb;

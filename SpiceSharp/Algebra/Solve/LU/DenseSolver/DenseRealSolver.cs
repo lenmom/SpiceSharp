@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Algebra.Solve;
-using System;
+﻿using System;
+
+using SpiceSharp.Algebra.Solve;
 
 namespace SpiceSharp.Algebra
 {
@@ -48,32 +49,47 @@ namespace SpiceSharp.Algebra
         {
             solution.ThrowIfNull(nameof(solution));
             if (!IsFactored)
+            {
                 throw new AlgebraException(Properties.Resources.Algebra_SolverNotFactored.FormatString(nameof(Solve)));
+            }
+
             if (solution.Length != Size)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(solution.Length, Size), nameof(solution));
+            }
 
             if (_intermediate == null || _intermediate.Length != Size + 1)
+            {
                 _intermediate = new double[Size + 1];
+            }
+
             size = Math.Min(size, Size);
-            var order = Math.Min(size, Size - Degeneracy);
+            int order = Math.Min(size, Size - Degeneracy);
 
             // Fill in the values from the solution for degenerate cases
-            for (var i = order + 1; i <= Size; i++)
+            for (int i = order + 1; i <= Size; i++)
+            {
                 _intermediate[i] = solution[Column.Reverse(i)];
+            }
 
             // Forward substitution
-            for (var i = 1; i <= order; i++)
+            for (int i = 1; i <= order; i++)
             {
                 _intermediate[i] = Vector[i];
-                for (var j = 1; j < i; j++)
+                for (int j = 1; j < i; j++)
+                {
                     _intermediate[i] -= Matrix[i, j] * _intermediate[j];
+                }
             }
 
             // Backward substitution
-            for (var i = order; i >= 1; i--)
+            for (int i = order; i >= 1; i--)
             {
-                for (var j = i + 1; j <= size; j++)
+                for (int j = i + 1; j <= size; j++)
+                {
                     _intermediate[i] -= Matrix[i, j] * _intermediate[j];
+                }
+
                 _intermediate[i] *= Matrix[i, i];
             }
 
@@ -98,34 +114,47 @@ namespace SpiceSharp.Algebra
         {
             solution.ThrowIfNull(nameof(solution));
             if (!IsFactored)
+            {
                 throw new AlgebraException(Properties.Resources.Algebra_SolverNotFactored);
+            }
+
             if (solution.Length != Size)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(solution.Length, Size), nameof(solution));
+            }
 
             if (_intermediate == null || _intermediate.Length != Size + 1)
+            {
                 _intermediate = new double[Size + 1];
+            }
+
             steps = Math.Max(steps, Size);
 
             // Scramble
-            for (var i = 1; i <= steps; i++)
+            for (int i = 1; i <= steps; i++)
             {
-                var newIndex = Column[Row.Reverse(i)];
+                int newIndex = Column[Row.Reverse(i)];
                 _intermediate[newIndex] = Vector[i];
             }
 
             // Forward substitution
-            for (var i = 1; i <= steps; i++)
+            for (int i = 1; i <= steps; i++)
             {
-                for (var j = 1; j < i; j++)
+                for (int j = 1; j < i; j++)
+                {
                     _intermediate[i] -= Matrix[i, j] * Vector[j];
+                }
             }
 
             // Backward substitution
             _intermediate[steps] *= Matrix[steps, steps];
-            for (var i = steps - 1; i >= 1; i--)
+            for (int i = steps - 1; i >= 1; i--)
             {
-                for (var j = i + 1; j <= steps; j++)
+                for (int j = i + 1; j <= steps; j++)
+                {
                     _intermediate[i] -= Matrix[i, j] * _intermediate[j];
+                }
+
                 _intermediate[i] *= Matrix[i, i];
             }
 
@@ -135,22 +164,30 @@ namespace SpiceSharp.Algebra
         /// <inheritdoc/>
         protected override void Eliminate(int step, int size)
         {
-            var diagonal = Matrix[step, step];
+            double diagonal = Matrix[step, step];
             if (diagonal.Equals(0.0))
+            {
                 throw new AlgebraException(Properties.Resources.Algebra_InvalidPivot.FormatString(step));
+            }
+
             diagonal = 1.0 / diagonal;
             Matrix[step, step] = diagonal;
 
-            for (var r = step + 1; r <= size; r++)
+            for (int r = step + 1; r <= size; r++)
             {
-                var lead = Matrix[r, step];
+                double lead = Matrix[r, step];
                 if (lead.Equals(0.0))
+                {
                     continue;
+                }
+
                 lead *= diagonal;
                 Matrix[r, step] = lead;
 
-                for (var c = step + 1; c <= size; c++)
+                for (int c = step + 1; c <= size; c++)
+                {
                     Matrix[r, c] -= lead * Matrix[step, c];
+                }
             }
         }
     }

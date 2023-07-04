@@ -24,7 +24,9 @@ namespace SpiceSharp.Validation
         public GenericRules(params IRule[] rules)
         {
             foreach (IRule rule in rules)
+            {
                 _rules.Add(rule);
+            }
         }
 
         /// <summary>
@@ -34,7 +36,9 @@ namespace SpiceSharp.Validation
         public GenericRules(IEnumerable<IRule> rules)
         {
             foreach (IRule rule in rules)
+            {
                 _rules.Add(rule);
+            }
         }
 
         /// <summary>
@@ -46,7 +50,9 @@ namespace SpiceSharp.Validation
         public override IEnumerator<IRule> GetEnumerator()
         {
             foreach (IRule rule in _rules)
+            {
                 yield return rule;
+            }
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using SpiceSharp;
-using SpiceSharp.ParameterSets;
-using SpiceSharp.Validation;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using SpiceSharp;
+using SpiceSharp.ParameterSets;
+using SpiceSharp.Validation;
 
 namespace SpiceSharpTest.Models
 {
@@ -25,7 +26,13 @@ namespace SpiceSharpTest.Models
         /// <value>
         /// The number of rule violations.
         /// </value>
-        public int ViolationCount => _rules.Sum(x => x.ViolationCount);
+        public int ViolationCount
+        {
+            get
+            {
+                return _rules.Sum(x => x.ViolationCount);
+            }
+        }
 
         /// <summary>
         /// Gets the violated rules.
@@ -33,7 +40,13 @@ namespace SpiceSharpTest.Models
         /// <value>
         /// The violated rules.
         /// </value>
-        public IEnumerable<IRuleViolation> Violations => _rules.SelectMany(x => x.Violations);
+        public IEnumerable<IRuleViolation> Violations
+        {
+            get
+            {
+                return _rules.SelectMany(x => x.Violations);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentRules"/> class.
@@ -44,7 +57,9 @@ namespace SpiceSharpTest.Models
         {
             Parameters = parameters.ThrowIfNull(nameof(parameters));
             foreach (IRule rule in rules)
+            {
                 _rules.Add(rule);
+            }
         }
 
         /// <summary>
@@ -53,7 +68,9 @@ namespace SpiceSharpTest.Models
         public void Reset()
         {
             foreach (IRule rule in _rules)
+            {
                 rule.Reset();
+            }
         }
 
         /// <summary>
@@ -68,7 +85,9 @@ namespace SpiceSharpTest.Models
             foreach (IRule rule in _rules)
             {
                 if (rule is R r)
+                {
                     yield return r;
+                }
             }
         }
 

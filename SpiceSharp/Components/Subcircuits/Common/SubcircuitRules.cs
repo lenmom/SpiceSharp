@@ -1,8 +1,9 @@
-﻿using SpiceSharp.ParameterSets;
-using SpiceSharp.Validation;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using SpiceSharp.ParameterSets;
+using SpiceSharp.Validation;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -16,10 +17,22 @@ namespace SpiceSharp.Components.Subcircuits
         private readonly ComponentRuleParameters _validationParameters, _parentValidationParameters;
 
         /// <inheritdoc/>
-        public int ViolationCount => _parent.ViolationCount;
+        public int ViolationCount
+        {
+            get
+            {
+                return _parent.ViolationCount;
+            }
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<IRuleViolation> Violations => _parent.Violations;
+        public IEnumerable<IRuleViolation> Violations
+        {
+            get
+            {
+                return _parent.Violations;
+            }
+        }
 
         /// <inheritdoc/>
         public override IEnumerable<IParameterSet> ParameterSets
@@ -29,9 +42,13 @@ namespace SpiceSharp.Components.Subcircuits
                 foreach (IParameterSet ps in _parent.ParameterSets)
                 {
                     if (ps == _parentValidationParameters)
+                    {
                         yield return _validationParameters;
+                    }
                     else
+                    {
                         yield return ps;
+                    }
                 }
             }
         }
@@ -71,7 +88,10 @@ namespace SpiceSharp.Components.Subcircuits
         public override P GetParameterSet<P>()
         {
             if (_validationParameters is P p)
+            {
                 return p;
+            }
+
             return _parent.GetParameterSet<P>();
         }
 

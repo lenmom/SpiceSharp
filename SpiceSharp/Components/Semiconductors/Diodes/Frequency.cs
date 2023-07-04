@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -27,7 +28,13 @@ namespace SpiceSharp.Components.Diodes
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("vd"), ParameterInfo("The complex voltage across the internal diode")]
-        public Complex ComplexVoltage => (ComplexVariables.PosPrime.Value - ComplexVariables.Negative.Value) / Parameters.SeriesMultiplier;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return (ComplexVariables.PosPrime.Value - ComplexVariables.Negative.Value) / Parameters.SeriesMultiplier;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("id"), ParameterName("c"), ParameterName("cd"), ParameterInfo("The complex current through the diode")]
@@ -42,7 +49,13 @@ namespace SpiceSharp.Components.Diodes
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterName("pd"), ParameterInfo("The complex power")]
-        public Complex ComplexPower => ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -68,13 +81,13 @@ namespace SpiceSharp.Components.Diodes
         {
             IComplexSimulationState state = _complex;
 
-            var gspr = ModelTemperature.Conductance * Parameters.Area;
-            var geq = LocalConductance;
-            var xceq = LocalCapacitance * state.Laplace.Imaginary;
+            double gspr = ModelTemperature.Conductance * Parameters.Area;
+            double geq = LocalConductance;
+            double xceq = LocalCapacitance * state.Laplace.Imaginary;
 
             // Load Y-matrix
-            var m = Parameters.ParallelMultiplier;
-            var n = Parameters.SeriesMultiplier;
+            double m = Parameters.ParallelMultiplier;
+            double n = Parameters.SeriesMultiplier;
             geq *= m / n;
             gspr *= m / n;
             xceq *= m / n;

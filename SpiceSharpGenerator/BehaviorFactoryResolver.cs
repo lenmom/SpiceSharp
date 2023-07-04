@@ -1,8 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -48,7 +49,10 @@ namespace SpiceSharpGenerator
                 while (baseType != null)
                 {
                     if (_behaviors.TryGetValue(baseType, out BehaviorData childBehavior))
+                    {
                         _graph.MakeDependency(childBehavior, behavior);
+                    }
+
                     baseType = baseType.BaseType;
                 }
 
@@ -56,13 +60,17 @@ namespace SpiceSharpGenerator
                 foreach (INamedTypeSymbol required in behavior.Required)
                 {
                     if (_behaviors.TryGetValue(required, out BehaviorData data))
+                    {
                         _graph.MakeDependency(behavior, data);
+                    }
                     else
                     {
                         if (required.TypeKind == TypeKind.Interface)
                         {
                             foreach (BehaviorData possibility in _behaviors.Values.Where(data => data.Behavior.AllInterfaces.Any(itf => SymbolEqualityComparer.Default.Equals(itf, required))))
+                            {
                                 _graph.MakeDependency(behavior, possibility);
+                            }
                         }
                     }
                 }
@@ -74,8 +82,8 @@ namespace SpiceSharpGenerator
             yield return "var behaviors = new BehaviorContainer(Name);";
             yield return $"var context = new {_context}(this, simulation, behaviors);";
 
-            var sb = new StringBuilder(32);
-            var needsBuilder = true;
+            StringBuilder sb = new StringBuilder(32);
+            bool needsBuilder = true;
 
             foreach (BehaviorData behavior in _graph.OrderByIndependentFirst())
             {
@@ -125,7 +133,7 @@ namespace SpiceSharpGenerator
         {
             Resolve();
 
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine($@"using System;
 using SpiceSharp.Simulations;
 using SpiceSharp.Behaviors;

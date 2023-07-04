@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components
 {
@@ -48,7 +49,7 @@ namespace SpiceSharp.Components
             if (nodes != null && nodes.Count > 0)
             {
                 myNodes = new string[nodes.Count];
-                for (var i = 0; i < nodes.Count; i++)
+                for (int i = 0; i < nodes.Count; i++)
                 {
                     if (nodes[i] == null)
                     {
@@ -56,18 +57,27 @@ namespace SpiceSharp.Components
                         SpiceSharpWarning.Warning(this, Properties.Resources.Nodes_NullToGround.FormatString(component.Name, i));
                     }
                     else
+                    {
                         myNodes[i] = nodes[i];
+                    }
                 }
             }
             else
+            {
                 myNodes = Array<string>.Empty();
+            }
+
             Nodes = myNodes;
 
             // Get the model of the component
             if (component.Model != null)
+            {
                 ModelBehaviors = simulation.EntityBehaviors[component.Model];
+            }
             else
+            {
                 ModelBehaviors = null;
+            }
         }
     }
 }

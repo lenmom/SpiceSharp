@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.SamplerBehaviors
 {
@@ -31,9 +32,13 @@ namespace SpiceSharp.Components.SamplerBehaviors
         public void RegisterToExportEvent(EventHandler<ExportDataEventArgs> @event)
         {
             if (Simulation is IEventfulSimulation sim)
+            {
                 sim.ExportSimulationData += @event;
+            }
             else
+            {
                 throw new SpiceSharpException(Properties.Resources.Sampler_NoExportEvent.FormatString(Simulation.Name));
+            }
         }
     }
 }

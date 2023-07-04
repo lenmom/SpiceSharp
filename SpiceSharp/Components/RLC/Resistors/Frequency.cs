@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -23,11 +24,23 @@ namespace SpiceSharp.Components.Resistors
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("The complex voltage")]
-        public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterInfo("The complex current")]
-        public Complex ComplexCurrent => ComplexVoltage * Conductance;
+        public Complex ComplexCurrent
+        {
+            get
+            {
+                return ComplexVoltage * Conductance;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("The complex power")]

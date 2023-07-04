@@ -13,23 +13,49 @@ namespace SpiceSharp.Algebra.Solve
             private readonly SparseLUSolver<T> _parent;
 
             /// <inheritdoc/>
-            public int ElementCount => _parent.Matrix.ElementCount;
+            public int ElementCount
+            {
+                get
+                {
+                    return _parent.Matrix.ElementCount;
+                }
+            }
 
             /// <inheritdoc/>
-            public int Size => _parent.Matrix.Size;
+            public int Size
+            {
+                get
+                {
+                    return _parent.Matrix.Size;
+                }
+            }
 
             /// <inheritdoc/>
             public T this[int row, int column]
             {
-                get => _parent.Matrix[row, column];
-                set => _parent.Matrix[row, column] = value;
+                get
+                {
+                    return _parent.Matrix[row, column];
+                }
+
+                set
+                {
+                    _parent.Matrix[row, column] = value;
+                }
             }
 
             /// <inheritdoc/>
             public T this[MatrixLocation location]
             {
-                get => _parent.Matrix[location];
-                set => _parent.Matrix[location] = value;
+                get
+                {
+                    return _parent.Matrix[location];
+                }
+
+                set
+                {
+                    _parent.Matrix[location] = value;
+                }
             }
 
             /// <summary>

@@ -16,10 +16,22 @@ namespace SpiceSharp.Simulations
         private readonly Dictionary<IVariable, int> _map = new Dictionary<IVariable, int>();
 
         /// <inheritdoc/>
-        public int Count => _map.Count;
+        public int Count
+        {
+            get
+            {
+                return _map.Count;
+            }
+        }
 
         /// <inheritdoc/>
-        public int this[IVariable variable] => _map[variable];
+        public int this[IVariable variable]
+        {
+            get
+            {
+                return _map[variable];
+            }
+        }
 
         /// <inheritdoc/>
         public IVariable this[int index]
@@ -28,7 +40,10 @@ namespace SpiceSharp.Simulations
             {
                 KeyValuePair<IVariable, int> result = _map.FirstOrDefault(p => p.Value == index);
                 if (result.Equals(default(IVariable)))
+                {
                     throw new ArgumentException(Properties.Resources.VariableNotFound.FormatString(index));
+                }
+
                 return result.Key;
             }
         }

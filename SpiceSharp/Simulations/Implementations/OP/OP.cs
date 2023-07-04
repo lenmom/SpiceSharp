@@ -23,7 +23,7 @@ namespace SpiceSharp.Simulations
         {
             base.Execute();
             Op(BiasingParameters.DcMaxIterations);
-            var exportargs = new ExportDataEventArgs(this);
+            ExportDataEventArgs exportargs = new ExportDataEventArgs(this);
             OnExport(exportargs);
         }
     }

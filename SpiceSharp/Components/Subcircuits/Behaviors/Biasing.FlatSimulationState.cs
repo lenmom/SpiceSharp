@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -16,7 +17,13 @@ namespace SpiceSharp.Components.Subcircuits
             IBiasingSimulationState
         {
             /// <inheritdoc/>
-            public IVector<double> OldSolution => Parent.OldSolution;
+            public IVector<double> OldSolution
+            {
+                get
+                {
+                    return Parent.OldSolution;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FlatSimulationState"/> class.

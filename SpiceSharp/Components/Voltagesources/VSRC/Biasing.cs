@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.VoltageSources
 {
@@ -42,11 +43,23 @@ namespace SpiceSharp.Components.VoltageSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_r"), ParameterInfo("Voltage source current")]
-        public double Current => Branch.Value;
+        public double Current
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_r"), ParameterInfo("Instantaneous power")]
-        public double Power => Voltage * -Branch.Value;
+        public double Power
+        {
+            get
+            {
+                return Voltage * -Branch.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_r"), ParameterInfo("Instantaneous voltage")]
@@ -89,9 +102,9 @@ namespace SpiceSharp.Components.VoltageSources
 
             _variables = new OnePort<double>(_biasing, context);
             Branch = _biasing.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            var pos = _biasing.Map[_variables.Positive];
-            var neg = _biasing.Map[_variables.Negative];
-            var br = _biasing.Map[Branch];
+            int pos = _biasing.Map[_variables.Positive];
+            int neg = _biasing.Map[_variables.Negative];
+            int br = _biasing.Map[Branch];
 
             _elements = new ElementSet<double>(_biasing.Solver, new[] {
                         new MatrixLocation(pos, br),
@@ -110,9 +123,13 @@ namespace SpiceSharp.Components.VoltageSources
             {
                 // Use the waveform if possible
                 if (Waveform != null)
+                {
                     value = Waveform.Value;
+                }
                 else
+                {
                     value = Parameters.DcValue * _iteration.SourceFactor;
+                }
             }
             else
             {

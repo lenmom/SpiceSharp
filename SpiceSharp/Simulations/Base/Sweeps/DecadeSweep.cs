@@ -1,7 +1,8 @@
-using SpiceSharp.Attributes;
-using SpiceSharp.Simulations.Sweeps;
 using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
+using SpiceSharp.Simulations.Sweeps;
 
 namespace SpiceSharp.Simulations
 {
@@ -35,10 +36,22 @@ namespace SpiceSharp.Simulations
         public double Final { get; set; }
 
         /// <inheritdoc/>
-        protected override double A => Initial;
+        protected override double A
+        {
+            get
+            {
+                return Initial;
+            }
+        }
 
         /// <inheritdoc/>
-        protected override double R => _r;
+        protected override double R
+        {
+            get
+            {
+                return _r;
+            }
+        }
 
         /// <inheritdoc/>
         protected override int N
@@ -46,10 +59,16 @@ namespace SpiceSharp.Simulations
             get
             {
                 if (Final.Equals(0.0) || Initial.Equals(0.0))
+                {
                     throw new ArgumentException(Properties.Resources.Sweeps_ZeroTarget);
+                }
+
                 if (Final > 0 && Initial < 0 || Final < 0 && Initial > 0)
+                {
                     throw new ArgumentException(Properties.Resources.Sweeps_Unreachable.FormatString(Final));
-                var n = Math.Log(Final / Initial) / Math.Log(_r);
+                }
+
+                double n = Math.Log(Final / Initial) / Math.Log(_r);
                 return (int)Math.Round(n);
             }
         }
@@ -64,8 +83,15 @@ namespace SpiceSharp.Simulations
         [GreaterThan(0)]
         public int PointsPerDecade
         {
-            get => (int)Math.Round(LogDecade / Math.Log(_r));
-            set => _r = Math.Exp(LogDecade / value);
+            get
+            {
+                return (int)Math.Round(LogDecade / Math.Log(_r));
+            }
+
+            set
+            {
+                _r = Math.Exp(LogDecade / value);
+            }
         }
 
         /// <summary>

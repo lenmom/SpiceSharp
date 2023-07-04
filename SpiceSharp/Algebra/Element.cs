@@ -43,7 +43,10 @@ namespace SpiceSharp.Algebra
         public void Add(T value)
         {
             if (Addition == null)
+            {
                 Addition = CompileDefaultAddition();
+            }
+
             Value = Addition(Value, value);
         }
 
@@ -54,7 +57,10 @@ namespace SpiceSharp.Algebra
         public void Subtract(T value)
         {
             if (Subtraction == null)
+            {
                 Subtraction = CompileDefaultSubtraction();
+            }
+
             Value = Subtraction(Value, value);
         }
 
@@ -84,7 +90,10 @@ namespace SpiceSharp.Algebra
 
             // If we failed after all this, let's throw an exception
             if (result == null)
+            {
                 throw new SpiceSharpException(Properties.Resources.Element_DefaultMethodNotCreated);
+            }
+
             return result;
         }
 
@@ -114,7 +123,10 @@ namespace SpiceSharp.Algebra
 
             // If we failed after all this, let's throw an exception
             if (result == null)
+            {
                 throw new SpiceSharpException(Properties.Resources.Element_DefaultMethodNotCreated);
+            }
+
             return result;
         }
     }

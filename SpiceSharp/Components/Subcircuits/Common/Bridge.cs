@@ -40,7 +40,10 @@ namespace SpiceSharp.Components.Subcircuits
         public override bool Equals(object obj)
         {
             if (obj is Bridge<T> bridge)
+            {
                 return Equals(bridge);
+            }
+
             return false;
         }
 
@@ -91,9 +94,15 @@ namespace SpiceSharp.Components.Subcircuits
         public bool Equals(Bridge<T> other)
         {
             if (!Local.Equals(other.Local))
+            {
                 return false;
+            }
+
             if (!Global.Equals(other.Global))
+            {
                 return false;
+            }
+
             return true;
         }
     }

@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.SamplerBehaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components
 {
@@ -48,7 +49,9 @@ namespace SpiceSharp.Components
         {
             Parameters.Points = timepoints;
             if (callback != null)
+            {
                 Parameters.ExportSimulationData += callback;
+            }
         }
     }
 }

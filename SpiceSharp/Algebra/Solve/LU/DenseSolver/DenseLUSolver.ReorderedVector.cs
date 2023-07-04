@@ -14,13 +14,26 @@ namespace SpiceSharp.Algebra.Solve
             private readonly DenseLUSolver<T> _parent;
 
             /// <inheritdoc/>
-            public int Length => _parent.Vector.Length;
+            public int Length
+            {
+                get
+                {
+                    return _parent.Vector.Length;
+                }
+            }
 
             /// <inheritdoc/>
             public T this[int index]
             {
-                get => _parent.Vector[index];
-                set => _parent.Vector[index] = value;
+                get
+                {
+                    return _parent.Vector[index];
+                }
+
+                set
+                {
+                    _parent.Vector[index] = value;
+                }
             }
 
             /// <summary>

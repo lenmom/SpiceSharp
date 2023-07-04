@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Simulations
 {
@@ -13,7 +14,13 @@ namespace SpiceSharp.Simulations
         private readonly string _name;
 
         /// <inheritdoc/>
-        public double BaseValue => 1.0;
+        public double BaseValue
+        {
+            get
+            {
+                return 1.0;
+            }
+        }
 
         /// <inheritdoc/>
         public SIUnits SI { get; }
@@ -46,11 +53,20 @@ namespace SpiceSharp.Simulations
         public bool Equals(IUnit other)
         {
             if (other == this)
+            {
                 return true;
+            }
+
             if (SI != other.SI)
+            {
                 return false;
+            }
+
             if (!other.BaseValue.Equals(1.0))
+            {
                 return false;
+            }
+
             return true;
         }
 
@@ -64,7 +80,10 @@ namespace SpiceSharp.Simulations
         public override bool Equals(object obj)
         {
             if (obj is IUnit unit)
+            {
                 return ((IEquatable<IUnit>)this).Equals(unit);
+            }
+
             return false;
         }
 

@@ -24,7 +24,13 @@ namespace SpiceSharp.Simulations.Variables
         /// <remarks>
         /// The numerator can have a value ranging from -16 to +15.
         /// </remarks>
-        public sbyte Numerator => (sbyte)(_fraction >> 3);
+        public sbyte Numerator
+        {
+            get
+            {
+                return (sbyte)(_fraction >> 3);
+            }
+        }
 
         /// <summary>
         /// Gets the denominator.
@@ -35,7 +41,13 @@ namespace SpiceSharp.Simulations.Variables
         /// <remarks>
         /// The denominator can have a value ranging from 1 to 8.
         /// </remarks>
-        public sbyte Denominator => (sbyte)((_fraction & 0b00000_111) + 1);
+        public sbyte Denominator
+        {
+            get
+            {
+                return (sbyte)((_fraction & 0b00000_111) + 1);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Fraction"/> struct.
@@ -47,10 +59,13 @@ namespace SpiceSharp.Simulations.Variables
         public Fraction(int numerator, int denominator)
         {
             if (denominator == 0)
+            {
                 throw new DivideByZeroException();
+            }
+
             if (numerator != 0)
             {
-                var gcd = Gcd(numerator, denominator);
+                int gcd = Gcd(numerator, denominator);
                 numerator /= gcd;
                 denominator /= gcd;
             }
@@ -58,7 +73,9 @@ namespace SpiceSharp.Simulations.Variables
 
             // Double-check that the numerator and denominator are represented correctly
             if (Numerator != numerator || Denominator != denominator)
+            {
                 throw new ArgumentException(Properties.Resources.Units_InvalidExponent.FormatString(numerator, denominator));
+            }
         }
 
         /// <summary>
@@ -91,7 +108,10 @@ namespace SpiceSharp.Simulations.Variables
         public override bool Equals(object obj)
         {
             if (obj is Fraction fraction)
+            {
                 return Equals(fraction);
+            }
+
             return false;
         }
 
@@ -116,7 +136,10 @@ namespace SpiceSharp.Simulations.Variables
         public override string ToString()
         {
             if (Denominator != 1)
+            {
                 return "{0}/{1}".FormatString(Numerator, Denominator);
+            }
+
             return Numerator.ToString();
         }
 
@@ -131,7 +154,10 @@ namespace SpiceSharp.Simulations.Variables
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (Denominator != 1)
+            {
                 return Numerator.ToString(format, formatProvider) + "/" + Denominator.ToString(format, formatProvider);
+            }
+
             return Numerator.ToString(format, formatProvider);
         }
 
@@ -139,7 +165,7 @@ namespace SpiceSharp.Simulations.Variables
         {
             while (b != 0)
             {
-                var t = b;
+                int t = b;
                 b = a % b;
                 a = t;
             }

@@ -1,5 +1,6 @@
-﻿using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -52,8 +53,8 @@ namespace SpiceSharp.Algebra.Solve
         /// <inheritdoc/>
         public override void Precondition(PreconditioningMethod<IMatrix<T>, IVector<T>, T> method)
         {
-            var reorderedMatrix = new ReorderedMatrix(this);
-            var reorderedVector = new ReorderedVector(this);
+            ReorderedMatrix reorderedMatrix = new ReorderedMatrix(this);
+            ReorderedVector reorderedVector = new ReorderedVector(this);
             method(reorderedMatrix, reorderedVector);
         }
 
@@ -76,11 +77,14 @@ namespace SpiceSharp.Algebra.Solve
         public bool Factor(int size)
         {
             int order = Math.Min(size, Size) - Degeneracy;
-            for (var step = 1; step <= order; step++)
+            for (int step = 1; step <= order; step++)
             {
                 T pivot = Matrix[step, step];
                 if (pivot.Equals(default))
+                {
                     return false;
+                }
+
                 Eliminate(step, size);
             }
             IsFactored = true;
@@ -90,9 +94,9 @@ namespace SpiceSharp.Algebra.Solve
         /// <inheritdoc/>
         public override int OrderAndFactor()
         {
-            var size = Size;
-            var step = 1;
-            var order = Size - Degeneracy;
+            int size = Size;
+            int step = 1;
+            int order = Size - Degeneracy;
             int max = Size - PivotSearchReduction;
 
             if (!NeedsReordering)
@@ -100,7 +104,9 @@ namespace SpiceSharp.Algebra.Solve
                 for (step = 1; step <= order; step++)
                 {
                     if (Parameters.IsValidPivot(Matrix, step, max))
+                    {
                         Eliminate(step, size);
+                    }
                     else
                     {
                         NeedsReordering = true;
@@ -119,7 +125,10 @@ namespace SpiceSharp.Algebra.Solve
             {
                 Pivot<MatrixLocation> pivot = Parameters.FindPivot(Matrix, step, max);
                 if (pivot.Info == PivotInfo.None)
+                {
                     return step - 1;
+                }
+
                 SwapRows(pivot.Element.Row, step);
                 SwapColumns(pivot.Element.Column, step);
                 Eliminate(step, size);

@@ -32,15 +32,29 @@ namespace SpiceSharp.Algebra
         /// <inheritdoc/>
         public T this[int row, int column]
         {
-            get => GetMatrixValue(new MatrixLocation(row, column));
-            set => SetMatrixValue(new MatrixLocation(row, column), value);
+            get
+            {
+                return GetMatrixValue(new MatrixLocation(row, column));
+            }
+
+            set
+            {
+                SetMatrixValue(new MatrixLocation(row, column), value);
+            }
         }
 
         /// <inheritdoc/>
         public T this[MatrixLocation location]
         {
-            get => GetMatrixValue(location);
-            set => SetMatrixValue(location, value);
+            get
+            {
+                return GetMatrixValue(location);
+            }
+
+            set
+            {
+                SetMatrixValue(location, value);
+            }
         }
 
         /// <summary>
@@ -53,13 +67,17 @@ namespace SpiceSharp.Algebra
 
             // Allocate rows
             _rows = new Row[_initialSize + 1];
-            for (var i = 1; i <= _initialSize; i++)
+            for (int i = 1; i <= _initialSize; i++)
+            {
                 _rows[i] = new Row();
+            }
 
             // Allocate columns
             _columns = new Column[_initialSize + 1];
-            for (var i = 1; i <= _initialSize; i++)
+            for (int i = 1; i <= _initialSize; i++)
+            {
                 _columns[i] = new Column();
+            }
 
             // Other
             _diagonal = new Element[_initialSize + 1];
@@ -79,13 +97,17 @@ namespace SpiceSharp.Algebra
 
             // Allocate rows
             _rows = new Row[_allocatedSize + 1];
-            for (var i = 1; i <= _allocatedSize; i++)
+            for (int i = 1; i <= _allocatedSize; i++)
+            {
                 _rows[i] = new Row();
+            }
 
             // Allocate columns
             _columns = new Column[_allocatedSize + 1];
-            for (var i = 1; i <= _allocatedSize; i++)
+            for (int i = 1; i <= _allocatedSize; i++)
+            {
                 _columns[i] = new Column();
+            }
 
             // Other
             _diagonal = new Element[_allocatedSize + 1];
@@ -97,22 +119,30 @@ namespace SpiceSharp.Algebra
         public Element<T> GetElement(MatrixLocation location)
         {
             if (location.Row == 0 || location.Column == 0)
+            {
                 return _trashCan;
+            }
 
             // Expand our matrix if it is necessary!
             if (location.Row > Size || location.Column > Size)
+            {
                 Expand(Math.Max(location.Row, location.Column));
+            }
 
             // Quick access to diagonals
             if (location.Row == location.Column && _diagonal[location.Row] != null)
+            {
                 return _diagonal[location.Row];
+            }
 
             if (!_rows[location.Row].CreateOrGetElement(location, out Element element))
             {
                 ElementCount++;
                 _columns[location.Column].Insert(element);
                 if (location.Row == location.Column)
+                {
                     _diagonal[location.Row] = element;
+                }
             }
 
             return element;
@@ -122,9 +152,14 @@ namespace SpiceSharp.Algebra
         public bool RemoveElement(MatrixLocation location)
         {
             if (location.Row < 1 || location.Column < 1)
+            {
                 return false;
+            }
+
             if (location.Row > Size || location.Column > Size)
+            {
                 return false;
+            }
 
             // Quick access to diagonals
             if (location.Row == location.Column)
@@ -142,7 +177,10 @@ namespace SpiceSharp.Algebra
             // General case
             Element elt = _rows[location.Row].Find(location.Column);
             if (elt == null)
+            {
                 return false;
+            }
+
             _rows[location.Row].Remove(elt);
             _columns[location.Column].Remove(elt);
             return true;
@@ -153,7 +191,10 @@ namespace SpiceSharp.Algebra
         {
             index.GreaterThanOrEquals(nameof(index), 0);
             if (index > Size)
+            {
                 return null;
+            }
+
             return _diagonal[index];
         }
 
@@ -161,9 +202,14 @@ namespace SpiceSharp.Algebra
         public Element<T> FindElement(MatrixLocation location)
         {
             if (location.Row > Size || location.Column > Size)
+            {
                 return null;
+            }
+
             if (location.Row == 0 || location.Column == 0)
+            {
                 return _trashCan;
+            }
 
             // Find the element
             return _rows[location.Row].Find(location.Column);
@@ -199,17 +245,21 @@ namespace SpiceSharp.Algebra
             row1.GreaterThan(nameof(row1), 0);
             row2.GreaterThan(nameof(row2), 0);
             if (row1 == row2)
+            {
                 return;
+            }
 
             // Simplify algorithm: first index is always the lowest one
             if (row2 < row1)
             {
-                var tmp = row1;
+                int tmp = row1;
                 row1 = row2;
                 row2 = tmp;
             }
             if (row2 > Size)
+            {
                 Expand(row2);
+            }
 
             // Get the two elements
             Element row1Element = _rows[row1].FirstInRow;
@@ -231,28 +281,40 @@ namespace SpiceSharp.Algebra
                 {
                     _columns[row1Element.Column].Swap(row1Element, null, row1, row2);
                     if (row1Element.Column == row2)
+                    {
                         _diagonal[row1Element.Column] = row1Element;
+                    }
+
                     row1Element = row1Element.Right;
                 }
                 else if (row1Element == null)
                 {
                     _columns[row2Element.Column].Swap(null, row2Element, row1, row2);
                     if (row2Element.Column == row1)
+                    {
                         _diagonal[row2Element.Column] = row2Element;
+                    }
+
                     row2Element = row2Element.Right;
                 }
                 else if (row1Element.Column < row2Element.Column)
                 {
                     _columns[row1Element.Column].Swap(row1Element, null, row1, row2);
                     if (row1Element.Column == row2)
+                    {
                         _diagonal[row1Element.Column] = row1Element;
+                    }
+
                     row1Element = row1Element.Right;
                 }
                 else if (row2Element.Column < row1Element.Column)
                 {
                     _columns[row2Element.Column].Swap(null, row2Element, row1, row2);
                     if (row2Element.Column == row1)
+                    {
                         _diagonal[row2Element.Column] = row2Element;
+                    }
+
                     row2Element = row2Element.Right;
                 }
                 else
@@ -261,9 +323,13 @@ namespace SpiceSharp.Algebra
 
                     // Update diagonals
                     if (row1Element.Column == row2)
+                    {
                         _diagonal[row1Element.Column] = row1Element;
+                    }
                     else if (row2Element.Column == row1)
+                    {
                         _diagonal[row2Element.Column] = row2Element;
+                    }
 
                     row1Element = row1Element.Right;
                     row2Element = row2Element.Right;
@@ -277,17 +343,21 @@ namespace SpiceSharp.Algebra
             column1.GreaterThan(nameof(column1), 0);
             column2.GreaterThan(nameof(column2), 0);
             if (column1 == column2)
+            {
                 return;
+            }
 
             // Simplify algorithm: column1 is always the lowest index
             if (column2 < column1)
             {
-                var tmp = column1;
+                int tmp = column1;
                 column1 = column2;
                 column2 = tmp;
             }
             if (column2 > Size)
+            {
                 Expand(column2);
+            }
 
             // Get the two elements
             Element column1Element = _columns[column1].FirstInColumn;
@@ -309,28 +379,40 @@ namespace SpiceSharp.Algebra
                 {
                     _rows[column1Element.Row].Swap(column1Element, null, column1, column2);
                     if (column1Element.Row == column2)
+                    {
                         _diagonal[column1Element.Row] = column1Element;
+                    }
+
                     column1Element = column1Element.Below;
                 }
                 else if (column1Element == null)
                 {
                     _rows[column2Element.Row].Swap(null, column2Element, column1, column2);
                     if (column2Element.Row == column1)
+                    {
                         _diagonal[column2Element.Row] = column2Element;
+                    }
+
                     column2Element = column2Element.Below;
                 }
                 else if (column1Element.Row < column2Element.Row)
                 {
                     _rows[column1Element.Row].Swap(column1Element, null, column1, column2);
                     if (column1Element.Row == column2)
+                    {
                         _diagonal[column1Element.Row] = column1Element;
+                    }
+
                     column1Element = column1Element.Below;
                 }
                 else if (column2Element.Row < column1Element.Row)
                 {
                     _rows[column2Element.Row].Swap(null, column2Element, column1, column2);
                     if (column2Element.Row == column1)
+                    {
                         _diagonal[column2Element.Row] = column2Element;
+                    }
+
                     column2Element = column2Element.Below;
                 }
                 else
@@ -339,9 +421,14 @@ namespace SpiceSharp.Algebra
 
                     // Update diagonal
                     if (column1Element.Row == column2)
+                    {
                         _diagonal[column1Element.Row] = column1Element;
+                    }
+
                     if (column2Element.Row == column1)
+                    {
                         _diagonal[column2Element.Row] = column2Element;
+                    }
 
                     column1Element = column1Element.Below;
                     column2Element = column2Element.Below;
@@ -353,7 +440,7 @@ namespace SpiceSharp.Algebra
         public void Reset()
         {
             _trashCan.Value = default;
-            for (var r = 1; r <= Size; r++)
+            for (int r = 1; r <= Size; r++)
             {
                 ISparseMatrixElement<T> elt = GetFirstInRow(r);
                 while (elt != null)
@@ -368,12 +455,21 @@ namespace SpiceSharp.Algebra
         public void Clear()
         {
             _trashCan.Value = default;
-            for (var i = 1; i < _columns.Length; i++)
+            for (int i = 1; i < _columns.Length; i++)
+            {
                 _columns[i].Clear();
-            for (var i = 1; i < _rows.Length; i++)
+            }
+
+            for (int i = 1; i < _rows.Length; i++)
+            {
                 _rows[i].Clear();
-            for (var i = 0; i < _diagonal.Length; i++)
+            }
+
+            for (int i = 0; i < _diagonal.Length; i++)
+            {
                 _diagonal[i] = null;
+            }
+
             Array.Resize(ref _columns, _initialSize + 1);
             Array.Resize(ref _rows, _initialSize + 1);
             Array.Resize(ref _diagonal, _initialSize + 1);
@@ -397,7 +493,10 @@ namespace SpiceSharp.Algebra
         {
             Element<T> element = FindElement(location);
             if (element == null)
+            {
                 return default;
+            }
+
             return element.Value;
         }
         private void SetMatrixValue(MatrixLocation location, T value)
@@ -407,7 +506,9 @@ namespace SpiceSharp.Algebra
                 // We don't need to create a new element unnecessarily
                 Element<T> element = FindElement(location);
                 if (element != null)
+                {
                     element.Value = default;
+                }
             }
             else
             {
@@ -420,28 +521,37 @@ namespace SpiceSharp.Algebra
         {
             // Only expanding here!
             if (newSize <= Size)
+            {
                 return;
+            }
 
             // Current size
             Size = newSize;
 
             // No need to allocate new vectors
             if (newSize <= _allocatedSize)
+            {
                 return;
-            var oldAllocatedSize = _allocatedSize;
+            }
+
+            int oldAllocatedSize = _allocatedSize;
 
             // Allocate some extra space if necessary
             newSize = Math.Max(newSize, (int)(_allocatedSize * _expansionFactor));
 
             // Resize rows
             Array.Resize(ref _rows, newSize + 1);
-            for (var i = oldAllocatedSize + 1; i <= newSize; i++)
+            for (int i = oldAllocatedSize + 1; i <= newSize; i++)
+            {
                 _rows[i] = new Row();
+            }
 
             // Resize columns
             Array.Resize(ref _columns, newSize + 1);
-            for (var i = oldAllocatedSize + 1; i <= newSize; i++)
+            for (int i = oldAllocatedSize + 1; i <= newSize; i++)
+            {
                 _columns[i] = new Column();
+            }
 
             // Other
             Array.Resize(ref _diagonal, newSize + 1);

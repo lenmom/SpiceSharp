@@ -1,5 +1,6 @@
-using SpiceSharp.Attributes;
 using System;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -53,31 +54,39 @@ namespace SpiceSharp.Algebra.Solve
             markowitz.ThrowIfNull(nameof(markowitz));
             matrix.ThrowIfNull(nameof(matrix));
             if (eliminationStep < 1 || eliminationStep > max)
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
 
-            var minMarkowitzProduct = int.MaxValue;
-            var numberOfTies = -1;
+            int minMarkowitzProduct = int.MaxValue;
+            int numberOfTies = -1;
 
             /* Used for debugging along Spice 3f5
             for (var index = matrix.Size + 1; index > eliminationStep; index--)
             {
                 int i = index > matrix.Size ? eliminationStep : index; */
-            for (var i = eliminationStep; i <= max; i++)
+            for (int i = eliminationStep; i <= max; i++)
             {
                 // Skip diagonal elements with a Markowitz product worse than already found
-                var product = markowitz.Product(i);
+                int product = markowitz.Product(i);
                 if (product >= minMarkowitzProduct)
+                {
                     continue;
+                }
 
                 // Get the diagonal item
                 ISparseMatrixElement<T> diagonal = matrix.FindDiagonalElement(i);
                 if (diagonal == null)
+                {
                     continue;
+                }
 
                 // Get the magnitude
-                var magnitude = markowitz.Magnitude(diagonal.Value);
+                double magnitude = markowitz.Magnitude(diagonal.Value);
                 if (magnitude <= markowitz.AbsolutePivotThreshold)
+                {
                     continue;
+                }
 
                 // Well, can't do much better than this can we? (Assuming all the singletons are taken)
                 // Note that a singleton can still appear depending on the allowed tolerances!
@@ -93,11 +102,13 @@ namespace SpiceSharp.Algebra.Solve
                     {
                         if (otherInRow.Column == otherInColumn.Row)
                         {
-                            var largest = Math.Max(
+                            double largest = Math.Max(
                                 markowitz.Magnitude(otherInRow.Value),
                                 markowitz.Magnitude(otherInColumn.Value));
                             if (magnitude >= largest)
+                            {
                                 return new Pivot<ISparseMatrixElement<T>>(diagonal, PivotInfo.Good);
+                            }
                         }
                     }
                 }
@@ -118,24 +129,28 @@ namespace SpiceSharp.Algebra.Solve
 
                         // This is our heuristic for speeding up pivot searching
                         if (numberOfTies >= minMarkowitzProduct * TiesMultiplier)
+                        {
                             break;
+                        }
                     }
                 }
             }
 
             // Not even one eligible pivot on the diagonal...
             if (numberOfTies < 0)
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
 
             // Determine which of the tied elements is the best numerical choise
             ISparseMatrixElement<T> chosen = null;
-            var maxRatio = 1.0 / markowitz.RelativePivotThreshold;
-            for (var i = 0; i <= numberOfTies; i++)
+            double maxRatio = 1.0 / markowitz.RelativePivotThreshold;
+            for (int i = 0; i <= numberOfTies; i++)
             {
                 ISparseMatrixElement<T> diag = _tiedElements[i];
-                var mag = markowitz.Magnitude(diag.Value);
-                var largest = LargestOtherElementInColumn(markowitz, diag, eliminationStep, max);
-                var ratio = largest / mag;
+                double mag = markowitz.Magnitude(diag.Value);
+                double largest = LargestOtherElementInColumn(markowitz, diag, eliminationStep, max);
+                double ratio = largest / mag;
                 if (ratio < maxRatio)
                 {
                     maxRatio = ratio;
@@ -151,7 +166,7 @@ namespace SpiceSharp.Algebra.Solve
         {
             // Find the biggest element above and below the pivot
             ISparseMatrixElement<T> element = chosen.Below;
-            var largest = 0.0;
+            double largest = 0.0;
             while (element != null && element.Row <= max)
             {
                 largest = Math.Max(largest, markowitz.Magnitude(element.Value));

@@ -44,9 +44,15 @@
             if (obj is JacobianInfo ji)
             {
                 if (!Jacobian.Equals(ji.Jacobian))
+                {
                     return false;
+                }
+
                 if (!Rhs.Equals(ji.Rhs))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;

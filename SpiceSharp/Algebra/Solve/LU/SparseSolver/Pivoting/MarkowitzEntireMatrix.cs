@@ -1,5 +1,6 @@
-using SpiceSharp.Attributes;
 using System;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -40,26 +41,33 @@ namespace SpiceSharp.Algebra.Solve
             markowitz.ThrowIfNull(nameof(markowitz));
             matrix.ThrowIfNull(nameof(matrix));
             if (eliminationStep < 1 || eliminationStep > max)
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
 
             ISparseMatrixElement<T> chosen = null;
-            var minMarkowitzProduct = long.MaxValue;
+            long minMarkowitzProduct = long.MaxValue;
             double largestMagnitude = 0.0, acceptedRatio = 0.0;
             ISparseMatrixElement<T> largestElement = null;
-            var ties = 0;
+            int ties = 0;
 
             // Start search of matrix on column by column basis
-            for (var i = eliminationStep; i <= max; i++)
+            for (int i = eliminationStep; i <= max; i++)
             {
                 // Find an entry point to the interesting part of the column
                 ISparseMatrixElement<T> lowest = matrix.GetLastInColumn(i);
                 while (lowest != null && lowest.Row > max)
+                {
                     lowest = lowest.Above;
+                }
+
                 if (lowest == null || lowest.Row < eliminationStep)
+                {
                     continue;
+                }
 
                 // Find the biggest magnitude in the column for checking valid pivots later
-                var largest = 0.0;
+                double largest = 0.0;
                 ISparseMatrixElement<T> element = lowest;
                 while (element != null && element.Row >= eliminationStep)
                 {
@@ -67,15 +75,17 @@ namespace SpiceSharp.Algebra.Solve
                     element = element.Above;
                 }
                 if (largest.Equals(0.0))
+                {
                     continue;
+                }
 
                 // Restart search for a pivot
                 element = lowest;
                 while (element != null && element.Row >= eliminationStep)
                 {
                     // Find the magnitude and Markowitz product
-                    var magnitude = markowitz.Magnitude(element.Value);
-                    var product = markowitz.RowCount(element.Row) * markowitz.ColumnCount(element.Column);
+                    double magnitude = markowitz.Magnitude(element.Value);
+                    int product = markowitz.RowCount(element.Row) * markowitz.ColumnCount(element.Column);
 
                     // In the case no valid pivot is available, at least return the largest element
                     if (magnitude > largestMagnitude)
@@ -104,14 +114,16 @@ namespace SpiceSharp.Algebra.Solve
                         {
                             // This case handles Markowitz ties
                             ties++;
-                            var ratio = largest / magnitude;
+                            double ratio = largest / magnitude;
                             if (ratio < acceptedRatio)
                             {
                                 chosen = element;
                                 acceptedRatio = ratio;
                             }
                             if (ties >= minMarkowitzProduct * _tiesMultiplier)
+                            {
                                 return new Pivot<ISparseMatrixElement<T>>(chosen, PivotInfo.Suboptimal);
+                            }
                         }
                     }
 
@@ -121,11 +133,16 @@ namespace SpiceSharp.Algebra.Solve
 
             // If a valid pivot was found, return it
             if (chosen != null)
+            {
                 return new Pivot<ISparseMatrixElement<T>>(chosen, PivotInfo.Suboptimal);
+            }
 
             // Else just return the largest element
             if (largestElement == null || largestElement.Value.Equals(default))
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
+
             return new Pivot<ISparseMatrixElement<T>>(largestElement, PivotInfo.Bad);
         }
     }

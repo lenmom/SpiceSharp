@@ -45,9 +45,15 @@
             if (obj is Contribution<T> c)
             {
                 if (!G.Equals(c.G))
+                {
                     return false;
+                }
+
                 if (!C.Equals(c.C))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;

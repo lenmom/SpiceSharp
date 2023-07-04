@@ -1,8 +1,10 @@
 ﻿// using System;
 
-using NUnit.Framework;
-using SpiceSharp.Algebra;
 using System;
+
+using NUnit.Framework;
+
+using SpiceSharp.Algebra;
 
 namespace SpiceSharpTest.Algebra
 {
@@ -26,24 +28,32 @@ namespace SpiceSharpTest.Algebra
             };
 
             // Create matrix
-            var solver = new SparseRealSolver();
-            for (var r = 0; r < matrixElements.Length; r++)
-                for (var c = 0; c < matrixElements[r].Length; c++)
+            SparseRealSolver solver = new SparseRealSolver();
+            for (int r = 0; r < matrixElements.Length; r++)
+            {
+                for (int c = 0; c < matrixElements[r].Length; c++)
+                {
                     solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrixElements[r][c];
+                }
+            }
 
             // Factor
             solver.Factor();
 
             // Compare
-            for (var r = 0; r < matrixElements.Length; r++)
-                for (var c = 0; c < matrixElements[r].Length; c++)
+            for (int r = 0; r < matrixElements.Length; r++)
+            {
+                for (int c = 0; c < matrixElements[r].Length; c++)
+                {
                     Assert.AreEqual(expected[r][c], solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value, 1e-12);
+                }
+            }
         }
 
         [Test]
         public void When_OrderAndFactoring_Expect_Reference()
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver.GetElement(new MatrixLocation(1, 1)).Value = 0.0001;
             solver.GetElement(new MatrixLocation(1, 4)).Value = -0.0001;
             solver.GetElement(new MatrixLocation(1, 5)).Value = 0.0;
@@ -76,7 +86,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_OrderAndFactoring2_Expect_Reference()
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver.GetElement(new MatrixLocation(1, 1)).Value = 1.0;
             solver.GetElement(new MatrixLocation(2, 1)).Value = 0.0;
             solver.GetElement(new MatrixLocation(2, 2)).Value = 1.0;
@@ -107,7 +117,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_Preorder_Expect_Reference()
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver.GetElement(new MatrixLocation(1, 1)).Value = 1e-4;
             solver.GetElement(new MatrixLocation(1, 2)).Value = 0.0;
             solver.GetElement(new MatrixLocation(1, 3)).Value = -1e-4;
@@ -139,7 +149,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_PartialDecompositionSingular_Expect_Reference()
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver[1, 1] = 1;
             solver[2, 2] = 1;
             solver[2, 3] = 1;
@@ -167,7 +177,7 @@ namespace SpiceSharpTest.Algebra
         /// <param name="expected"></param>
         private void AssertInternal(ISparsePivotingSolver<double> solver, int row, int col, double expected)
         {
-            var indices = new MatrixLocation(row, col);
+            MatrixLocation indices = new MatrixLocation(row, col);
             indices = solver.InternalToExternal(indices);
             Element<double> elt = solver.FindElement(indices);
             Assert.AreNotEqual(null, elt);

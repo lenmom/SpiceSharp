@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Algebra;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations.Histories;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -18,7 +19,13 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             private readonly List<IIntegrationState> _registeredStates = new List<IIntegrationState>();
 
             /// <inheritdoc/>
-            public int MaxOrder => 1;
+            public int MaxOrder
+            {
+                get
+                {
+                    return 1;
+                }
+            }
 
             /// <inheritdoc/>
             public int Order { get; set; }
@@ -52,7 +59,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             /// <inheritdoc/>
             public IDerivative CreateDerivative(bool track = true)
             {
-                var result = new DerivativeInstance(this, _stateValues + 1);
+                DerivativeInstance result = new DerivativeInstance(this, _stateValues + 1);
                 _stateValues += 2;
                 return result;
             }
@@ -60,7 +67,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             /// <inheritdoc/>
             public IIntegral CreateIntegral(bool track = true)
             {
-                var result = new IntegralInstance(this, _stateValues + 1);
+                IntegralInstance result = new IntegralInstance(this, _stateValues + 1);
                 _stateValues += 2;
                 return result;
             }
@@ -115,10 +122,14 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 if (BaseTime.Equals(0.0))
                 {
                     foreach (IVector<double> state in _states)
+                    {
                         _states.Value.CopyTo(state);
+                    }
                 }
                 foreach (IIntegrationState state in _registeredStates)
+                {
                     state.Accept();
+                }
             }
 
             /// <inheritdoc/>

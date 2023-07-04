@@ -26,14 +26,21 @@ namespace SpiceSharp.Components.Semiconductors
             {
                 if (oldVoltage > 0)
                 {
-                    var arg = (newVoltage - oldVoltage) / thermalVoltage;
+                    double arg = (newVoltage - oldVoltage) / thermalVoltage;
                     if (arg > 0)
+                    {
                         newVoltage = oldVoltage + thermalVoltage * (2 + Math.Log(arg - 2));
+                    }
                     else
+                    {
                         newVoltage = oldVoltage - thermalVoltage * (2 + Math.Log(2 - arg));
+                    }
                 }
                 else
+                {
                     newVoltage = thermalVoltage * Math.Log(newVoltage / thermalVoltage);
+                }
+
                 limited = true;
             }
             else
@@ -42,9 +49,13 @@ namespace SpiceSharp.Components.Semiconductors
                 {
                     double arg;
                     if (oldVoltage > 0)
+                    {
                         arg = -oldVoltage - 1;
+                    }
                     else
+                    {
                         arg = 2 * oldVoltage - 1;
+                    }
 
                     if (newVoltage < arg)
                     {

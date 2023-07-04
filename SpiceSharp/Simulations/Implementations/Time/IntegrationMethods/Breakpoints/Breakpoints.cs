@@ -35,11 +35,13 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         public void SetBreakpoint(double timePoint)
         {
             // Insert
-            for (var i = 0; i < _bps.Count; i++)
+            for (int i = 0; i < _bps.Count; i++)
             {
                 // Same breakpoint, return without setting it
                 if (Math.Abs(_bps[i] - timePoint) <= MinBreak)
+                {
                     return;
+                }
 
                 // Check if we need to insert the breakpoint here
                 if (timePoint < _bps[i])
@@ -69,7 +71,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         {
             // Remove the first item
             if (_bps.Count > 2)
+            {
                 _bps.RemoveAt(0);
+            }
             else
             {
                 _bps[0] = _bps[1];

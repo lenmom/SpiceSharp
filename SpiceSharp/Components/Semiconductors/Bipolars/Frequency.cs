@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Bipolars
 {
@@ -51,7 +52,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The base-emitter voltage.
         /// </value>
         [ParameterName("vbe"), ParameterInfo("Complex B-E voltage")]
-        public Complex ComplexVoltageBe => _complex.Solution[_basePrimeNode] - _complex.Solution[_emitterPrimeNode];
+        public Complex ComplexVoltageBe
+        {
+            get
+            {
+                return _complex.Solution[_basePrimeNode] - _complex.Solution[_emitterPrimeNode];
+            }
+        }
 
         /// <summary>
         /// Gets the base-collector voltage.
@@ -60,7 +67,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The base-collector voltage.
         /// </value>
         [ParameterName("vbc"), ParameterInfo("Complex B-C voltage")]
-        public Complex ComplexVoltageBc => _complex.Solution[_basePrimeNode] - _complex.Solution[_collectorPrimeNode];
+        public Complex ComplexVoltageBc
+        {
+            get
+            {
+                return _complex.Solution[_basePrimeNode] - _complex.Solution[_collectorPrimeNode];
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -82,17 +95,26 @@ namespace SpiceSharp.Components.Bipolars
 
             // Add a series collector node if necessary
             if (ModelParameters.CollectorResistance > 0)
+            {
                 CollectorPrime = _complex.CreatePrivateVariable(Name.Combine("col"), Units.Volt);
+            }
+
             _collectorPrimeNode = _complex.Map[CollectorPrime];
 
             // Add a series base node if necessary
             if (ModelParameters.BaseResist > 0)
+            {
                 BasePrime = _complex.CreatePrivateVariable(Name.Combine("base"), Units.Volt);
+            }
+
             _basePrimeNode = _complex.Map[BasePrime];
 
             // Add a series emitter node if necessary
             if (ModelParameters.EmitterResistance > 0)
+            {
                 EmitterPrime = _complex.CreatePrivateVariable(Name.Combine("emit"), Units.Volt);
+            }
+
             _emitterPrimeNode = _complex.Map[EmitterPrime];
 
             _elements = new ElementSet<Complex>(_complex.Solver,
@@ -124,10 +146,10 @@ namespace SpiceSharp.Components.Bipolars
         /// <inheritdoc/>
         void IFrequencyBehavior.InitializeParameters()
         {
-            var vbe = VoltageBe;
-            var vbc = VoltageBc;
-            var vbx = ModelParameters.BipolarType * (BiasingState.Solution[_baseNode] - BiasingState.Solution[_collectorPrimeNode]);
-            var vcs = ModelParameters.BipolarType * (BiasingState.Solution[_substrateNode] - BiasingState.Solution[_collectorPrimeNode]);
+            double vbe = VoltageBe;
+            double vbc = VoltageBc;
+            double vbx = ModelParameters.BipolarType * (BiasingState.Solution[_baseNode] - BiasingState.Solution[_collectorPrimeNode]);
+            double vcs = ModelParameters.BipolarType * (BiasingState.Solution[_substrateNode] - BiasingState.Solution[_collectorPrimeNode]);
             CalculateCapacitances(vbe, vbc, vbx, vcs);
         }
 
@@ -135,13 +157,13 @@ namespace SpiceSharp.Components.Bipolars
         void IFrequencyBehavior.Load()
         {
             IComplexSimulationState cstate = _complex;
-            var gcpr = ModelTemperature.CollectorConduct * Parameters.Area;
-            var gepr = ModelTemperature.EmitterConduct * Parameters.Area;
-            var gpi = ConductancePi;
-            var gmu = ConductanceMu;
+            double gcpr = ModelTemperature.CollectorConduct * Parameters.Area;
+            double gepr = ModelTemperature.EmitterConduct * Parameters.Area;
+            double gpi = ConductancePi;
+            double gmu = ConductanceMu;
             Complex gm = Transconductance;
-            var go = OutputConductance;
-            var td = ModelTemperature.ExcessPhaseFactor;
+            double go = OutputConductance;
+            double td = ModelTemperature.ExcessPhaseFactor;
             if (!td.Equals(0)) // Avoid computations
             {
                 Complex arg = td * cstate.Laplace;
@@ -150,14 +172,14 @@ namespace SpiceSharp.Components.Bipolars
                 gm *= Complex.Exp(-arg);
                 gm -= go;
             }
-            var gx = ConductanceX;
+            double gx = ConductanceX;
             Complex xcpi = CapBe * cstate.Laplace;
             Complex xcmu = CapBc * cstate.Laplace;
             Complex xcbx = CapBx * cstate.Laplace;
             Complex xccs = CapCs * cstate.Laplace;
             Complex xcmcb = Geqcb * cstate.Laplace;
 
-            var m = Parameters.ParallelMultiplier;
+            double m = Parameters.ParallelMultiplier;
             _elements.Add(
                 gcpr * m,
                 (gx + xcbx) * m,

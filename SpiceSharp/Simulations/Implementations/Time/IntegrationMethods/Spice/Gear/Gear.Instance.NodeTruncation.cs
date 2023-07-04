@@ -32,25 +32,27 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 public double Truncate()
                 {
                     SpiceMethod parameters = _method.Parameters;
-                    var timetmp = double.PositiveInfinity;
+                    double timetmp = double.PositiveInfinity;
                     IBiasingSimulationState state = _method.State;
                     Algebra.IVector<double> prediction = _method.Prediction;
                     IHistory<SpiceIntegrationState> states = _method.States;
 
-                    var delsum = 0.0;
-                    for (var i = 0; i <= _method.Order; i++)
+                    double delsum = 0.0;
+                    for (int i = 0; i <= _method.Order; i++)
+                    {
                         delsum += states.GetPreviousValue(i).Delta;
+                    }
 
                     foreach (System.Collections.Generic.KeyValuePair<IVariable, int> v in state.Map)
                     {
                         IVariable node = v.Key;
-                        var index = v.Value;
-                        var tol = Math.Max(Math.Abs(state.Solution[index]), Math.Abs(prediction[index])) * parameters.RelativeTolerance + parameters.AbsoluteTolerance;
-                        var diff = state.Solution[index] - prediction[index];
+                        int index = v.Value;
+                        double tol = Math.Max(Math.Abs(state.Solution[index]), Math.Abs(prediction[index])) * parameters.RelativeTolerance + parameters.AbsoluteTolerance;
+                        double diff = state.Solution[index] - prediction[index];
 
                         if (!diff.Equals(0.0))
                         {
-                            var tmp = tol * parameters.TrTol * delsum / (diff * states.Value.Delta);
+                            double tmp = tol * parameters.TrTol * delsum / (diff * states.Value.Delta);
                             tmp = Math.Abs(tmp);
                             switch (_method.Order)
                             {

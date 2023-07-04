@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.CurrentSources
 {
@@ -24,15 +25,33 @@ namespace SpiceSharp.Components.CurrentSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
-        public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
-        public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(Parameters.Phasor);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return -ComplexVoltage * Complex.Conjugate(Parameters.Phasor);
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
-        public Complex ComplexCurrent => Parameters.Phasor;
+        public Complex ComplexCurrent
+        {
+            get
+            {
+                return Parameters.Phasor;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -58,7 +77,7 @@ namespace SpiceSharp.Components.CurrentSources
         {
             // NOTE: Spice 3f5's documentation is IXXXX POS NEG VALUE but in the code it is IXXXX NEG POS VALUE
             // I solved it by inverting the current when loading the rhs vector
-            var value = Parameters.Phasor * Parameters.ParallelMultiplier;
+            Complex value = Parameters.Phasor * Parameters.ParallelMultiplier;
             _elements.Add(-value, value);
         }
     }

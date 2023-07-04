@@ -1,8 +1,9 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SpiceSharpGenerator
 {
@@ -19,16 +20,20 @@ namespace SpiceSharpGenerator
         public static string GetQualifiedName(this ClassDeclarationSyntax @class)
         {
             // Find the namespace by going outward
-            var name = "";
+            string name = "";
             SyntaxNode parent = @class.Parent;
             while (parent != null)
             {
                 if (parent is NamespaceDeclarationSyntax @namespace)
                 {
                     if (string.IsNullOrEmpty(name))
+                    {
                         name = @namespace.Name.WithoutTrivia().GetText().ToString();
+                    }
                     else
+                    {
                         name = @namespace.Name.WithoutTrivia().GetText().ToString() + "." + name;
+                    }
                 }
                 parent = parent.Parent;
             }
@@ -36,7 +41,10 @@ namespace SpiceSharpGenerator
 
             // Also make sure to add generic type names
             if (@class.TypeParameterList != null && @class.TypeParameterList.Parameters.Count > 0)
+            {
                 name += "<" + string.Join(",", @class.TypeParameterList.Parameters.Select(p => p.Identifier.WithoutTrivia())) + ">";
+            }
+
             return name;
         }
 
@@ -47,9 +55,12 @@ namespace SpiceSharpGenerator
         /// <returns>The fully qualified name.</returns>
         public static string GetQualifiedName(this INamedTypeSymbol type)
         {
-            var name = type.ContainingNamespace.ToString() + "." + type.Name;
+            string name = type.ContainingNamespace.ToString() + "." + type.Name;
             if (type.TypeParameters.Length > 0)
+            {
                 name += "<" + string.Join(".", type.TypeParameters.Select(p => p.Name)) + ">";
+            }
+
             return name;
         }
 
@@ -65,11 +76,20 @@ namespace SpiceSharpGenerator
         public static bool IsInterface(this INamedTypeSymbol symbol, string name = null, string @namespace = null)
         {
             if (symbol.TypeKind != TypeKind.Interface)
+            {
                 return false;
+            }
+
             if (name != null && string.CompareOrdinal(symbol.Name, name) != 0)
+            {
                 return false;
+            }
+
             if (@namespace != null && string.CompareOrdinal(symbol.ContainingNamespace.ToString(), @namespace) != 0)
+            {
                 return false;
+            }
+
             return true;
         }
 
@@ -85,9 +105,15 @@ namespace SpiceSharpGenerator
         public static bool IsAttribute(this AttributeData attribute, string name, string @namespace = Constants.AttributeNamespace)
         {
             if (string.CompareOrdinal(attribute.AttributeClass.Name, name) != 0)
+            {
                 return false;
+            }
+
             if (string.CompareOrdinal(attribute.AttributeClass.ContainingNamespace.ToString(), @namespace) != 0)
+            {
                 return false;
+            }
+
             return true;
         }
 
@@ -100,9 +126,15 @@ namespace SpiceSharpGenerator
         public static INamedTypeSymbol MakeGeneric(this INamedTypeSymbol baseType, TypedConstant arguments)
         {
             if (arguments.Values.Length > 0)
+            {
                 return baseType.Construct(arguments.Values.Select(v => v.Value).Cast<INamedTypeSymbol>().ToArray());
+            }
+
             if (arguments.Value is INamedTypeSymbol arg)
+            {
                 return baseType.Construct(arg);
+            }
+
             return null;
         }
 
@@ -117,11 +149,20 @@ namespace SpiceSharpGenerator
         public static INamedTypeSymbol MakeGenericFromAttribute(this AttributeData attribute, int index = 0)
         {
             if (attribute.ConstructorArguments.Length <= index)
+            {
                 return null;
+            }
+
             if (attribute.ConstructorArguments[index].Value is not INamedTypeSymbol btype)
+            {
                 return null;
+            }
+
             if (attribute.ConstructorArguments.Length > index + 1)
+            {
                 btype = btype.MakeGeneric(attribute.ConstructorArguments[index + 1]);
+            }
+
             return btype;
         }
 
@@ -135,7 +176,7 @@ namespace SpiceSharpGenerator
         /// </returns>
         public static bool Implements(this INamedTypeSymbol toCheck, INamedTypeSymbol implemented)
         {
-            var ns = implemented.ContainingNamespace.ToString();
+            string ns = implemented.ContainingNamespace.ToString();
             if (implemented.TypeKind == TypeKind.Class)
             {
                 // Check any base type
@@ -144,7 +185,10 @@ namespace SpiceSharpGenerator
                 {
                     if (string.CompareOrdinal(baseType.Name, implemented.Name) == 0 &&
                         string.CompareOrdinal(baseType.ContainingNamespace.ToString(), ns) == 0)
+                    {
                         return true;
+                    }
+
                     baseType = baseType.BaseType;
                 }
             }
@@ -164,7 +208,10 @@ namespace SpiceSharpGenerator
         public static IEnumerable<AttributeData> GetAllAttributes(this INamedTypeSymbol symbol)
         {
             foreach (AttributeData attribute in symbol.GetAttributes())
+            {
                 yield return attribute;
+            }
+
             symbol = symbol.BaseType;
             while (symbol != null)
             {
@@ -174,7 +221,10 @@ namespace SpiceSharpGenerator
                     // Get the AttributeUsageAttribute
                     AttributeData usage = attribute.AttributeClass.GetAttributes().FirstOrDefault(a => a.IsAttribute("AttributeUsageAttribute", "System"));
                     if (usage != null && usage.NamedArguments.Any(pair => string.CompareOrdinal(pair.Key, "Inherited") == 0 && pair.Value.Value.Equals(false)))
+                    {
                         continue;
+                    }
+
                     yield return attribute;
                 }
 
@@ -209,7 +259,7 @@ namespace SpiceSharpGenerator
             name = name.Replace(' ', '_');
             name = _dashes.Replace(name, match =>
             {
-                var word = match.Groups["word"].Value;
+                string word = match.Groups["word"].Value;
                 return char.ToUpper(word[0]) + word.Substring(1);
             });
             name = char.ToUpper(name[0]) + name.Substring(1);

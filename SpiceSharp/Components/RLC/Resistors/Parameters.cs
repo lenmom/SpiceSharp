@@ -48,8 +48,15 @@ namespace SpiceSharp.Components.Resistors
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double TemperatureCelsius
         {
-            get => Temperature - Constants.CelsiusKelvin;
-            set => Temperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return Temperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                Temperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>

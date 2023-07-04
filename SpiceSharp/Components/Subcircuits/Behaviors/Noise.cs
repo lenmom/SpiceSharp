@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Linq;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -16,13 +17,31 @@ namespace SpiceSharp.Components.Subcircuits
         INoiseBehavior
     {
         /// <inheritdoc/>
-        public double OutputNoiseDensity => Behaviors.Sum(nb => nb.OutputNoiseDensity);
+        public double OutputNoiseDensity
+        {
+            get
+            {
+                return Behaviors.Sum(nb => nb.OutputNoiseDensity);
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalOutputNoise => Behaviors.Sum(nb => nb.TotalOutputNoise);
+        public double TotalOutputNoise
+        {
+            get
+            {
+                return Behaviors.Sum(nb => nb.TotalOutputNoise);
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalInputNoise => Behaviors.Sum(nb => nb.TotalInputNoise);
+        public double TotalInputNoise
+        {
+            get
+            {
+                return Behaviors.Sum(nb => nb.TotalInputNoise);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Noise" /> class.
@@ -38,14 +57,18 @@ namespace SpiceSharp.Components.Subcircuits
         void INoiseSource.Initialize()
         {
             foreach (INoiseBehavior behavior in Behaviors)
+            {
                 behavior.Initialize();
+            }
         }
 
         /// <inheritdoc/>
         void INoiseBehavior.Compute()
         {
             foreach (INoiseBehavior behavior in Behaviors)
+            {
                 behavior.Compute();
+            }
         }
     }
 }

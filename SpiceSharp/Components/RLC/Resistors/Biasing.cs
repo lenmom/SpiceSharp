@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -22,11 +23,23 @@ namespace SpiceSharp.Components.Resistors
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("Voltage")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterInfo("Current")]
-        public double Current => Voltage * Conductance;
+        public double Current
+        {
+            get
+            {
+                return Voltage * Conductance;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("Power")]
@@ -34,7 +47,7 @@ namespace SpiceSharp.Components.Resistors
         {
             get
             {
-                var v = Voltage;
+                double v = Voltage;
                 return v * v * Conductance;
             }
         }

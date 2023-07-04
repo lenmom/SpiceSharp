@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.VoltageControlledCurrentSources;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
-using System;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {
@@ -58,7 +59,9 @@ namespace SpiceSharp.Components
             ComponentRuleParameters p = rules.GetParameterSet<ComponentRuleParameters>();
             IVariable[] nodes = Nodes.Select(name => p.Factory.GetSharedVariable(name)).ToArray();
             foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
+            {
                 rule.AddPath(this, ConductionTypes.None, nodes);
+            }
         }
     }
 }

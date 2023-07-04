@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
@@ -13,7 +14,7 @@ namespace SpiceSharpTest.Examples
         {
             // <example_change_parameter_circuit>
             // Build a circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new Resistor("R1", "in", "out", 1.0e3),
                 new Resistor("R2", "out", "0", 1.0e3),
                 new Capacitor("C1", "out", "0", 0.5e-9),
@@ -22,12 +23,12 @@ namespace SpiceSharpTest.Examples
             // </example_change_parameter_circuit>
             // <example_change_parameter_transient>
             // Create the transient analysis and exports
-            var tran = new Transient("tran", 1e-6, 10e-5);
-            var outputExport = new RealVoltageExport(tran, "out");
+            Transient tran = new Transient("tran", 1e-6, 10e-5);
+            RealVoltageExport outputExport = new RealVoltageExport(tran, "out");
             tran.ExportSimulationData += (sender, args) =>
             {
-                var time = args.Time;
-                var output = outputExport.Value;
+                double time = args.Time;
+                double output = outputExport.Value;
             };
             // </example_change_parameter_transient>
             // <example_change_parameter_setup>
@@ -47,10 +48,10 @@ namespace SpiceSharpTest.Examples
             tran.BeforeLoad += (sender, args) =>
             {
                 // First we need to figure out the timepoint that will be loaded
-                var time = tran.GetState<IIntegrationMethod>().Time;
+                double time = tran.GetState<IIntegrationMethod>().Time;
 
                 // Then we need to calculate the resistance for "R2"
-                var resistance = 1.0e3 * (1 + time * 1.0e5);
+                double resistance = 1.0e3 * (1 + time * 1.0e5);
 
                 // Now let's update the parameter
                 bp.Resistance = resistance;

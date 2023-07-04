@@ -1,6 +1,7 @@
+using System;
+
 using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
-using System;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -31,20 +32,40 @@ namespace SpiceSharp.Algebra.Solve
         public bool NeedsReordering { get; set; }
 
         /// <inheritdoc/>
-        public int Size => Math.Max(Matrix.Size, Vector.Length);
+        public int Size
+        {
+            get
+            {
+                return Math.Max(Matrix.Size, Vector.Length);
+            }
+        }
 
         /// <inheritdoc/>
         public T this[int row, int column]
         {
-            get => this[new MatrixLocation(row, column)];
-            set => this[new MatrixLocation(row, column)] = value;
+            get
+            {
+                return this[new MatrixLocation(row, column)];
+            }
+
+            set
+            {
+                this[new MatrixLocation(row, column)] = value;
+            }
         }
 
         /// <inheritdoc/>
         public T this[MatrixLocation location]
         {
-            get => Matrix[ExternalToInternal(location)];
-            set => Matrix[ExternalToInternal(location)] = value;
+            get
+            {
+                return Matrix[ExternalToInternal(location)];
+            }
+
+            set
+            {
+                Matrix[ExternalToInternal(location)] = value;
+            }
         }
 
         /// <inheritdoc/>

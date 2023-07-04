@@ -42,7 +42,10 @@ namespace SpiceSharp
         public static string Combine(this string name, string appendix)
         {
             if (name == null)
+            {
                 return appendix;
+            }
+
             return name + Separator + appendix;
         }
 
@@ -59,7 +62,10 @@ namespace SpiceSharp
         public static T ThrowIfNull<T>(this T source, string name)
         {
             if (source == null)
+            {
                 throw new ArgumentNullException(name);
+            }
+
             return source;
         }
 
@@ -79,9 +85,15 @@ namespace SpiceSharp
         public static T[] ThrowIfNotLength<T>(this T[] arguments, string name, int expected)
         {
             if (arguments == null)
+            {
                 throw new ArgumentException(Properties.Resources.Parameters_ArgumentCountMismatch.FormatString(name, 0, expected));
+            }
+
             if (arguments.Length != expected)
+            {
                 throw new ArgumentException(Properties.Resources.Parameters_ArgumentCountMismatch.FormatString(name, arguments.Length, expected));
+            }
+
             return arguments;
         }
 
@@ -103,12 +115,12 @@ namespace SpiceSharp
         {
             if (arguments == null && minimum > 0)
             {
-                var allowed = "{0}-{1}".FormatString(minimum, maximum);
+                string allowed = "{0}-{1}".FormatString(minimum, maximum);
                 throw new ArgumentException(Properties.Resources.Parameters_ArgumentCountMismatch.FormatString(name, 0, allowed));
             }
             if (arguments.Length < minimum || arguments.Length > maximum)
             {
-                var allowed = "{0}-{1}".FormatString(minimum, maximum);
+                string allowed = "{0}-{1}".FormatString(minimum, maximum);
                 throw new ArgumentException(Properties.Resources.Parameters_ArgumentCountMismatch.FormatString(name, allowed));
             }
             return arguments;
@@ -125,7 +137,10 @@ namespace SpiceSharp
         public static double GreaterThan(this double value, string name, double limit)
         {
             if (value <= limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotGreater.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -140,7 +155,10 @@ namespace SpiceSharp
         public static double LessThan(this double value, string name, double limit)
         {
             if (value >= limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotLess.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -155,7 +173,10 @@ namespace SpiceSharp
         public static double GreaterThanOrEquals(this double value, string name, double limit)
         {
             if (value < limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotGreaterOrEqual.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -170,7 +191,10 @@ namespace SpiceSharp
         public static double LessThanOrEquals(this double value, string name, double limit)
         {
             if (value > limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotLessOrEqual.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -223,7 +247,10 @@ namespace SpiceSharp
         public static int GreaterThan(this int value, string name, int limit)
         {
             if (value <= limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotGreater.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -238,7 +265,10 @@ namespace SpiceSharp
         public static int LessThan(this int value, string name, int limit)
         {
             if (value >= limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotLess.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -253,7 +283,10 @@ namespace SpiceSharp
         public static int GreaterThanOrEquals(this int value, string name, int limit)
         {
             if (value < limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotGreaterOrEqual.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -268,7 +301,10 @@ namespace SpiceSharp
         public static int LessThanOrEquals(this int value, string name, int limit)
         {
             if (value > limit)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotLessOrEqual.FormatString(limit));
+            }
+
             return value;
         }
 
@@ -284,7 +320,10 @@ namespace SpiceSharp
         public static int Between(this int value, string name, int min, int max)
         {
             if (value < min || value > max)
+            {
                 throw new ArgumentOutOfRangeException(name, value, Properties.Resources.Parameters_NotWithinRange.FormatString(min, max));
+            }
+
             return value;
         }
 
@@ -335,9 +374,15 @@ namespace SpiceSharp
         public static double Finite(this double value, string name)
         {
             if (double.IsNaN(value))
+            {
                 throw new ArgumentException(Properties.Resources.Parameters_IsNaN, name);
+            }
+
             if (double.IsInfinity(value))
+            {
                 throw new ArgumentException(Properties.Resources.Parameters_Finite, name);
+            }
+
             return value;
         }
 
@@ -353,11 +398,20 @@ namespace SpiceSharp
         public static IReadOnlyList<string> CheckNodes(this IReadOnlyList<string> nodes, int count)
         {
             if (nodes == null)
+            {
                 throw new ArgumentNullException(nameof(nodes));
+            }
+
             if (nodes.Count != count)
+            {
                 throw new NodeMismatchException(count, nodes.Count);
-            foreach (var node in nodes)
+            }
+
+            foreach (string node in nodes)
+            {
                 node.ThrowIfNull(nameof(node));
+            }
+
             return nodes;
         }
     }

@@ -26,7 +26,10 @@ namespace SpiceSharp.General
             get
             {
                 if (_first != null)
+                {
                     return _first.Value;
+                }
+
                 return default;
             }
         }
@@ -37,7 +40,13 @@ namespace SpiceSharp.General
         /// <value>
         ///   <c>true</c> if this instance is ambiguous; otherwise, <c>false</c>.
         /// </value>
-        public bool IsAmbiguous => _first.IsIndirect && _first.Next != null;
+        public bool IsAmbiguous
+        {
+            get
+            {
+                return _first.IsIndirect && _first.Next != null;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether this instance is empty.
@@ -45,7 +54,13 @@ namespace SpiceSharp.General
         /// <value>
         ///   <c>true</c> if this instance is empty; otherwise, <c>false</c>.
         /// </value>
-        public bool IsEmpty => _first == null;
+        public bool IsEmpty
+        {
+            get
+            {
+                return _first == null;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the value is a direct type reference.
@@ -58,7 +73,10 @@ namespace SpiceSharp.General
             get
             {
                 if (_first == null)
+                {
                     return false;
+                }
+
                 return !_first.IsIndirect;
             }
         }
@@ -115,7 +133,7 @@ namespace SpiceSharp.General
             }
             else if (isDirect)
             {
-                var node = new Node()
+                Node node = new Node()
                 {
                     Value = value,
                     IsIndirect = false,
@@ -125,7 +143,7 @@ namespace SpiceSharp.General
             }
             else
             {
-                var node = new Node()
+                Node node = new Node()
                 {
                     Value = value,
                     IsIndirect = true,

@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharpTest.Models
 {
@@ -16,13 +18,13 @@ namespace SpiceSharpTest.Models
     {
         private Diode CreateDiode(string name, string anode, string cathode, string model)
         {
-            var d = new Diode(name, anode, cathode, model);
+            Diode d = new Diode(name, anode, cathode, model);
             return d;
         }
 
         private DiodeModel CreateDiodeModel(string name, string parameters)
         {
-            var dm = new DiodeModel(name);
+            DiodeModel dm = new DiodeModel(name);
             ApplyParameters(dm, parameters);
             return dm;
         }
@@ -31,25 +33,25 @@ namespace SpiceSharpTest.Models
         public void When_GetPropertyOP_Expect_Reference()
         {
             // https://github.com/SpiceSharp/SpiceSharp/issues/169
-            var dModel = new DiodeModel("test");
-            var ckt = new Circuit(
+            DiodeModel dModel = new DiodeModel("test");
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "a", "0", 0),
                 new Resistor("R1", "b", "0", 1000),
                 new Diode("LED", "a", "b", "test"),
                 dModel
                 );
 
-            var dc = new DC("DC", "V1", -3.0, 3.0, 0.1);
+            DC dc = new DC("DC", "V1", -3.0, 3.0, 0.1);
 
-            var voltageExport = new RealPropertyExport(dc, "LED", "v");
+            RealPropertyExport voltageExport = new RealPropertyExport(dc, "LED", "v");
 
             dc.ExportSimulationData += (sender, args) =>
             {
-                var voltage = voltageExport.Value;
-                var voltage2 = args.GetVoltage("a") - args.GetVoltage("b");
+                double voltage = voltageExport.Value;
+                double voltage2 = args.GetVoltage("a") - args.GetVoltage("b");
 
                 // Because the property is always one iteration behind on the current solution, we relax the error a little bit
-                var tol = Math.Max(Math.Abs(voltage), Math.Abs(voltage2)) * RelTol + 1e-9;
+                double tol = Math.Max(Math.Abs(voltage), Math.Abs(voltage2)) * RelTol + 1e-9;
                 Assert.AreEqual(voltage2, voltage, tol);
             };
             dc.Run(ckt);
@@ -64,7 +66,7 @@ namespace SpiceSharpTest.Models
              */
 
             // Build circuit
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 CreateDiode("D1", "OUT", "0", "1N914"),
                 CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9"),
@@ -72,7 +74,7 @@ namespace SpiceSharpTest.Models
             };
 
             // Create simulation
-            var dc = new DC("DC", "V1", -1.0, 1.0, 10e-3);
+            DC dc = new DC("DC", "V1", -1.0, 1.0, 10e-3);
 
             // Create exports
             IExport<double>[] exports = { new RealPropertyExport(dc, "V1", "i") };
@@ -96,7 +98,7 @@ namespace SpiceSharpTest.Models
              * Current is expected to behave like the reference
              */
             // Build circuit
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 CreateDiode("D1", "0", "OUT", "1N914"),
                 CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9"),
@@ -105,16 +107,16 @@ namespace SpiceSharpTest.Models
             };
 
             // Create simulation
-            var ac = new AC("ac", new DecadeSweep(1e3, 10e6, 5));
+            AC ac = new AC("ac", new DecadeSweep(1e3, 10e6, 5));
 
             // Create exports
             IExport<Complex>[] exports = { new ComplexPropertyExport(ac, "V1", "i") };
 
             // Create references
             double[] riRef = { -1.945791742986885e-12, -1.904705637099517e-08, -1.946103289747125e-12, -3.018754997881332e-08, -1.946885859826953e-12, -4.784404245850086e-08, -1.948851586992178e-12, -7.582769719229839e-08, -1.953789270386556e-12, -1.201788010800761e-07, -1.966192170307985e-12, -1.904705637099495e-07, -1.997346846331992e-12, -3.018754997881245e-07, -2.075603854314768e-12, -4.784404245849736e-07, -2.272176570837208e-12, -7.582769719228451e-07, -2.765944910274710e-12, -1.201788010800207e-06, -4.006234902415568e-12, -1.904705637097290e-06, -7.121702504803603e-12, -3.018754997872460e-06, -1.494740330300116e-11, -4.784404245814758e-06, -3.460467495474045e-11, -7.582769719089195e-06, -8.398150889530617e-11, -1.201788010744768e-05, -2.080105080892987e-10, -1.904705636876583e-05, -5.195572682013223e-10, -3.018754996993812e-05, -1.302127347221150e-09, -4.784404242316795e-05, -3.267854507347871e-09, -7.582769705163549e-05, -8.205537869558709e-09, -1.201788005200868e-04, -2.060843758802494e-08, -1.904705614805916e-04 };
-            var references = new Complex[1][];
+            Complex[][] references = new Complex[1][];
             references[0] = new Complex[riRef.Length / 2];
-            for (var i = 0; i < riRef.Length; i += 2)
+            for (int i = 0; i < riRef.Length; i += 2)
             {
                 references[0][i / 2] = new Complex(riRef[i], riRef[i + 1]);
             }
@@ -129,7 +131,7 @@ namespace SpiceSharpTest.Models
         {
             // Bug reported by William C. Donaldson (dsonbill)
             // Issue 115
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 CreateDiode("D1", "0", "OUT", "1N914"),
                 CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9"),
@@ -138,10 +140,10 @@ namespace SpiceSharpTest.Models
             };
 
             // Create simulation
-            var ac = new AC("ac", new DecadeSweep(1e3, 10e6, 5));
+            AC ac = new AC("ac", new DecadeSweep(1e3, 10e6, 5));
 
             // Get the property Cd
-            var export = new RealPropertyExport(ac, "D1", "cd");
+            RealPropertyExport export = new RealPropertyExport(ac, "D1", "cd");
 
             ac.Run(ckt);
         }
@@ -154,7 +156,7 @@ namespace SpiceSharpTest.Models
              * Output voltage is expected to behavior like the reference
              */
             // Build circuit
-            var ckt = new Circuit
+            Circuit ckt = new Circuit
             {
                 new VoltageSource("V1", "in", "0", new Pulse(0, 5, 1e-6, 10e-9, 10e-9, 1e-6, 2e-6)),
                 new VoltageSource("Vsupply", "vdd", "0", 5.0),
@@ -165,7 +167,7 @@ namespace SpiceSharpTest.Models
             };
 
             // Create simulation
-            var tran = new Transient("tran", 1e-9, 10e-6);
+            Transient tran = new Transient("tran", 1e-9, 10e-6);
 
             // Create exports
             IExport<double>[] exports = { new RealVoltageExport(tran, "out") };
@@ -185,7 +187,7 @@ namespace SpiceSharpTest.Models
         public void When_SimpleNoise_Expect_Spice3f5Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 1.0),
                 new Resistor("R1", "in", "out", 10e3),
                 CreateDiode("D1", "out", "0", "1N914"),
@@ -193,7 +195,7 @@ namespace SpiceSharpTest.Models
             );
 
             // Create the noise, exports and reference values
-            var noise = new Noise("Noise", "V1", "out", new DecadeSweep(10, 10e9, 10));
+            Noise noise = new Noise("Noise", "V1", "out", new DecadeSweep(10, 10e9, 10));
             IExport<double>[] exports = { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
             double[][] references =
             {
@@ -258,16 +260,16 @@ namespace SpiceSharpTest.Models
         public void When_MultipliersDC_Expect_Reference()
         {
             DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
-            var cktReference = new Circuit(
+            Circuit cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0), model);
             ParallelSeries(cktReference, name => new Diode(name, "", "", model.Name), "in", "0", 3, 2);
-            var cktActual = new Circuit(
+            Circuit cktActual = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0), model,
                 new Diode("D1", "in", "0", model.Name).SetParameter("m", 3.0).SetParameter("n", 2.0));
 
-            var dc = new DC("dc", "V1", -1, 1, 0.1);
+            DC dc = new DC("dc", "V1", -1, 1, 0.1);
             dc.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new IExport<double>[] { new RealCurrentExport(dc, "V1") };
+            IExport<double>[] exports = new IExport<double>[] { new RealCurrentExport(dc, "V1") };
 
             Compare(dc, cktReference, cktActual, exports);
             DestroyExports(exports);
@@ -277,16 +279,16 @@ namespace SpiceSharpTest.Models
         public void When_MultipliersSmallSignal_Expect_Reference()
         {
             DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=0.568 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9");
-            var cktReference = new Circuit(
+            Circuit cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0).SetParameter("acmag", 1.0), model);
             ParallelSeries(cktReference, name => new Diode(name, "", "", model.Name), "in", "0", 3, 2);
-            var cktActual = new Circuit(
+            Circuit cktActual = new Circuit(
                 new VoltageSource("V1", "in", "0", 0.0).SetParameter("acmag", 1.0), model,
                 new Diode("D1", "in", "0", model.Name).SetParameter("m", 3.0).SetParameter("n", 2.0));
 
-            var ac = new AC("ac", new DecadeSweep(0.1, 1e6, 5));
+            AC ac = new AC("ac", new DecadeSweep(0.1, 1e6, 5));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new IExport<Complex>[] { new ComplexCurrentExport(ac, "V1") };
+            IExport<Complex>[] exports = new IExport<Complex>[] { new ComplexCurrentExport(ac, "V1") };
 
             Compare(ac, cktReference, cktActual, exports);
             DestroyExports(exports);
@@ -296,19 +298,19 @@ namespace SpiceSharpTest.Models
         public void When_MultipliersNoise_Expect_Reference()
         {
             DiodeModel model = CreateDiodeModel("1N914", "Is=2.52e-9 Rs=5680 N=1.752 Cjo=4e-12 M=0.4 tt=20e-9 Kf=1e-10 Af=0.9");
-            var cktReference = new Circuit(
+            Circuit cktReference = new Circuit(
                 new VoltageSource("V1", "in", "0", 3),
                 new Resistor("R1", "in", "out", 10e3),
                 model);
             ParallelSeries(cktReference, name => new Diode(name, "", "", model.Name), "out", "0", 3, 2);
-            var cktActual = new Circuit(
+            Circuit cktActual = new Circuit(
                 new VoltageSource("V1", "in", "0", 3).SetParameter("acmag", 1.0),
                 new Resistor("R1", "in", "out", 10e3), model,
                 new Diode("D1", "out", "0", model.Name).SetParameter("m", 3.0).SetParameter("n", 2.0));
 
-            var noise = new Noise("noise", "V1", "out", new DecadeSweep(0.1, 1e6, 5));
+            Noise noise = new Noise("noise", "V1", "out", new DecadeSweep(0.1, 1e6, 5));
             noise.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var exports = new IExport<double>[] { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
+            IExport<double>[] exports = new IExport<double>[] { new InputNoiseDensityExport(noise), new OutputNoiseDensityExport(noise) };
 
             Compare(noise, cktReference, cktActual, exports);
             DestroyExports(exports);
@@ -323,7 +325,7 @@ namespace SpiceSharpTest.Models
              */
             // Build circuit
             DiodeModel model = CreateDiodeModel("1N914", "Is = 2.52e-9 Rs = 0.568 N = 1.752 Cjo = 4e-12 M = 0.4 tt = 20e-9");
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1r", "inr", "0", new Pulse(0, 5, 1e-6, 10e-9, 10e-9, 1e-6, 2e-6)),
                 new VoltageSource("Vsupplyr", "vddr", "0", 5.0),
                 new Resistor("R1r", "vddr", "outr", 10.0e3),
@@ -339,13 +341,13 @@ namespace SpiceSharpTest.Models
             ParallelSeries(ckt, name => new Diode(name, "", "", model.Name), "inr", "outr", 3, 2);
 
             // Create simulation
-            var tran = new Transient("tran", 1e-9, 10e-6);
+            Transient tran = new Transient("tran", 1e-9, 10e-6);
             tran.BiasingParameters.Gmin = 0.0; // May interfere with comparison
-            var v_ref = new RealVoltageExport(tran, "outr");
-            var v_act = new RealVoltageExport(tran, "outa");
+            RealVoltageExport v_ref = new RealVoltageExport(tran, "outr");
+            RealVoltageExport v_act = new RealVoltageExport(tran, "outa");
             tran.ExportSimulationData += (sender, args) =>
             {
-                var tol = Math.Max(Math.Abs(v_ref.Value), Math.Abs(v_act.Value)) * CompareRelTol + CompareAbsTol;
+                double tol = Math.Max(Math.Abs(v_ref.Value), Math.Abs(v_act.Value)) * CompareRelTol + CompareAbsTol;
                 Assert.AreEqual(v_ref.Value, v_act.Value, tol);
             };
             tran.Run(ckt);
@@ -358,15 +360,15 @@ namespace SpiceSharpTest.Models
         {
             // Source: https://www.el-component.com/diodes/1n4148
             DiodeModel model = CreateDiodeModel("1N4148", "IS=4.352E-9 N=1.906 BV=110 IBV=0.0001 RS=0.6458 CJO=7.048E-13 VJ=0.869 M=0.03 FC=0.5 TT=3.48E-9");
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "a", "0", 0.0),
                 CreateDiode("D1", "a", "0", "1N4148"),
                 model);
 
             // Sweep
-            var dc = new DC("dc", "V1", -111.0, 1.0, 0.5);
+            DC dc = new DC("dc", "V1", -111.0, 1.0, 0.5);
             RealCurrentExport[] exports = new[] { new RealCurrentExport(dc, "V1") };
-            var references = new[]
+            double[][] references = new[]
             {
                 new[]
                 {

@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Entities;
-using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+
+using SpiceSharp.Attributes;
+using SpiceSharp.Entities;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Components
 {
@@ -24,7 +25,13 @@ namespace SpiceSharp.Components
 
         /// <inheritdoc/>
         [ParameterName("pins"), ParameterInfo("The pins that connect this subcircuit definition to the outside.")]
-        public IReadOnlyList<string> Pins => new ReadOnlyCollection<string>(_pins);
+        public IReadOnlyList<string> Pins
+        {
+            get
+            {
+                return new ReadOnlyCollection<string>(_pins);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcircuitDefinition"/> class.
@@ -38,11 +45,15 @@ namespace SpiceSharp.Components
             if (pins != null)
             {
                 _pins = new string[pins.Length];
-                for (var i = 0; i < pins.Length; i++)
+                for (int i = 0; i < pins.Length; i++)
+                {
                     _pins[i] = pins[i].ThrowIfNull("node {0}".FormatString(i + 1));
+                }
             }
             else
+            {
                 _pins = Array<string>.Empty();
+            }
         }
 
         /// <inheritdoc/>

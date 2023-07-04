@@ -27,12 +27,24 @@ namespace SpiceSharp.General
         /// <summary>
         /// Gets the number of elements contained in the set.
         /// </summary>
-        public int Count => _dictionary.Count;
+        public int Count
+        {
+            get
+            {
+                return _dictionary.Count;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the set is read-only.
         /// </summary>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Adds the specified value.
@@ -83,8 +95,10 @@ namespace SpiceSharp.General
         public void CopyTo(V[] array, int arrayIndex)
         {
             V[] arr = _dictionary.Values.ToArray();
-            for (var i = 0; i < arr.Length; i++)
+            for (int i = 0; i < arr.Length; i++)
+            {
                 array[i + arrayIndex] = arr[i];
+            }
         }
 
         /// <inheritdoc/>
@@ -94,7 +108,7 @@ namespace SpiceSharp.General
             {
                 if (!_dictionary.TryGetValue(typeof(TResult), out V result))
                 {
-                    var args = new TypeNotFoundEventArgs<V>(typeof(TResult));
+                    TypeNotFoundEventArgs<V> args = new TypeNotFoundEventArgs<V>(typeof(TResult));
                     TypeNotFound?.Invoke(this, args);
                     if (args.Value is TResult newResult)
                     {

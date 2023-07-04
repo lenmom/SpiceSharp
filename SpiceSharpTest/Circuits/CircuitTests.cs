@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 
@@ -13,9 +14,9 @@ namespace SpiceSharpTest.Circuits
         [Test]
         public void When_CircuitMerge_Expect_Reference()
         {
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 1.0));
-            var subckt = new Circuit(
+            Circuit subckt = new Circuit(
                 new Resistor("Ra", "in", "out", 100),
                 new Resistor("Rb", "out", "0", 100));
 

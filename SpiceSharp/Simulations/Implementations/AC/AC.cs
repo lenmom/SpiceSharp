@@ -37,7 +37,7 @@ namespace SpiceSharp.Simulations
             // Execute base behavior
             base.Execute();
 
-            var cstate = (ComplexSimulationState)GetState<IComplexSimulationState>();
+            ComplexSimulationState cstate = (ComplexSimulationState)GetState<IComplexSimulationState>();
 
             // Calculate the operating point
             cstate.Laplace = 0.0;
@@ -50,12 +50,14 @@ namespace SpiceSharp.Simulations
                 InitializeAcParameters();
 
                 // Export operating point if requested
-                var exportargs = new ExportDataEventArgs(this);
+                ExportDataEventArgs exportargs = new ExportDataEventArgs(this);
                 if (FrequencyParameters.KeepOpInfo)
+                {
                     OnExport(exportargs);
+                }
 
                 // Sweep the frequency
-                foreach (var freq in FrequencyParameters.Frequencies)
+                foreach (double freq in FrequencyParameters.Frequencies)
                 {
                     // Calculate the current frequency
                     cstate.Laplace = new Complex(0.0, 2.0 * Math.PI * freq);

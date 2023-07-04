@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Bipolars
 {
@@ -18,16 +19,34 @@ namespace SpiceSharp.Components.Bipolars
         private readonly NoiseGain _flicker;
 
         /// <inheritdoc/>
-        public double OutputNoiseDensity => _rc.OutputNoiseDensity + _rb.OutputNoiseDensity + _re.OutputNoiseDensity +
+        public double OutputNoiseDensity
+        {
+            get
+            {
+                return _rc.OutputNoiseDensity + _rb.OutputNoiseDensity + _re.OutputNoiseDensity +
             _ic.OutputNoiseDensity + _ib.OutputNoiseDensity + _flicker.OutputNoiseDensity;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalOutputNoise => _rc.TotalOutputNoise + _rb.TotalOutputNoise + _re.TotalOutputNoise +
+        public double TotalOutputNoise
+        {
+            get
+            {
+                return _rc.TotalOutputNoise + _rb.TotalOutputNoise + _re.TotalOutputNoise +
             _ic.TotalOutputNoise + _ib.TotalOutputNoise + _flicker.TotalOutputNoise;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalInputNoise => _rc.TotalInputNoise + _rb.TotalInputNoise + _re.TotalInputNoise +
+        public double TotalInputNoise
+        {
+            get
+            {
+                return _rc.TotalInputNoise + _rb.TotalInputNoise + _re.TotalInputNoise +
             _ic.TotalInputNoise + _ib.TotalInputNoise + _flicker.TotalInputNoise;
+            }
+        }
 
         /// <summary>
         /// Gets the thermal noise source of the resistor at the collector.
@@ -36,7 +55,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The thermal noise source.
         /// </value>
         [ParameterName("rc"), ParameterInfo("The thermal noise at the collector")]
-        public INoiseSource ThermalCollectorResistor => _rc;
+        public INoiseSource ThermalCollectorResistor
+        {
+            get
+            {
+                return _rc;
+            }
+        }
 
         /// <summary>
         /// Gets the thermal noise source of the resistor at the base.
@@ -45,7 +70,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The thermal noise source.
         /// </value>
         [ParameterName("rb"), ParameterInfo("Ther thermal noise at the base")]
-        public INoiseSource ThermalBaseResistor => _rb;
+        public INoiseSource ThermalBaseResistor
+        {
+            get
+            {
+                return _rb;
+            }
+        }
 
         /// <summary>
         /// Gets the thermal noise source of the resistor at the emitter.
@@ -53,7 +84,13 @@ namespace SpiceSharp.Components.Bipolars
         /// <value>
         /// The thermal noise source.
         /// </value>
-        public INoiseSource ThermalEmitterResistor => _re;
+        public INoiseSource ThermalEmitterResistor
+        {
+            get
+            {
+                return _re;
+            }
+        }
 
         /// <summary>
         /// Gets the shot noise source of the collector-emitter current.
@@ -62,7 +99,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The shot noise source.
         /// </value>
         [ParameterName("ic"), ParameterInfo("The shot noise of the collector-emitter current")]
-        public INoiseSource ShotCollectorCurrent => _ic;
+        public INoiseSource ShotCollectorCurrent
+        {
+            get
+            {
+                return _ic;
+            }
+        }
 
         /// <summary>
         /// Gets the shot noise of the base-emitter current.
@@ -71,7 +114,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The shot noise source.
         /// </value>
         [ParameterName("ib"), ParameterInfo("The shot noise of the base-emitter current")]
-        public INoiseSource ShotBaseCurrent => _ib;
+        public INoiseSource ShotBaseCurrent
+        {
+            get
+            {
+                return _ib;
+            }
+        }
 
         /// <summary>
         /// Gets the flicker noise source.
@@ -80,7 +129,13 @@ namespace SpiceSharp.Components.Bipolars
         /// The flicker noise source.
         /// </value>
         [ParameterName("flicker"), ParameterInfo("The flicker noise")]
-        public INoiseSource Flicker => _flicker;
+        public INoiseSource Flicker
+        {
+            get
+            {
+                return _flicker;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Noise"/> class.

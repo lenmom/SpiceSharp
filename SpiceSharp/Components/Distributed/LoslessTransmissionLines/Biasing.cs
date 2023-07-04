@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.LosslessTransmissionLines
 {
@@ -80,7 +81,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The voltage on side 1.
         /// </value>
         [ParameterName("v1"), ParameterName("v1_r"), ParameterInfo("Voltage 1")]
-        public double Voltage1 => BiasingState.Solution[_pos1] - BiasingState.Solution[_neg1];
+        public double Voltage1
+        {
+            get
+            {
+                return BiasingState.Solution[_pos1] - BiasingState.Solution[_neg1];
+            }
+        }
 
         /// <summary>
         /// Gets the voltage on side 2.
@@ -89,7 +96,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The voltage on side 2.
         /// </value>
         [ParameterName("v2"), ParameterName("v2_r"), ParameterInfo("Voltage 2")]
-        public double Voltage2 => BiasingState.Solution[_pos2] - BiasingState.Solution[_neg2];
+        public double Voltage2
+        {
+            get
+            {
+                return BiasingState.Solution[_pos2] - BiasingState.Solution[_neg2];
+            }
+        }
 
         /// <summary>
         /// Gets the current on side 1.
@@ -98,7 +111,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The current on side 1.
         /// </value>
         [ParameterName("i1"), ParameterName("c1"), ParameterName("i1_r"), ParameterInfo("Current 1")]
-        public double Current1 => BiasingState.Solution[_br1];
+        public double Current1
+        {
+            get
+            {
+                return BiasingState.Solution[_br1];
+            }
+        }
 
         /// <summary>
         /// Gets the current on side 2.
@@ -107,7 +126,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The current on side 2.
         /// </value>
         [ParameterName("i2"), ParameterName("c2"), ParameterName("i2_r"), ParameterInfo("Current 2")]
-        public double Current2 => BiasingState.Solution[_br2];
+        public double Current2
+        {
+            get
+            {
+                return BiasingState.Solution[_br2];
+            }
+        }
 
         /// <summary>
         /// Gets the power on side 1.
@@ -116,7 +141,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The power on side 1.
         /// </value>
         [ParameterName("p1"), ParameterName("p1_r"), ParameterInfo("Power 1")]
-        public double Power1 => -Voltage1 * Current1;
+        public double Power1
+        {
+            get
+            {
+                return -Voltage1 * Current1;
+            }
+        }
 
         /// <summary>
         /// Gets the power on side 2.
@@ -125,7 +156,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The power on side 2.
         /// </value>
         [ParameterName("p2"), ParameterName("p2_r"), ParameterInfo("Power 2")]
-        public double Power2 => -Voltage1 * Current1;
+        public double Power2
+        {
+            get
+            {
+                return -Voltage1 * Current1;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Biasing"/> class.
@@ -185,8 +222,8 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var m = Parameters.ParallelMultiplier;
-            var y = Parameters.Admittance * m;
+            double m = Parameters.ParallelMultiplier;
+            double y = Parameters.Admittance * m;
 
             BiasingElements.Add(
                 y, -y, -y, y, 1, 0, -1, -1,

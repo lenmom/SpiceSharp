@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Simulations;
-using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Simulations;
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -35,14 +36,19 @@ namespace SpiceSharp.Components.Subcircuits
                 { Constants.Ground, Constants.Ground }
             };
             foreach (Bridge<string> bridge in nodes)
+            {
                 _nodeMap.Add(bridge.Local, bridge.Global);
+            }
         }
 
         /// <inheritdoc/>
         public IVariable GetSharedVariable(string name)
         {
-            if (!_nodeMap.TryGetValue(name, out var mapped))
+            if (!_nodeMap.TryGetValue(name, out string mapped))
+            {
                 mapped = _name.Combine(name);
+            }
+
             return _parent.GetSharedVariable(mapped);
         }
 

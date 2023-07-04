@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Components;
-using System;
+﻿using System;
+
+using SpiceSharp.Components;
 
 namespace SpiceSharp.Simulations
 {

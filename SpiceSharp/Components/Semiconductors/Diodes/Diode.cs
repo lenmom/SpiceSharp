@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Diodes;
 using SpiceSharp.ParameterSets;
-using System;
 
 namespace SpiceSharp.Components
 {

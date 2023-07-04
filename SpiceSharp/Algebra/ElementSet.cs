@@ -22,21 +22,26 @@ namespace SpiceSharp.Algebra
             solver.ThrowIfNull(nameof(solver));
 
             // Allocate memory for all the elements
-            var length = (rhsPins?.Length ?? 0) + (matrixPins?.Length ?? 0);
+            int length = (rhsPins?.Length ?? 0) + (matrixPins?.Length ?? 0);
             _elements = new Element<T>[length];
-            var offset = 0;
+            int offset = 0;
 
             if (matrixPins != null)
             {
-                for (var i = 0; i < matrixPins.Length; i++)
+                for (int i = 0; i < matrixPins.Length; i++)
+                {
                     _elements[i] = solver.GetElement(matrixPins[i]);
+                }
+
                 offset = matrixPins.Length;
             }
 
             if (rhsPins != null)
             {
-                for (var i = 0; i < rhsPins.Length; i++)
+                for (int i = 0; i < rhsPins.Length; i++)
+                {
                     _elements[i + offset] = solver.GetElement(rhsPins[i]);
+                }
             }
         }
 
@@ -70,9 +75,14 @@ namespace SpiceSharp.Algebra
         public void Add(params T[] values)
         {
             if (values == null)
+            {
                 return;
-            for (var i = 0; i < values.Length; i++)
+            }
+
+            for (int i = 0; i < values.Length; i++)
+            {
                 _elements[i].Add(values[i]);
+            }
         }
 
         /// <summary>
@@ -83,9 +93,14 @@ namespace SpiceSharp.Algebra
         public void Subtract(params T[] values)
         {
             if (values == null)
+            {
                 return;
-            for (var i = 0; i < values.Length; i++)
+            }
+
+            for (int i = 0; i < values.Length; i++)
+            {
                 _elements[i].Subtract(values[i]);
+            }
         }
 
         /// <summary>

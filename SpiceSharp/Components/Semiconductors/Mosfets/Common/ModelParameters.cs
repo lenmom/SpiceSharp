@@ -39,8 +39,15 @@ namespace SpiceSharp.Components.Mosfets
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>
@@ -328,7 +335,9 @@ namespace SpiceSharp.Components.Mosfets
         public void SetNmos(bool value)
         {
             if (value)
+            {
                 MosfetType = 1.0;
+            }
         }
 
         /// <summary>
@@ -339,7 +348,9 @@ namespace SpiceSharp.Components.Mosfets
         public void SetPmos(bool value)
         {
             if (value)
+            {
                 MosfetType = -1.0;
+            }
         }
 
         /// <inheritdoc/>
@@ -360,7 +371,10 @@ namespace SpiceSharp.Components.Mosfets
             get
             {
                 if (MosfetType > 0)
+                {
                     return "nmos";
+                }
+
                 return "pmos";
             }
         }

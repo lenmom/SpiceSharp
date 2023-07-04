@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.General;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.Common
 {
@@ -32,22 +33,52 @@ namespace SpiceSharp.Components.Common
         public ITypeSet<ISimulationState> LocalStates { get; }
 
         /// <inheritdoc/>
-        public IEnumerable<Type> States => Parent.States;
+        public IEnumerable<Type> States
+        {
+            get
+            {
+                return Parent.States;
+            }
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<Type> Behaviors => Parent.Behaviors;
+        public IEnumerable<Type> Behaviors
+        {
+            get
+            {
+                return Parent.Behaviors;
+            }
+        }
 
         /// <inheritdoc/>
-        public string Name => Parent.Name;
+        public string Name
+        {
+            get
+            {
+                return Parent.Name;
+            }
+        }
 
         /// <inheritdoc/>
-        public SimulationStatus Status => Parent.Status;
+        public SimulationStatus Status
+        {
+            get
+            {
+                return Parent.Status;
+            }
+        }
 
         /// <inheritdoc/>
         public IBehaviorContainerCollection EntityBehaviors { get; }
 
         /// <inheritdoc/>
-        public virtual IEnumerable<IParameterSet> ParameterSets => Parent.ParameterSets;
+        public virtual IEnumerable<IParameterSet> ParameterSets
+        {
+            get
+            {
+                return Parent.ParameterSets;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimulationWrapper"/> class.
@@ -78,7 +109,9 @@ namespace SpiceSharp.Components.Common
                 {
                     entity.CreateBehaviors(this);
                     if (EntityBehaviors.TryGetBehaviors(entity.Name, out IBehaviorContainer container))
+                    {
                         args.Behaviors = container;
+                    }
                 }
                 else
                 {
@@ -90,7 +123,9 @@ namespace SpiceSharp.Components.Common
             foreach (IEntity entity in entities)
             {
                 if (!EntityBehaviors.Contains(entity.Name))
+                {
                     entity.CreateBehaviors(this);
+                }
             }
 
             EntityBehaviors.BehaviorsNotFound -= BehaviorsNotFound;
@@ -106,7 +141,10 @@ namespace SpiceSharp.Components.Common
         public virtual S GetState<S>() where S : ISimulationState
         {
             if (LocalStates.TryGetValue(out S result))
+            {
                 return result;
+            }
+
             return Parent.GetState<S>();
         }
 
@@ -114,7 +152,10 @@ namespace SpiceSharp.Components.Common
         public virtual bool TryGetState<S>(out S state) where S : ISimulationState
         {
             if (LocalStates.TryGetValue(out state))
+            {
                 return true;
+            }
+
             return Parent.TryGetState(out state);
         }
 

@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -82,13 +83,21 @@ namespace SpiceSharp.Components.Diodes
         void ITemperatureBehavior.Temperature()
         {
             if (!Parameters.NominalTemperature.Given)
+            {
                 Parameters.NominalTemperature = new GivenParameter<double>(_temperature.NominalTemperature, false);
+            }
+
             VtNominal = Constants.KOverQ * Parameters.NominalTemperature;
 
             if (!Parameters.Resistance.Equals(0.0))
+            {
                 Conductance = 1 / Parameters.Resistance;
+            }
             else
+            {
                 Conductance = 0;
+            }
+
             Xfc = Math.Log(1 - Parameters.DepletionCapCoefficient);
 
             F2 = Math.Exp((1 + Parameters.GradingCoefficient) * Xfc);

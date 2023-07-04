@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.VoltageControlledVoltageSources;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
-using System;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {
@@ -64,7 +65,9 @@ namespace SpiceSharp.Components
                 rule.AddPath(this, ConductionTypes.None, nodes[2], nodes[3]);
             }
             foreach (IAppliedVoltageRule rule in rules.GetRules<IAppliedVoltageRule>())
+            {
                 rule.Fix(this, nodes[0], nodes[1]);
+            }
         }
     }
 }

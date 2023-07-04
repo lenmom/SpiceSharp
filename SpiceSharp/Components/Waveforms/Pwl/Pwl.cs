@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {
@@ -34,11 +35,14 @@ namespace SpiceSharp.Components
         public void SetPoints(params double[] vector)
         {
             vector.ThrowIfNull(nameof(vector));
-            var n = Math.Max(vector.Length / 2, 2);
+            int n = Math.Max(vector.Length / 2, 2);
             vector.ThrowIfNotLength(nameof(vector), n * 2);
-            var arr = new Point[n];
-            for (var i = 0; i < n; i++)
+            Point[] arr = new Point[n];
+            for (int i = 0; i < n; i++)
+            {
                 arr[i] = new Point(vector[i * 2], vector[i * 2 + 1]);
+            }
+
             Points = arr;
         }
 
@@ -59,7 +63,10 @@ namespace SpiceSharp.Components
         public override string ToString()
         {
             if (Points != null)
+            {
                 return "pwl({0})".FormatString(string.Join(", ", Points));
+            }
+
             return "pwl(null)";
         }
 

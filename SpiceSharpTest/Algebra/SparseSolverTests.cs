@@ -1,10 +1,12 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.IO;
+using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp.Algebra;
 using SpiceSharp.Algebra.Solve;
 using SpiceSharp.Simulations;
-using System;
-using System.IO;
-using System.Numerics;
 
 namespace SpiceSharpTest.Algebra
 {
@@ -15,7 +17,7 @@ namespace SpiceSharpTest.Algebra
         public void When_BigMatrix_Expect_NoException()
         {
             // Test factoring a big matrix
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             ReadMatrix(solver, Path.Combine(TestContext.CurrentContext.TestDirectory, Path.Combine("Algebra", "Matrices", "fidapm05")));
 
             // Order and factor this larger matrix
@@ -43,7 +45,7 @@ namespace SpiceSharpTest.Algebra
         public void When_SingletonPivoting_Expect_NoException()
         {
             // Build the solver with only the singleton pivoting
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver.Parameters.Strategies.Clear();
             solver.Parameters.Strategies.Add(new MarkowitzSingleton<double>());
 
@@ -56,15 +58,19 @@ namespace SpiceSharpTest.Algebra
                 new double[] { 1, 0, 0, 0 }
             };
             double[] rhs = { 0, 1, 0, 0 };
-            for (var r = 0; r < matrix.Length; r++)
+            for (int r = 0; r < matrix.Length; r++)
             {
-                for (var c = 0; c < matrix[r].Length; c++)
+                for (int c = 0; c < matrix[r].Length; c++)
                 {
                     if (!matrix[r][c].Equals(0.0))
+                    {
                         solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrix[r][c];
+                    }
                 }
                 if (!rhs[r].Equals(0.0))
+                {
                     solver.GetElement(r + 1).Value = rhs[r];
+                }
             }
 
             // This should run without throwing an exception
@@ -75,7 +81,7 @@ namespace SpiceSharpTest.Algebra
         public void When_QuickDiagonalPivoting_Expect_NoException()
         {
             // Build the solver with only the quick diagonal pivoting
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzQuickDiagonal<double>());
@@ -89,15 +95,19 @@ namespace SpiceSharpTest.Algebra
                 new[] {    0,      0,  -0.01,   3 }
             };
             double[] rhs = { 0, 0, 0, 0 };
-            for (var r = 0; r < matrix.Length; r++)
+            for (int r = 0; r < matrix.Length; r++)
             {
-                for (var c = 0; c < matrix[r].Length; c++)
+                for (int c = 0; c < matrix[r].Length; c++)
                 {
                     if (!matrix[r][c].Equals(0.0))
+                    {
                         solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrix[r][c];
+                    }
                 }
                 if (!rhs[r].Equals(0.0))
+                {
                     solver.GetElement(r + 1).Value = rhs[r];
+                }
             }
 
             // This should run without throwing an exception
@@ -108,7 +118,7 @@ namespace SpiceSharpTest.Algebra
         public void When_DiagonalPivoting_Expect_NoException()
         {
             // Build the solver with only the quick diagonal pivoting
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzDiagonal<double>());
@@ -122,15 +132,19 @@ namespace SpiceSharpTest.Algebra
                 new[] {    0,      0,  -0.01,   3 }
             };
             double[] rhs = { 1, 0, 0, 0 };
-            for (var r = 0; r < matrix.Length; r++)
+            for (int r = 0; r < matrix.Length; r++)
             {
-                for (var c = 0; c < matrix[r].Length; c++)
+                for (int c = 0; c < matrix[r].Length; c++)
                 {
                     if (!matrix[r][c].Equals(0.0))
+                    {
                         solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrix[r][c];
+                    }
                 }
                 if (!rhs[r].Equals(0.0))
+                {
                     solver.GetElement(r + 1).Value = rhs[r];
+                }
             }
 
             // This should run without throwing an exception
@@ -141,7 +155,7 @@ namespace SpiceSharpTest.Algebra
         public void When_EntireMatrixPivoting_Expect_NoException()
         {
             // Build the solver with only the quick diagonal pivoting
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             Markowitz<double> strategy = solver.Parameters;
             strategy.Strategies.Clear();
             strategy.Strategies.Add(new MarkowitzEntireMatrix<double>());
@@ -155,15 +169,19 @@ namespace SpiceSharpTest.Algebra
                 new[] {    4,    1.8,  -0.01,  8 }
             };
             double[] rhs = { 1, 2, 3, 4 };
-            for (var r = 0; r < matrix.Length; r++)
+            for (int r = 0; r < matrix.Length; r++)
             {
-                for (var c = 0; c < matrix[r].Length; c++)
+                for (int c = 0; c < matrix[r].Length; c++)
                 {
                     if (!matrix[r][c].Equals(0.0))
+                    {
                         solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrix[r][c];
+                    }
                 }
                 if (!rhs[r].Equals(0.0))
+                {
                     solver.GetElement(r + 1).Value = rhs[r];
+                }
             }
 
             // This should run without throwing an exception
@@ -199,13 +217,15 @@ namespace SpiceSharpTest.Algebra
             };
 
             // build the matrix
-            var solver = new SparseComplexSolver();
-            for (var r = 0; r < matrix.Length; r++)
+            SparseComplexSolver solver = new SparseComplexSolver();
+            for (int r = 0; r < matrix.Length; r++)
             {
-                for (var c = 0; c < matrix[r].Length; c++)
+                for (int c = 0; c < matrix[r].Length; c++)
                 {
                     if (!matrix[r][c].Equals(Complex.Zero))
+                    {
                         solver.GetElement(new MatrixLocation(r + 1, c + 1)).Value = matrix[r][c];
+                    }
                 }
             }
 
@@ -214,19 +234,21 @@ namespace SpiceSharpTest.Algebra
             solver.GetElement(5);
 
             // Build the Rhs vector
-            for (var r = 0; r < rhs.Length; r++)
+            for (int r = 0; r < rhs.Length; r++)
             {
                 if (!rhs[r].Equals(Complex.Zero))
+                {
                     solver.GetElement(r + 1).Value = rhs[r];
+                }
             }
 
             // Solver
             Assert.AreEqual(solver.Size, solver.OrderAndFactor());
-            var solution = new DenseVector<Complex>(solver.Size);
+            DenseVector<Complex> solution = new DenseVector<Complex>(solver.Size);
             solver.Solve(solution);
 
             // Check!
-            for (var r = 0; r < reference.Length; r++)
+            for (int r = 0; r < reference.Length; r++)
             {
                 Assert.AreEqual(reference[r].Real, solution[r + 1].Real, 1e-12);
                 Assert.AreEqual(reference[r].Imaginary, solution[r + 1].Imaginary, 1e-12);
@@ -236,7 +258,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_PartialDecomposition_Expect_Reference()
         {
-            var solver = new SparseRealSolver
+            SparseRealSolver solver = new SparseRealSolver
             {
                 PivotSearchReduction = 2, // Limit to only the 2 first elements
                 Degeneracy = 2 // Only perform elimination on the first two rows
@@ -265,7 +287,7 @@ namespace SpiceSharpTest.Algebra
         [Test]
         public void When_PartialSolve_Expect_Reference()
         {
-            var solver = new SparseRealSolver
+            SparseRealSolver solver = new SparseRealSolver
             {
                 PivotSearchReduction = 2, // Limit to only the 2 first elements
                 Degeneracy = 2 // Only perform elimination on the first two rows
@@ -282,7 +304,7 @@ namespace SpiceSharpTest.Algebra
 
             // We should now be able to solve for multiple solutions, where the last two elements
             // will determine the result.
-            var solution = new DenseVector<double>(4);
+            DenseVector<double> solution = new DenseVector<double>(4);
             solution[3] = 0;
             solution[4] = 0;
             solver.Solve(solution);

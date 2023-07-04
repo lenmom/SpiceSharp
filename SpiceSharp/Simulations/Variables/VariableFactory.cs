@@ -23,7 +23,10 @@ namespace SpiceSharp.Simulations.Variables
         public IVariable GetSharedVariable(string name)
         {
             if (TryGetValue(name, out IVariable result))
+            {
                 return result;
+            }
+
             result = new Variable(name, Units.Volt);
             Add(name, result);
             return result;

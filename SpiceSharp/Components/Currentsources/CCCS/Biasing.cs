@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.CurrentControlledCurrentSources
 {
@@ -31,15 +32,33 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_r"), ParameterInfo("Current")]
-        public double Current => _control.Value * Parameters.Coefficient;
+        public double Current
+        {
+            get
+            {
+                return _control.Value * Parameters.Coefficient;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_r"), ParameterInfo("Voltage")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_r"), ParameterInfo("Power")]
-        public double Power => -Voltage * Current;
+        public double Power
+        {
+            get
+            {
+                return -Voltage * Current;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Biasing" /> class.
@@ -57,9 +76,9 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
             _variables = new OnePort<double>(_biasing, context);
             _control = context.ControlBehaviors.GetValue<IBranchedBehavior<double>>().Branch;
 
-            var pos = _biasing.Map[_variables.Positive];
-            var neg = _biasing.Map[_variables.Negative];
-            var br = _biasing.Map[_control];
+            int pos = _biasing.Map[_variables.Positive];
+            int neg = _biasing.Map[_variables.Negative];
+            int br = _biasing.Map[_control];
             _elements = new ElementSet<double>(_biasing.Solver,
                 new MatrixLocation(pos, br),
                 new MatrixLocation(neg, br));
@@ -67,7 +86,7 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
 
         void IBiasingBehavior.Load()
         {
-            var value = Parameters.Coefficient * Parameters.ParallelMultiplier;
+            double value = Parameters.Coefficient * Parameters.ParallelMultiplier;
             _elements.Add(value, -value);
         }
     }

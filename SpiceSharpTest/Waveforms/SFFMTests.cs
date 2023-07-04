@@ -1,8 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharpTest.Waveforms
 {
@@ -26,12 +28,12 @@ namespace SpiceSharpTest.Waveforms
         [TestCase(1.0, 10.0, 1.0, 2.5, 0.2, 2.0, 1.0)]
         public void When_SimpleTransient_Expect_Reference(double vo, double va, double fc, double mdi, double fs, double phasec, double phases)
         {
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "a", "0", new SFFM(vo, va, fc, mdi, fs, phasec, phases)));
-            var tran = new Transient("tran", 1e-6, 1);
+            Transient tran = new Transient("tran", 1e-6, 1);
             tran.ExportSimulationData += (sender, args) =>
             {
-                var time = args.Time;
+                double time = args.Time;
                 Assert.AreEqual(vo + va * Math.Sin(2.0 * Math.PI * fc * time + phasec * Math.PI / 180.0 +
                     mdi * Math.Sin(2.0 * Math.PI * fs * time + phases * Math.PI / 180.0)),
                     args.GetVoltage("a"), 1e-12);

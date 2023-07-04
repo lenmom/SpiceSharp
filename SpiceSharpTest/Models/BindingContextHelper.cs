@@ -8,7 +8,14 @@ namespace SpiceSharpTest.Models
         {
             private readonly double _dt;
             public double Value { get; set; }
-            public double Derivative => 1.0;
+            public double Derivative
+            {
+                get
+                {
+                    return 1.0;
+                }
+            }
+
             public TmpDerivative(double dt)
             {
                 _dt = dt;
@@ -25,12 +32,12 @@ namespace SpiceSharpTest.Models
 
             public JacobianInfo GetContributions(double coefficient, double currentValue)
             {
-                var g = coefficient / _dt;
+                double g = coefficient / _dt;
                 return new JacobianInfo(g, Derivative - g * currentValue);
             }
             public JacobianInfo GetContributions(double coefficient)
             {
-                var h = 1.0 / _dt;
+                double h = 1.0 / _dt;
                 return new JacobianInfo(
                     h * coefficient,
                     Derivative - h * Value);

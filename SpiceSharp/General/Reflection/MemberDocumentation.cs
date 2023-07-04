@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Documentation
 {
@@ -109,9 +110,15 @@ namespace SpiceSharp.Documentation
             {
                 case PropertyInfo propertyInfo:
                     if (propertyInfo.GetMethod.IsPublic)
+                    {
                         IsProperty = true;
+                    }
+
                     if (propertyInfo.SetMethod.IsPublic)
+                    {
                         IsParameter = true;
+                    }
+
                     MemberType = propertyInfo.PropertyType;
                     BaseType = GetBaseType(propertyInfo.PropertyType);
                     break;
@@ -138,12 +145,15 @@ namespace SpiceSharp.Documentation
                         BaseType = GetBaseType(parameters[0].ParameterType);
                     }
                     else
+                    {
                         throw new SpiceSharpException($"The method {methodInfo.Name} of type {member.DeclaringType} does not describe a parameter or property.");
+                    }
+
                     break;
             }
 
             // Go through the attributes and figure our what its properties are
-            var names = new List<string>();
+            List<string> names = new List<string>();
             foreach (Attribute attribute in Member.GetCustomAttributes())
             {
                 switch (attribute)
@@ -168,7 +178,9 @@ namespace SpiceSharp.Documentation
             if (type.IsGenericType)
             {
                 if (type.BaseType == typeof(GivenParameter<>))
+                {
                     return type.GenericTypeArguments[0];
+                }
             }
             return type;
         }

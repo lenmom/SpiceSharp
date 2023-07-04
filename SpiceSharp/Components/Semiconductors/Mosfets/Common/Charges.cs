@@ -16,9 +16,9 @@ namespace SpiceSharp.Components.Mosfets
         public void Calculate(IMosfetBiasingBehavior behavior, ModelParameters mp)
         {
             TemperatureProperties tp = behavior.Properties;
-            var vgs = behavior.Vgs;
-            var vds = behavior.Vds;
-            var vbs = behavior.Vbs;
+            double vgs = behavior.Vgs;
+            double vds = behavior.Vds;
+            double vbs = behavior.Vbs;
 
             /*
              * Now we do the hard part of the bulk-drain and bulk-source
@@ -37,7 +37,7 @@ namespace SpiceSharp.Components.Mosfets
                 {
                     if (vbs < tp.TempDepCap)
                     {
-                        var arg = 1 - vbs / tp.TempBulkPotential;
+                        double arg = 1 - vbs / tp.TempBulkPotential;
                         double sarg, sargsw;
                         /*
                          * the following block looks somewhat long and messy,
@@ -49,20 +49,33 @@ namespace SpiceSharp.Components.Mosfets
                         if (mp.BulkJunctionBotGradingCoefficient == mp.BulkJunctionSideGradingCoefficient)
                         {
                             if (mp.BulkJunctionBotGradingCoefficient == .5)
+                            {
                                 sarg = sargsw = 1 / Math.Sqrt(arg);
+                            }
                             else
+                            {
                                 sarg = sargsw = Math.Exp(-mp.BulkJunctionBotGradingCoefficient * Math.Log(arg));
+                            }
                         }
                         else
                         {
                             if (mp.BulkJunctionBotGradingCoefficient == .5)
+                            {
                                 sarg = 1 / Math.Sqrt(arg);
+                            }
                             else
+                            {
                                 sarg = Math.Exp(-mp.BulkJunctionBotGradingCoefficient * Math.Log(arg));
+                            }
+
                             if (mp.BulkJunctionSideGradingCoefficient == .5)
+                            {
                                 sargsw = 1 / Math.Sqrt(arg);
+                            }
                             else
+                            {
                                 sargsw = Math.Exp(-mp.BulkJunctionSideGradingCoefficient * Math.Log(arg));
+                            }
                         }
                         Qbs = tp.TempBulkPotential * (tp.Cbs *
                                 (1 - arg * sarg) / (1 - mp.BulkJunctionBotGradingCoefficient)
@@ -86,12 +99,12 @@ namespace SpiceSharp.Components.Mosfets
 
             // Bulk-drain depletion capacitances
             {
-                var vbd = vbs - vds;
+                double vbd = vbs - vds;
                 if (tp.Cbd != 0 || tp.CbdSidewall != 0)
                 {
                     if (vbd < tp.TempDepCap)
                     {
-                        var arg = 1 - vbd / tp.TempBulkPotential;
+                        double arg = 1 - vbd / tp.TempBulkPotential;
                         double sarg, sargsw;
                         /*
                          * the following block looks somewhat long and messy,
@@ -101,17 +114,28 @@ namespace SpiceSharp.Components.Mosfets
                          * (as much as 10% of total job time!)
                          */
                         if (mp.BulkJunctionBotGradingCoefficient == .5 && mp.BulkJunctionSideGradingCoefficient == .5)
+                        {
                             sarg = sargsw = 1 / Math.Sqrt(arg);
+                        }
                         else
                         {
                             if (mp.BulkJunctionBotGradingCoefficient == .5)
+                            {
                                 sarg = 1 / Math.Sqrt(arg);
+                            }
                             else
+                            {
                                 sarg = Math.Exp(-mp.BulkJunctionBotGradingCoefficient * Math.Log(arg));
+                            }
+
                             if (mp.BulkJunctionSideGradingCoefficient == .5)
+                            {
                                 sargsw = 1 / Math.Sqrt(arg);
+                            }
                             else
+                            {
                                 sargsw = Math.Exp(-mp.BulkJunctionSideGradingCoefficient * Math.Log(arg));
+                            }
                         }
                         Qbd = tp.TempBulkPotential * (tp.Cbd *
                                 (1 - arg * sarg)
@@ -146,9 +170,14 @@ namespace SpiceSharp.Components.Mosfets
                  */
                 double cgs, cgd, cgb;
                 if (behavior.Mode > 0)
+                {
                     Transistor.MeyerCharges(vgs, vgs - vds, mp.MosfetType * behavior.Von, mp.MosfetType * behavior.Vdsat, out cgs, out cgd, out cgb, tp.TempPhi, tp.OxideCap);
+                }
                 else
+                {
                     Transistor.MeyerCharges(vgs - vds, vgs, mp.MosfetType * behavior.Von, mp.MosfetType * behavior.Vdsat, out cgd, out cgs, out cgb, tp.TempPhi, tp.OxideCap);
+                }
+
                 Cgs = cgs;
                 Cgd = cgd;
                 Cgb = cgb;

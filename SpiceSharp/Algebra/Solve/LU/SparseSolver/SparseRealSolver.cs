@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Algebra.Solve;
-using System;
+﻿using System;
+
+using SpiceSharp.Algebra.Solve;
 
 namespace SpiceSharp.Algebra
 {
@@ -27,25 +28,40 @@ namespace SpiceSharp.Algebra
         {
             solution.ThrowIfNull(nameof(solution));
             if (!IsFactored)
+            {
                 throw new AlgebraException(Properties.Resources.Algebra_SolverNotFactored.FormatString(nameof(Solve)));
+            }
+
             if (solution.Length != Size)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(solution.Length, Size), nameof(solution));
+            }
+
             if (_intermediate == null || _intermediate.Length != Size + 1)
+            {
                 _intermediate = new double[Size + 1];
-            var order = Size - Degeneracy;
+            }
+
+            int order = Size - Degeneracy;
 
             // Scramble
             ISparseVectorElement<double> rhsElement = Vector.GetFirstInVector();
-            var index = 0;
+            int index = 0;
             while (rhsElement != null && rhsElement.Index <= order)
             {
                 while (index < rhsElement.Index)
+                {
                     _intermediate[index++] = 0.0;
+                }
+
                 _intermediate[index++] = rhsElement.Value;
                 rhsElement = rhsElement.Below;
             }
             while (index <= order)
+            {
                 _intermediate[index++] = 0.0;
+            }
+
             while (index <= Size)
             {
                 _intermediate[index] = solution[Column.Reverse(index)];
@@ -53,9 +69,9 @@ namespace SpiceSharp.Algebra
             }
 
             // Forward substitution
-            for (var i = 1; i <= order; i++)
+            for (int i = 1; i <= order; i++)
             {
-                var temp = _intermediate[i];
+                double temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
                     ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
@@ -71,9 +87,9 @@ namespace SpiceSharp.Algebra
             }
 
             // Backward substitution
-            for (var i = order; i > 0; i--)
+            for (int i = order; i > 0; i--)
             {
-                var temp = _intermediate[i];
+                double temp = _intermediate[i];
                 ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
                 ISparseMatrixElement<double> element = pivot.Right;
                 while (element != null)
@@ -93,29 +109,40 @@ namespace SpiceSharp.Algebra
         {
             solution.ThrowIfNull(nameof(solution));
             if (!IsFactored)
+            {
                 throw new AlgebraException(Properties.Resources.Algebra_SolverNotFactored);
+            }
+
             if (solution.Length != Size)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(solution.Length, Size), nameof(solution));
+            }
 
             if (_intermediate == null || _intermediate.Length != Size + 1)
+            {
                 _intermediate = new double[Size + 1];
-            var order = Size - Degeneracy;
+            }
+
+            int order = Size - Degeneracy;
 
             // Scramble
             ISparseVectorElement<double> rhsElement = Vector.GetFirstInVector();
-            for (var i = 0; i <= order; i++)
+            for (int i = 0; i <= order; i++)
+            {
                 _intermediate[i] = 0.0;
+            }
+
             while (rhsElement != null && rhsElement.Index <= order)
             {
-                var newIndex = Column[Row.Reverse(rhsElement.Index)];
+                int newIndex = Column[Row.Reverse(rhsElement.Index)];
                 _intermediate[newIndex] = rhsElement.Value;
                 rhsElement = rhsElement.Below;
             }
 
             // Forward elimination
-            for (var i = 1; i <= order; i++)
+            for (int i = 1; i <= order; i++)
             {
-                var temp = _intermediate[i];
+                double temp = _intermediate[i];
                 if (!temp.Equals(0.0))
                 {
                     ISparseMatrixElement<double> element = Matrix.FindDiagonalElement(i).Right;
@@ -128,9 +155,9 @@ namespace SpiceSharp.Algebra
             }
 
             // Backward substitution
-            for (var i = order; i > 0; i--)
+            for (int i = order; i > 0; i--)
             {
-                var temp = _intermediate[i];
+                double temp = _intermediate[i];
                 ISparseMatrixElement<double> pivot = Matrix.FindDiagonalElement(i);
                 ISparseMatrixElement<double> element = pivot.Below;
                 while (element != null && element.Row <= order)
@@ -150,7 +177,10 @@ namespace SpiceSharp.Algebra
         {
             // Test for zero pivot
             if (pivot == null || pivot.Value.Equals(0.0))
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_InvalidPivot.FormatString(pivot.Row));
+            }
+
             pivot.Value = 1.0 / pivot.Value;
 
             ISparseMatrixElement<double> upper = pivot.Right;
@@ -164,15 +194,19 @@ namespace SpiceSharp.Algebra
                 ISparseMatrixElement<double> lower = pivot.Below;
                 while (lower != null)
                 {
-                    var row = lower.Row;
+                    int row = lower.Row;
 
                     // Find element in row that lines up with the current lower triangular element
                     while (sub != null && sub.Row < row)
+                    {
                         sub = sub.Below;
+                    }
 
                     // Test to see if the desired element was not found, if not, create fill-in
                     if (sub == null || sub.Row > row)
+                    {
                         sub = CreateFillin(new MatrixLocation(row, upper.Column));
+                    }
 
                     // element -= upper * lower
                     sub.Value -= upper.Value * lower.Value;

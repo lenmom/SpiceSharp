@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Capacitors
 {
@@ -26,15 +27,33 @@ namespace SpiceSharp.Components.Capacitors
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterInfo("The instantaneous current")]
-        public double Current => _qcap.Derivative;
+        public double Current
+        {
+            get
+            {
+                return _qcap.Derivative;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("The instantaneous dissipated power")]
-        public double Power => -Current * Voltage;
+        public double Power
+        {
+            get
+            {
+                return -Current * Voltage;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("The instantaneous voltage")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Time"/> class.
@@ -59,9 +78,13 @@ namespace SpiceSharp.Components.Capacitors
         {
             // Calculate the state for DC
             if (_time.UseIc && Parameters.InitialCondition.Given)
+            {
                 _qcap.Value = Capacitance * Parameters.InitialCondition;
+            }
             else
+            {
                 _qcap.Value = Capacitance * (_variables.Positive.Value - _variables.Negative.Value);
+            }
         }
 
         /// <inheritdoc/>
@@ -69,15 +92,18 @@ namespace SpiceSharp.Components.Capacitors
         {
             // Don't matter for DC analysis
             if (_time.UseDc)
+            {
                 return;
-            var vcap = _variables.Positive.Value - _variables.Negative.Value;
+            }
+
+            double vcap = _variables.Positive.Value - _variables.Negative.Value;
 
             // Integrate
             _qcap.Value = Capacitance * vcap;
             _qcap.Derive();
             JacobianInfo info = _qcap.GetContributions(Capacitance);
-            var geq = info.Jacobian;
-            var ceq = info.Rhs;
+            double geq = info.Jacobian;
+            double ceq = info.Rhs;
 
             // Load matrix and rhs vector
             _elements.Add(geq, -geq, -geq, geq, -ceq, ceq);

@@ -37,7 +37,10 @@ namespace SpiceSharp.Algebra
                 while (element != null)
                 {
                     if (element.Column > location.Column)
+                    {
                         break;
+                    }
+
                     if (element.Column == location.Column)
                     {
                         // Found the element
@@ -54,16 +57,26 @@ namespace SpiceSharp.Algebra
 
                 // Update links for last element
                 if (lastElement == null)
+                {
                     FirstInRow = result;
+                }
                 else
+                {
                     lastElement.Right = result;
+                }
+
                 result.Left = lastElement;
 
                 // Update links for next element
                 if (element == null)
+                {
                     LastInRow = result;
+                }
                 else
+                {
                     element.Left = result;
+                }
+
                 result.Right = element;
 
                 // Could not find existing element
@@ -81,9 +94,15 @@ namespace SpiceSharp.Algebra
                 while (element != null)
                 {
                     if (element.Column == column)
+                    {
                         return element;
+                    }
+
                     if (element.Column > column)
+                    {
                         return null;
+                    }
+
                     element = element.Right;
                 }
 
@@ -97,13 +116,22 @@ namespace SpiceSharp.Algebra
             public void Remove(Element element)
             {
                 if (element.Left == null)
+                {
                     FirstInRow = element.Right;
+                }
                 else
+                {
                     element.Left.Right = element.Right;
+                }
+
                 if (element.Right == null)
+                {
                     LastInRow = element.Left;
+                }
                 else
+                {
                     element.Right.Left = element.Left;
+                }
             }
 
             /// <summary>
@@ -127,7 +155,9 @@ namespace SpiceSharp.Algebra
                 int columnSecond)
             {
                 if (first == null && second == null)
+                {
                     throw new ArgumentNullException(nameof(first) + ", " + nameof(second));
+                }
 
                 if (first == null)
                 {
@@ -142,13 +172,20 @@ namespace SpiceSharp.Algebra
                     Element element = second.Left;
                     Remove(second);
                     while (element.Left != null && element.Left.Column > columnFirst)
+                    {
                         element = element.Left;
+                    }
 
                     // We now have the first element below the insertion point
                     if (element.Left == null)
+                    {
                         FirstInRow = second;
+                    }
                     else
+                    {
                         element.Left.Right = second;
+                    }
+
                     second.Left = element.Left;
                     element.Left = second;
                     second.Right = element;
@@ -167,13 +204,20 @@ namespace SpiceSharp.Algebra
                     Element element = first.Right;
                     Remove(first);
                     while (element.Right != null && element.Right.Column < columnSecond)
+                    {
                         element = element.Right;
+                    }
 
                     // We now have the first element above the insertion point
                     if (element.Right == null)
+                    {
                         LastInRow = first;
+                    }
                     else
+                    {
                         element.Right.Left = first;
+                    }
+
                     first.Right = element.Right;
                     element.Right = first;
                     first.Left = element;
@@ -186,13 +230,22 @@ namespace SpiceSharp.Algebra
                     {
                         // Correct surrounding links
                         if (first.Left == null)
+                        {
                             FirstInRow = second;
+                        }
                         else
+                        {
                             first.Left.Right = second;
+                        }
+
                         if (second.Right == null)
+                        {
                             LastInRow = first;
+                        }
                         else
+                        {
                             second.Right.Left = first;
+                        }
 
                         // Correct element links
                         first.Right = second.Right;
@@ -206,14 +259,24 @@ namespace SpiceSharp.Algebra
                     {
                         // Swap surrounding links
                         if (first.Left == null)
+                        {
                             FirstInRow = second;
+                        }
                         else
+                        {
                             first.Left.Right = second;
+                        }
+
                         first.Right.Left = second;
                         if (second.Right == null)
+                        {
                             LastInRow = first;
+                        }
                         else
+                        {
                             second.Right.Left = first;
+                        }
+
                         second.Left.Right = first;
 
                         // Swap element links

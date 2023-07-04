@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Algebra;
-using System;
+﻿using System;
+
+using SpiceSharp.Algebra;
 
 namespace SpiceSharp.Simulations
 {
@@ -50,7 +51,10 @@ namespace SpiceSharp.Simulations
 
             _state = state.ThrowIfNull(nameof(state));
             if (!state.Map.Contains(variable))
+            {
                 throw new SpiceSharpException(Properties.Resources.Simulations_ConvergenceAidVariableNotFound.FormatString(variable.Name));
+            }
+
             _index = state.Map[variable];
             _diagonal = _state.Solver.GetElement(new MatrixLocation(_index, _index));
             _rhs = !Value.Equals(0.0) ? _state.Solver.GetElement(_index) : _state.Solver.FindElement(_index);
@@ -63,17 +67,21 @@ namespace SpiceSharp.Simulations
         public virtual void Aid()
         {
             // Clear the row
-            var hasOtherTypes = false;
+            bool hasOtherTypes = false;
             foreach (System.Collections.Generic.KeyValuePair<IVariable, int> v in _state.Map)
             {
                 // If the variable is a current, then we can't just set it to 0... 
                 if (v.Key.Unit != Units.Volt)
+                {
                     hasOtherTypes = true;
+                }
                 else
                 {
                     Element<double> elt = _state.Solver.FindElement(new MatrixLocation(_index, v.Value));
                     if (elt != null)
+                    {
                         elt.Value = 0.0;
+                    }
                 }
             }
 
@@ -82,13 +90,17 @@ namespace SpiceSharp.Simulations
             {
                 _diagonal.Value = _force;
                 if (_rhs != null)
+                {
                     _rhs.Value = _force * Value;
+                }
             }
             else
             {
                 _diagonal.Value = 1.0;
                 if (_rhs != null)
+                {
                     _rhs.Value = Value;
+                }
             }
         }
     }

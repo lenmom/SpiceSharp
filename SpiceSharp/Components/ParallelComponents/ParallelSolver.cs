@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -31,46 +32,118 @@ namespace SpiceSharp.Components.ParallelComponents
         }
 
         /// <inheritdoc/>
-        IEnumerable<IParameterSet> IParameterSetCollection.ParameterSets => _parent.ParameterSets;
+        IEnumerable<IParameterSet> IParameterSetCollection.ParameterSets
+        {
+            get
+            {
+                return _parent.ParameterSets;
+            }
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentException">Thrown when trying to write in a parallel solver.</exception>
-        public int Degeneracy { get => _parent.Degeneracy; set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(Degeneracy))); }
+        public int Degeneracy
+        {
+            get
+            {
+                return _parent.Degeneracy;
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(Degeneracy)));
+            }
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentException">Thrown when trying to write in a parallel solver.</exception>
-        public int PivotSearchReduction { get => _parent.PivotSearchReduction; set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(PivotSearchReduction))); }
+        public int PivotSearchReduction
+        {
+            get
+            {
+                return _parent.PivotSearchReduction;
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(PivotSearchReduction)));
+            }
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentException">Thrown when trying to write in a parallel solver.</exception>
-        public bool NeedsReordering { get => _parent.NeedsReordering; set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(NeedsReordering))); }
+        public bool NeedsReordering
+        {
+            get
+            {
+                return _parent.NeedsReordering;
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString(nameof(NeedsReordering)));
+            }
+        }
 
         /// <inheritdoc/>
-        public bool IsFactored => _parent.IsFactored;
+        public bool IsFactored
+        {
+            get
+            {
+                return _parent.IsFactored;
+            }
+        }
 
         /// <inheritdoc/>
         T ISolver<T>.this[int row, int column]
         {
-            get => _parent[row, column];
-            set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[row, column]"));
+            get
+            {
+                return _parent[row, column];
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[row, column]"));
+            }
         }
 
         /// <inheritdoc/>
         T ISolver<T>.this[MatrixLocation location]
         {
-            get => _parent[location];
-            set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[location]"));
+            get
+            {
+                return _parent[location];
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[location]"));
+            }
         }
 
         /// <inheritdoc/>
         T ISolver<T>.this[int row]
         {
-            get => _parent[row];
-            set => throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[row]"));
+            get
+            {
+                return _parent[row];
+            }
+
+            set
+            {
+                throw new ArgumentException(Properties.Resources.Parallel_AccessNotSupported.FormatString("this[row]"));
+            }
         }
 
         /// <inheritdoc/>
-        public int Size => _parent.Size;
+        public int Size
+        {
+            get
+            {
+                return _parent.Size;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParallelSolver{T}"/> class.
@@ -111,16 +184,22 @@ namespace SpiceSharp.Components.ParallelComponents
         {
             Element<T> elt = _parent.FindElement(location);
             if (elt == null)
+            {
                 return null;
+            }
+
             if (_sharedMatrixElements.Contains(location))
             {
                 // We only allow one reference to an element
-                var bridge = new BridgeElement(elt);
+                BridgeElement bridge = new BridgeElement(elt);
                 _bridgeElements.Add(bridge);
                 return bridge;
             }
             else
+            {
                 _sharedMatrixElements.Add(location);
+            }
+
             return elt;
         }
 
@@ -129,15 +208,21 @@ namespace SpiceSharp.Components.ParallelComponents
         {
             Element<T> elt = _parent.FindElement(row);
             if (elt == null)
+            {
                 return null;
+            }
+
             if (_sharedVectorElements.Contains(row))
             {
-                var bridge = new BridgeElement(elt);
+                BridgeElement bridge = new BridgeElement(elt);
                 _bridgeElements.Add(bridge);
                 return bridge;
             }
             else
+            {
                 _sharedVectorElements.Add(row);
+            }
+
             return elt;
         }
 
@@ -147,12 +232,15 @@ namespace SpiceSharp.Components.ParallelComponents
             Element<T> elt = _parent.GetElement(location);
             if (_sharedMatrixElements.Contains(location))
             {
-                var bridge = new BridgeElement(elt);
+                BridgeElement bridge = new BridgeElement(elt);
                 _bridgeElements.Add(bridge);
                 return bridge;
             }
             else
+            {
                 _sharedMatrixElements.Add(location);
+            }
+
             return elt;
         }
 
@@ -168,12 +256,15 @@ namespace SpiceSharp.Components.ParallelComponents
             Element<T> elt = _parent.GetElement(row);
             if (_sharedVectorElements.Contains(row))
             {
-                var bridge = new BridgeElement(elt);
+                BridgeElement bridge = new BridgeElement(elt);
                 _bridgeElements.Add(bridge);
                 return bridge;
             }
             else
+            {
                 _sharedVectorElements.Add(row);
+            }
+
             return elt;
         }
 
@@ -189,7 +280,9 @@ namespace SpiceSharp.Components.ParallelComponents
         public void Reset()
         {
             foreach (BridgeElement bridge in _bridgeElements)
+            {
                 bridge.Value = default;
+            }
         }
 
         /// <inheritdoc/>
@@ -222,7 +315,9 @@ namespace SpiceSharp.Components.ParallelComponents
         public void Apply()
         {
             foreach (BridgeElement bridge in _bridgeElements)
+            {
                 bridge.Apply();
+            }
         }
 
         /// <inheritdoc/>

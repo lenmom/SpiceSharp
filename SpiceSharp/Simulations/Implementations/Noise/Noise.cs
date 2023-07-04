@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace SpiceSharp.Simulations
 {
@@ -28,10 +29,22 @@ namespace SpiceSharp.Simulations
         public NoiseParameters NoiseParameters { get; } = new NoiseParameters();
 
         /// <inheritdoc/>
-        NoiseParameters IParameterized<NoiseParameters>.Parameters => NoiseParameters;
+        NoiseParameters IParameterized<NoiseParameters>.Parameters
+        {
+            get
+            {
+                return NoiseParameters;
+            }
+        }
 
         /// <inheritdoc/>
-        INoiseSimulationState IStateful<INoiseSimulationState>.State => _state;
+        INoiseSimulationState IStateful<INoiseSimulationState>.State
+        {
+            get
+            {
+                return _state;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Noise"/> class.
@@ -93,17 +106,17 @@ namespace SpiceSharp.Simulations
         protected override void Execute()
         {
             base.Execute();
-            var cstate = (ComplexSimulationState)GetState<IComplexSimulationState>();
+            ComplexSimulationState cstate = (ComplexSimulationState)GetState<IComplexSimulationState>();
             NoiseParameters noiseconfig = NoiseParameters;
-            var exportargs = new ExportDataEventArgs(this);
+            ExportDataEventArgs exportargs = new ExportDataEventArgs(this);
 
             // Find the output nodes
-            var posOutNode = noiseconfig.Output != null ? cstate.Map[cstate.GetSharedVariable(noiseconfig.Output)] : 0;
-            var negOutNode = noiseconfig.OutputRef != null ? cstate.Map[cstate.GetSharedVariable(noiseconfig.OutputRef)] : 0;
+            int posOutNode = noiseconfig.Output != null ? cstate.Map[cstate.GetSharedVariable(noiseconfig.Output)] : 0;
+            int negOutNode = noiseconfig.OutputRef != null ? cstate.Map[cstate.GetSharedVariable(noiseconfig.OutputRef)] : 0;
 
             // We only want to enable the source that is flagged as the input
             IBehaviorContainer source = EntityBehaviors[NoiseParameters.InputSource];
-            var originalParameters = new List<Tuple<IndependentSourceParameters, double, double>>();
+            List<Tuple<IndependentSourceParameters, double, double>> originalParameters = new List<Tuple<IndependentSourceParameters, double, double>>();
             foreach (IBehaviorContainer container in EntityBehaviors)
             {
                 if (container.TryGetParameterSet(out IndependentSourceParameters parameters))
@@ -127,14 +140,19 @@ namespace SpiceSharp.Simulations
                 // Initialize
                 IEnumerator<double> freq = FrequencyParameters.Frequencies.GetEnumerator();
                 if (!freq.MoveNext())
+                {
                     return;
+                }
+
                 cstate.Laplace = 0;
                 Op(BiasingParameters.DcMaxIterations);
 
                 // Initialize all devices for small-signal analysis and reset all noise contributions
                 InitializeAcParameters();
                 foreach (INoiseBehavior behavior in _noiseBehaviors)
+                {
                     behavior.Initialize();
+                }
 
                 // Loop through noise figures
                 do
@@ -144,7 +162,7 @@ namespace SpiceSharp.Simulations
                     AcIterate();
 
                     Complex val = cstate.Solution[posOutNode] - cstate.Solution[negOutNode];
-                    var inverseGainSquared = 1.0 / Math.Max(val.Real * val.Real + val.Imaginary * val.Imaginary, 1e-20);
+                    double inverseGainSquared = 1.0 / Math.Max(val.Real * val.Real + val.Imaginary * val.Imaginary, 1e-20);
                     _state.SetCurrentPoint(new NoisePoint(freq.Current, inverseGainSquared));
 
                     // Solve the adjoint system

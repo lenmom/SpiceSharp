@@ -51,9 +51,15 @@
                 // This is probably only relevant for dictionaries &
                 // sorted sets, so let's not work with tolerances.
                 if (!Time.Equals(pt.Time))
+                {
                     return false;
+                }
+
                 if (!Value.Equals(pt.Value))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;

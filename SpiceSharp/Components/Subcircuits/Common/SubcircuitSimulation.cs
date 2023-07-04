@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Common;
 using SpiceSharp.General;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -60,7 +61,10 @@ namespace SpiceSharp.Components.Subcircuits
         public override S GetState<S>()
         {
             if (LocalStates.TryGetValue(out S result))
+            {
                 return result;
+            }
+
             return Parent.GetState<S>();
         }
     }

@@ -1,9 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
 using SpiceSharp.Simulations;
-using System;
+
 using Transistor = SpiceSharp.Components.Mosfets.Transistor;
 
 namespace SpiceSharp.Components.JFETs
@@ -151,11 +153,17 @@ namespace SpiceSharp.Components.JFETs
             _sourceNode = BiasingState.Map[SourcePrime];
 
             if (ModelParameters.DrainResistance > 0)
+            {
                 DrainPrime = BiasingState.CreatePrivateVariable(Name.Combine("drain"), Units.Volt);
+            }
+
             _drainPrimeNode = BiasingState.Map[DrainPrime];
 
             if (ModelParameters.SourceResistance > 0)
+            {
                 SourcePrime = BiasingState.CreatePrivateVariable(Name.Combine("source"), Units.Volt);
+            }
+
             _sourcePrimeNode = BiasingState.Map[SourcePrime];
 
             _elements = new ElementSet<double>(BiasingState.Solver, new[] {
@@ -181,18 +189,18 @@ namespace SpiceSharp.Components.JFETs
         protected virtual void Load()
         {
             // DC model parameters
-            var beta = ModelParameters.Beta * Parameters.Area;
-            var gdpr = ModelParameters.DrainConductance * Parameters.Area;
-            var gspr = ModelParameters.SourceConductance * Parameters.Area;
-            var csat = TempSaturationCurrent * Parameters.Area;
+            double beta = ModelParameters.Beta * Parameters.Area;
+            double gdpr = ModelParameters.DrainConductance * Parameters.Area;
+            double gspr = ModelParameters.SourceConductance * Parameters.Area;
+            double csat = TempSaturationCurrent * Parameters.Area;
 
             double ggs, cg;
             double ggd, cgd;
             double cdrain, gm, gds, betap, bfac;
 
             // Get the current voltages
-            Initialize(out var vgs, out var vgd, out var check);
-            var vds = vgs - vgd;
+            Initialize(out double vgs, out double vgd, out bool check);
+            double vds = vgs - vgd;
 
             // Determine dc current and derivatives 
             if (vgs <= -5 * Parameters.Temperature * Constants.KOverQ)
@@ -202,7 +210,7 @@ namespace SpiceSharp.Components.JFETs
             }
             else
             {
-                var evgs = Math.Exp(vgs / (Parameters.Temperature * Constants.KOverQ));
+                double evgs = Math.Exp(vgs / (Parameters.Temperature * Constants.KOverQ));
                 ggs = csat * evgs / (Parameters.Temperature * Constants.KOverQ) + BiasingParameters.Gmin;
                 cg = csat * (evgs - 1) + BiasingParameters.Gmin * vgs;
             }
@@ -214,7 +222,7 @@ namespace SpiceSharp.Components.JFETs
             }
             else
             {
-                var evgd = Math.Exp(vgd / (Parameters.Temperature * Constants.KOverQ));
+                double evgd = Math.Exp(vgd / (Parameters.Temperature * Constants.KOverQ));
                 ggd = csat * evgd / (Parameters.Temperature * Constants.KOverQ) + BiasingParameters.Gmin;
                 cgd = csat * (evgd - 1) + BiasingParameters.Gmin * vgd;
             }
@@ -222,10 +230,10 @@ namespace SpiceSharp.Components.JFETs
             cg += cgd;
 
             // Modification for Sydney University JFET model
-            var vto = ModelParameters.Threshold;
+            double vto = ModelParameters.Threshold;
             if (vds >= 0)
             {
-                var vgst = vgs - vto;
+                double vgst = vgs - vto;
 
                 // Compute drain current and derivatives for normal mode
                 if (vgst <= 0)
@@ -242,8 +250,8 @@ namespace SpiceSharp.Components.JFETs
                     if (vgst >= vds)
                     {
                         // Normal mode, linear region
-                        var apart = 2 * ModelParameters.B + 3 * bfac * (vgst - vds);
-                        var cpart = vds * (vds * (bfac * vds - ModelParameters.B) + vgst * apart);
+                        double apart = 2 * ModelParameters.B + 3 * bfac * (vgst - vds);
+                        double cpart = vds * (vds * (bfac * vds - ModelParameters.B) + vgst * apart);
                         cdrain = betap * cpart;
                         gm = betap * vds * (apart + 3 * bfac * vgst);
                         gds = betap * (vgst - vds) * apart
@@ -255,7 +263,7 @@ namespace SpiceSharp.Components.JFETs
                         gm = betap * vgst * (2 * ModelParameters.B + 3 * bfac);
 
                         // Normal mode, saturation region
-                        var cpart = vgst * vgst * (ModelParameters.B + bfac);
+                        double cpart = vgst * vgst * (ModelParameters.B + bfac);
                         cdrain = betap * cpart;
                         gds = ModelParameters.LModulation * beta * cpart;
                     }
@@ -263,7 +271,7 @@ namespace SpiceSharp.Components.JFETs
             }
             else
             {
-                var vgdt = vgd - vto;
+                double vgdt = vgd - vto;
 
                 // Compute drain current and derivatives for inverse mode
                 if (vgdt <= 0)
@@ -280,8 +288,8 @@ namespace SpiceSharp.Components.JFETs
                     if (vgdt + vds >= 0)
                     {
                         // Inverse mode, linear region
-                        var apart = 2 * ModelParameters.B + 3 * bfac * (vgdt + vds);
-                        var cpart = vds * (-vds * (-bfac * vds - ModelParameters.B) + vgdt * apart);
+                        double apart = 2 * ModelParameters.B + 3 * bfac * (vgdt + vds);
+                        double cpart = vds * (-vds * (-bfac * vds - ModelParameters.B) + vgdt * apart);
                         cdrain = betap * cpart;
                         gm = betap * vds * (apart + 3 * bfac * vgdt);
                         gds = betap * (vgdt + vds) * apart
@@ -293,14 +301,14 @@ namespace SpiceSharp.Components.JFETs
                         gm = -betap * vgdt * (2 * ModelParameters.B + 3 * bfac);
 
                         // Inverse mode, saturation region
-                        var cpart = vgdt * vgdt * (ModelParameters.B + bfac);
+                        double cpart = vgdt * vgdt * (ModelParameters.B + bfac);
                         cdrain = -betap * cpart;
                         gds = ModelParameters.LModulation * beta * cpart - gm;
                     }
                 }
             }
 
-            var cd = cdrain - cgd;
+            double cd = cdrain - cgd;
             Vgs = vgs;
             Vgd = vgd;
             Cg = cg;
@@ -315,15 +323,17 @@ namespace SpiceSharp.Components.JFETs
             if (_iteration.Mode != IterationModes.Fix || (_time != null && !_time.UseIc))
             {
                 if (check)
+                {
                     _iteration.IsConvergent = false;
+                }
             }
 
             // Load current vector
-            var ceqgd = ModelParameters.JFETType * (cgd - ggd * vgd);
-            var ceqgs = ModelParameters.JFETType * (cg - cgd - ggs * vgs);
-            var cdreq = ModelParameters.JFETType * (cd + cgd - gds * vds - gm * vgs);
+            double ceqgd = ModelParameters.JFETType * (cgd - ggd * vgd);
+            double ceqgs = ModelParameters.JFETType * (cg - cgd - ggs * vgs);
+            double cdreq = ModelParameters.JFETType * (cd + cgd - gds * vds - gm * vgs);
 
-            var m = Parameters.ParallelMultiplier;
+            double m = Parameters.ParallelMultiplier;
             _elements.Add(
                 // Y-matrix
                 -gdpr * m,
@@ -368,7 +378,7 @@ namespace SpiceSharp.Components.JFETs
             check = true;
             if (_iteration.Mode == IterationModes.Junction && _method != null && (_time != null && _time.UseDc && _time.UseIc))
             {
-                var vds = ModelParameters.JFETType * Parameters.InitialVds;
+                double vds = ModelParameters.JFETType * Parameters.InitialVds;
                 vgs = ModelParameters.JFETType * Parameters.InitialVgs;
                 vgd = vgs - vds;
             }

@@ -1,12 +1,13 @@
-﻿using SpiceSharp.Attributes;
-using SpiceSharp.Components;
-using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+
+using SpiceSharp.Attributes;
+using SpiceSharp.Components;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Documentation
 {
@@ -32,11 +33,15 @@ namespace SpiceSharp.Documentation
                 if (mt != MemberTypes.Property &&
                     mt != MemberTypes.Field &&
                     mt != MemberTypes.Method)
+                {
                     continue;
+                }
 
                 // Make sure it can be named
                 if (!member.GetCustomAttributes<ParameterNameAttribute>().Any())
+                {
                     continue;
+                }
 
                 // Create documentation
                 yield return new MemberDocumentation(member);
@@ -53,9 +58,12 @@ namespace SpiceSharp.Documentation
         {
             type.ThrowIfNull(nameof(type));
             PinAttribute[] pinAttributes = type.GetCustomAttributes<PinAttribute>().ToArray();
-            var pins = new string[pinAttributes.Length];
+            string[] pins = new string[pinAttributes.Length];
             foreach (PinAttribute attribute in pinAttributes)
+            {
                 pins[attribute.Index] = attribute.Name;
+            }
+
             return pins;
         }
 
@@ -85,12 +93,16 @@ namespace SpiceSharp.Documentation
                 if (ps is IParameterSetCollection child)
                 {
                     foreach (MemberDocumentation md in Parameters(child))
+                    {
                         yield return md;
+                    }
                 }
 
                 // Show the parameters in the parameter set
                 foreach (MemberDocumentation md in Parameters(ps))
+                {
                     yield return md;
+                }
             }
         }
 
@@ -118,12 +130,14 @@ namespace SpiceSharp.Documentation
         /// </returns>
         public static IReadOnlyDictionary<MemberDocumentation, T> ParameterValues<T>(this IParameterSetCollection parameterSetCollection, bool givenOnly = true)
         {
-            var result = new Dictionary<MemberDocumentation, T>();
+            Dictionary<MemberDocumentation, T> result = new Dictionary<MemberDocumentation, T>();
             foreach (IParameterSet ps in parameterSetCollection.ParameterSets)
             {
                 IReadOnlyDictionary<MemberDocumentation, T> n = ParameterValues<T>(ps, givenOnly);
                 foreach (KeyValuePair<MemberDocumentation, T> pair in n)
+                {
                     result.Add(pair.Key, pair.Value);
+                }
             }
             return new ReadOnlyDictionary<MemberDocumentation, T>(result);
         }
@@ -141,22 +155,30 @@ namespace SpiceSharp.Documentation
         public static IReadOnlyDictionary<MemberDocumentation, T> ParameterValues<T>(this IParameterSet parameterSet, bool givenOnly = true)
         {
             parameterSet.ThrowIfNull(nameof(parameterSet));
-            var result = new Dictionary<MemberDocumentation, T>();
+            Dictionary<MemberDocumentation, T> result = new Dictionary<MemberDocumentation, T>();
             foreach (MemberDocumentation member in Parameters(parameterSet))
             {
                 if (member.Names == null || member.Names.Count == 0)
+                {
                     continue;
+                }
+
                 if (givenOnly)
                 {
                     if (parameterSet.TryGetProperty<GivenParameter<T>>(member.Names[0], out GivenParameter<T> gp))
                     {
                         if (gp.Given)
+                        {
                             result.Add(member, gp.Value);
+                        }
+
                         continue;
                     }
                 }
                 if (parameterSet.TryGetProperty<T>(member.Names[0], out T value))
+                {
                     result.Add(member, value);
+                }
             }
             return new ReadOnlyDictionary<MemberDocumentation, T>(result);
         }
@@ -173,14 +195,19 @@ namespace SpiceSharp.Documentation
         public static string AsString<T>(this IReadOnlyDictionary<MemberDocumentation, T> parameterValues)
         {
             parameterValues.ThrowIfNull(nameof(parameterValues));
-            var sb = new StringBuilder(parameterValues.Count * 10);
-            var first = true;
+            StringBuilder sb = new StringBuilder(parameterValues.Count * 10);
+            bool first = true;
             foreach (KeyValuePair<MemberDocumentation, T> value in parameterValues.Where(p => p.Key.IsParameter && p.Key.IsProperty))
             {
                 if (first)
+                {
                     first = false;
+                }
                 else
+                {
                     sb.Append(' ');
+                }
+
                 sb.Append("{0}={1}".FormatString(value.Key.Names[0] ?? "?", value.Value));
             }
             return sb.ToString();

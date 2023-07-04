@@ -96,7 +96,10 @@ namespace SpiceSharp.Simulations.Variables
         public override bool Equals(object obj)
         {
             if (obj is SIUnits units)
+            {
                 return Equals(units);
+            }
+
             return false;
         }
 
@@ -131,21 +134,42 @@ namespace SpiceSharp.Simulations.Variables
         /// </returns>
         public override string ToString()
         {
-            var sb = new StringBuilder(16);
+            StringBuilder sb = new StringBuilder(16);
             if (_m != 0)
+            {
                 sb.Append(FormatUnit("m", _m));
+            }
+
             if (_s != 0)
+            {
                 sb.Append(FormatUnit("s", _s));
+            }
+
             if (_kg != 0)
+            {
                 sb.Append(FormatUnit("kg", _kg));
+            }
+
             if (_a != 0)
+            {
                 sb.Append(FormatUnit("A", _a));
+            }
+
             if (_k != 0)
+            {
                 sb.Append(FormatUnit("K", _k));
+            }
+
             if (_mol != 0)
+            {
                 sb.Append(FormatUnit("mol", _mol));
+            }
+
             if (_cd != 0)
+            {
                 sb.Append(FormatUnit("cd", _cd));
+            }
+
             return sb.ToString();
         }
 
@@ -170,9 +194,15 @@ namespace SpiceSharp.Simulations.Variables
         private static string FormatUnit(string unit, Fraction fraction)
         {
             if (fraction == 1)
+            {
                 return unit;
+            }
+
             if (fraction.Denominator == 1)
+            {
                 return "{0}^{1}".FormatString(unit, fraction);
+            }
+
             return "{0}^({1})".FormatString(unit, fraction);
         }
 

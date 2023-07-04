@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Behaviors;
-using System;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -38,12 +39,16 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_acceptWorkload != null)
             {
                 foreach (IAcceptBehavior behavior in _acceptBehaviors)
+                {
                     _acceptWorkload.Actions.Add(behavior.Accept);
+                }
             }
             if (_probeWorkload != null)
             {
                 foreach (IAcceptBehavior behavior in _acceptBehaviors)
+                {
                     _probeWorkload.Actions.Add(behavior.Probe);
+                }
             }
         }
 
@@ -51,11 +56,15 @@ namespace SpiceSharp.Components.ParallelComponents
         void IAcceptBehavior.Probe()
         {
             if (_probeWorkload != null)
+            {
                 _probeWorkload.Execute();
+            }
             else
             {
                 foreach (IAcceptBehavior behavior in _acceptBehaviors)
+                {
                     behavior.Probe();
+                }
             }
         }
 
@@ -63,11 +72,15 @@ namespace SpiceSharp.Components.ParallelComponents
         void IAcceptBehavior.Accept()
         {
             if (_acceptWorkload != null)
+            {
                 _acceptWorkload.Execute();
+            }
             else
             {
                 foreach (IAcceptBehavior behavior in _acceptBehaviors)
+                {
                     behavior.Accept();
+                }
             }
         }
     }

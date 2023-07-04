@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Distributed;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.LosslessTransmissionLines
 {
@@ -61,23 +62,23 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
             IVector<double> sol = BiasingState.Solution;
 
             // Calculate the inputs
-            var z = Parameters.Impedance / Parameters.ParallelMultiplier;
-            var input1 = sol[_pos2] - sol[_neg2] + z * sol[_br2];
-            var input2 = sol[_pos1] - sol[_neg1] + z * sol[_br1];
+            double z = Parameters.Impedance / Parameters.ParallelMultiplier;
+            double input1 = sol[_pos2] - sol[_neg2] + z * sol[_br2];
+            double input2 = sol[_pos1] - sol[_neg1] + z * sol[_br1];
             Signals.SetProbedValues(input1, input2);
         }
 
         /// <inheritdoc/>
         void IBiasingBehavior.Load()
         {
-            var m = Parameters.ParallelMultiplier;
-            var y = Parameters.Admittance * m;
+            double m = Parameters.ParallelMultiplier;
+            double y = Parameters.Admittance * m;
             IVector<double> sol = BiasingState.Solution;
 
             // Calculate inputs
-            var z = Parameters.Impedance / m;
-            var input1 = sol[_pos2] - sol[_neg2] + z * sol[_br2];
-            var input2 = sol[_pos1] - sol[_neg1] + z * sol[_br1];
+            double z = Parameters.Impedance / m;
+            double input1 = sol[_pos2] - sol[_neg2] + z * sol[_br2];
+            double input2 = sol[_pos1] - sol[_neg1] + z * sol[_br1];
             Signals.SetProbedValues(input1, input2);
 
             // Apply contributions to the Y-matrix and right-hand side vector
@@ -96,7 +97,7 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
                     y, -y, -y, y, 1, 1, -1, -1
                     );
             }
-            var c = Signals.InputDerivative;
+            double c = Signals.InputDerivative;
             double d = -c * z;
             _elements.Add(
                 -c, c, d,

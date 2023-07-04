@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Attributes;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Simulations
 {
@@ -25,12 +26,15 @@ namespace SpiceSharp.Simulations
         /// <inheritdoc/>
         public DCParameters Clone()
         {
-            var clone = new DCParameters
+            DCParameters clone = new DCParameters
             {
                 SweepMaxIterations = SweepMaxIterations
             };
             foreach (ISweep sweep in Sweeps)
+            {
                 clone.Sweeps.Add(sweep.Clone());
+            }
+
             return clone;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp.General;
 
 namespace SpiceSharpTest.General
@@ -14,16 +15,16 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_Inheritance1_Expect_Reference()
         {
-            var a = new A();
-            var b = new B();
-            var d = new InheritedTypeDictionary<object>();
+            A a = new A();
+            B b = new B();
+            InheritedTypeDictionary<object> d = new InheritedTypeDictionary<object>();
             d.Add(typeof(A), a);
             d.Add(typeof(B), b);
 
             Assert.AreEqual(a, d[typeof(A)]);
             Assert.AreEqual(b, d[typeof(B)]);
             Assert.AreEqual(b, d[typeof(IB)]);
-            Assert.Throws<AmbiguousTypeException>(() => { var r = d[typeof(IA)]; });
+            Assert.Throws<AmbiguousTypeException>(() => { object r = d[typeof(IA)]; });
         }
     }
 }

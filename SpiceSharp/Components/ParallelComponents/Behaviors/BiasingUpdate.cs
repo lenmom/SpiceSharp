@@ -37,7 +37,9 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_updateWorkload != null)
             {
                 foreach (IBiasingUpdateBehavior behavior in _updateBehaviors)
+                {
                     _updateWorkload.Actions.Add(behavior.Update);
+                }
             }
         }
 
@@ -45,11 +47,15 @@ namespace SpiceSharp.Components.ParallelComponents
         void IBiasingUpdateBehavior.Update()
         {
             if (_updateWorkload != null)
+            {
                 _updateWorkload.Execute();
+            }
             else
             {
                 foreach (IBiasingUpdateBehavior behavior in _updateBehaviors)
+                {
                     behavior.Update();
+                }
             }
         }
     }

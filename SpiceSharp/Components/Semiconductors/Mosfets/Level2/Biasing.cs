@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Mosfets.Level2
 {
@@ -41,7 +42,13 @@ namespace SpiceSharp.Components.Mosfets.Level2
         protected const double MaximumExponentArgument = 709.0;
 
         /// <inheritdoc/>
-        TemperatureProperties IMosfetBiasingBehavior.Properties => Properties;
+        TemperatureProperties IMosfetBiasingBehavior.Properties
+        {
+            get
+            {
+                return Properties;
+            }
+        }
 
         /// <inheritdoc/>
         public event EventHandler<MosfetContributionEventArgs> UpdateContributions;
@@ -136,7 +143,7 @@ namespace SpiceSharp.Components.Mosfets.Level2
             Contributions<double> con = _contributions;
             con.Reset();
 
-            var vt = Constants.KOverQ * Parameters.Temperature;
+            double vt = Constants.KOverQ * Parameters.Temperature;
             double DrainSatCur, SourceSatCur;
             if ((Properties.TempSatCurDensity == 0) || (Parameters.DrainArea == 0) || (Parameters.SourceArea == 0))
             {
@@ -148,12 +155,12 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 DrainSatCur = Parameters.ParallelMultiplier * Properties.TempSatCurDensity * Parameters.DrainArea;
                 SourceSatCur = Parameters.ParallelMultiplier * Properties.TempSatCurDensity * Parameters.SourceArea;
             }
-            var Beta = Properties.TempTransconductance * Parameters.Width * Parameters.ParallelMultiplier / Properties.EffectiveLength;
+            double Beta = Properties.TempTransconductance * Parameters.Width * Parameters.ParallelMultiplier / Properties.EffectiveLength;
 
             // Get the current voltages
-            Initialize(out var vgs, out var vds, out var vbs, out var check);
-            var vbd = vbs - vds;
-            var vgd = vgs - vds;
+            Initialize(out double vgs, out double vds, out double vbs, out bool check);
+            double vbd = vbs - vds;
+            double vgd = vgs - vds;
 
             if (vbs <= -3 * vt)
             {
@@ -162,7 +169,7 @@ namespace SpiceSharp.Components.Mosfets.Level2
             }
             else
             {
-                var evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / vt));
+                double evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / vt));
                 con.Bs.G = SourceSatCur * evbs / vt + _config.Gmin;
                 con.Bs.C = SourceSatCur * (evbs - 1) + _config.Gmin * vbs;
             }
@@ -173,15 +180,19 @@ namespace SpiceSharp.Components.Mosfets.Level2
             }
             else
             {
-                var evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / vt));
+                double evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / vt));
                 con.Bd.G = DrainSatCur * evbd / vt + _config.Gmin;
                 con.Bd.C = DrainSatCur * (evbd - 1) + _config.Gmin * vbd;
             }
 
             if (vds >= 0)
+            {
                 Mode = 1;
+            }
             else
+            {
                 Mode = -1;
+            }
 
             // An example out in the wild once-good, now-bad spaghetti code... Not touching this too much.
             {
@@ -209,12 +220,12 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double dbrgdb;
                 double eta;
                 double vbin;
-                var argd = 0.0;
-                var args = 0.0;
+                double argd = 0.0;
+                double args = 0.0;
                 double argss;
                 double argsd;
-                var argxs = 0.0;
-                var argxd = 0.0;
+                double argxs = 0.0;
+                double argxd = 0.0;
                 double daddb2;
                 double dasdb2;
                 double dbargd;
@@ -232,8 +243,8 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double vth;
                 double cfs;
                 double cdonco;
-                var xn = 0.0;
-                var argg = 0.0;
+                double xn = 0.0;
+                double argg = 0.0;
                 double vgst;
                 double sarg3;
                 double sbiarg;
@@ -241,9 +252,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 double body;
                 double gdbdv;
                 double dodvbs;
-                var dodvds = 0.0;
-                var dxndvd = 0.0;
-                var dxndvb = 0.0;
+                double dodvds = 0.0;
+                double dxndvd = 0.0;
+                double dxndvb = 0.0;
                 double udenom;
                 double dudvgs;
                 double dudvds;
@@ -317,10 +328,10 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 /* 'local' variables - these switch d & s around appropriately
                  * so that we don't have to worry about vds < 0
                  */
-                var lvbs = Mode == 1 ? vbs : vbd;
-                var lvds = Mode * vds;
-                var lvgs = Mode == 1 ? vgs : vgd;
-                var phiMinVbs = Properties.TempPhi - lvbs;
+                double lvbs = Mode == 1 ? vbs : vbd;
+                double lvds = Mode * vds;
+                double lvgs = Mode == 1 ? vgs : vgd;
+                double phiMinVbs = Properties.TempPhi - lvbs;
                 double tmp; /* a temporary variable, not used for more than */
                 /* about 10 lines at a time */
                 int iknt;
@@ -427,9 +438,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
                     dgdvds = 0.0;
                     dgddb2 = 0.0;
                 }
-                var von = vbin + gamasd * sarg;
+                double von = vbin + gamasd * sarg;
                 vth = von;
-                var vdsat = 0.0;
+                double vdsat = 0.0;
                 if (ModelParameters.FastSurfaceStateDensity != 0.0 && Properties.OxideCap != 0.0)
                 {
                     // XXX constant per model
@@ -465,9 +476,16 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 body = barg * barg * barg - sarg3;
                 gdbdv = 2.0 * gammad * (barg * barg * dbrgdb - sarg * sarg * dsrgdb);
                 dodvbs = -factor + dgdvbs * sarg + gammad * dsrgdb;
-                if (ModelParameters.FastSurfaceStateDensity == 0.0) goto line400;
+                if (ModelParameters.FastSurfaceStateDensity == 0.0)
+                {
+                    goto line400;
+                }
+
                 if (Properties.OxideCap == 0.0)
+                {
                     goto line410;
+                }
+
                 dxndvb = 2.0 * dgdvbs * dsrgdb + gammad * d2sdb2 + dgddb2 * sarg;
                 dodvbs += vt * dxndvb;
                 dxndvd = dgdvds * dsrgdb;
@@ -477,11 +495,17 @@ namespace SpiceSharp.Components.Mosfets.Level2
              */
             line400:
                 if (Properties.OxideCap <= 0.0)
+                {
                     goto line410;
+                }
+
                 udenom = vgst;
                 tmp = ModelParameters.CriticalField * 100 /* cm/m */ * EpsilonSilicon / ModelTemperature.Properties.OxideCapFactor;
                 if (udenom <= tmp)
+                {
                     goto line410;
+                }
+
                 ufact = Math.Exp(ModelParameters.CriticalFieldExp * Math.Log(tmp / udenom));
                 ueff = ModelParameters.SurfaceMobility * 1e-4 /*(m**2/cm**2) */ * ufact;
                 dudvgs = -ufact * ModelParameters.CriticalFieldExp / udenom;
@@ -582,7 +606,10 @@ namespace SpiceSharp.Components.Mosfets.Level2
                         b4[i - 1] = y3 / 2.0 + _sig2[i - 1] * b3;
                         delta4 = a4[i - 1] * a4[i - 1] / 4.0 - b4[i - 1];
                         if (delta4 < 0)
+                        {
                             continue;
+                        }
+
                         iknt += 1;
                         tmp = Math.Sqrt(delta4);
                         x4[iknt - 1] = -a4[i - 1] / 2.0 + tmp;
@@ -593,20 +620,28 @@ namespace SpiceSharp.Components.Mosfets.Level2
                     for (j = 1; j <= iknt; j++)
                     {
                         if (x4[j - 1] <= 0)
+                        {
                             continue;
+                        }
                         /* XXX implement this sanely */
                         poly4[j - 1] = x4[j - 1] * x4[j - 1] * x4[j - 1] * x4[j - 1] + a1 * x4[j - 1] *
                             x4[j - 1] * x4[j - 1];
                         poly4[j - 1] = poly4[j - 1] + b1 * x4[j - 1] * x4[j - 1] + c1 * x4[j - 1] + d1;
                         if (Math.Abs(poly4[j - 1]) > 1.0e-6)
+                        {
                             continue;
+                        }
+
                         jknt += 1;
                         if (jknt <= 1)
                         {
                             xvalid = x4[j - 1];
                         }
                         if (x4[j - 1] > xvalid)
+                        {
                             continue;
+                        }
+
                         xvalid = x4[j - 1];
                     }
                     if (jknt > 0)
@@ -703,7 +738,11 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 dldvds = -xlamda - dldvds;
                 xleff = Properties.EffectiveLength * clfact;
                 deltal = xlamda * lvds * Properties.EffectiveLength;
-                if (ModelParameters.SubstrateDoping == 0.0) xwb = 0.25e-6;
+                if (ModelParameters.SubstrateDoping == 0.0)
+                {
+                    xwb = 0.25e-6;
+                }
+
                 if (xleff < xwb)
                 {
                     xleff = xwb / (1.0 + (deltal - xld) / xwb);
@@ -742,23 +781,34 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 if (ModelParameters.FastSurfaceStateDensity != 0 && Properties.OxideCap != 0)
                 {
                     if (lvgs > von)
+                    {
                         goto line900;
+                    }
                 }
                 else
                 {
                     if (lvgs > vbin)
+                    {
                         goto line900;
+                    }
+
                     goto doneval;
                 }
 
                 if (lvgs > von)
+                {
                     goto line900;
+                }
 
                 // Subthreshold region
                 if (vdsat <= 0)
                 {
                     con.Ds.G = 0.0;
-                    if (lvgs > vth) goto doneval;
+                    if (lvgs > vth)
+                    {
+                        goto doneval;
+                    }
+
                     goto line1050;
                 }
                 vdson = Math.Min(vdsat, lvds);
@@ -772,16 +822,25 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 didvds = beta1 * (von - vbin - eta * vdson - gammad * barg);
                 gdson = -cdson * dldvds / clfact - beta1 * dgdvds * body / 1.5;
                 if (lvds < vdsat)
+                {
                     gdson += didvds;
+                }
+
                 gbson = -cdson * dldvbs / clfact + beta1 * (dodvbs * vdson + factor * vdson - dgdvbs * body / 1.5 - gdbdv);
                 if (lvds > vdsat)
+                {
                     gbson += didvds * dsdvbs;
+                }
+
                 expg = Math.Exp(argg * (lvgs - von));
                 con.Ds.C = cdson * expg;
                 gmw = con.Ds.C * argg;
                 Gm = gmw;
                 if (lvds > vdsat)
+                {
                     Gm = gmw + didvds * dsdvgs * expg;
+                }
+
                 tmp = gmw * (lvgs - von) / xn;
                 con.Ds.G = gdson * expg - Gm * dodvds - tmp * dxndvd;
                 Gmbs = gbson * expg - Gm * dodvbs - tmp * dxndvb;
@@ -838,7 +897,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
             if (!Parameters.Off && _iteration.Mode != IterationModes.Fix)
             {
                 if (check)
+                {
                     _iteration.IsConvergent = false;
+                }
             }
 
             Gbs = con.Bs.G;
@@ -905,16 +966,16 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 _iteration.Mode == IterationModes.Fix && !Parameters.Off)
             {
                 // General iteration
-                var s = _variables.SourcePrime.Value;
+                double s = _variables.SourcePrime.Value;
                 vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
                 vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
                 vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
 
                 // now some common crunching for some more useful quantities
-                var vbd = vbs - vds;
-                var vgd = vgs - vds;
-                var vgdo = Vgs - Vds;
-                var von = ModelParameters.MosfetType * Von;
+                double vbd = vbs - vds;
+                double vgd = vgs - vds;
+                double vgdo = Vgs - Vds;
+                double von = ModelParameters.MosfetType * Von;
 
                 /*
 				 * limiting
@@ -939,7 +1000,9 @@ namespace SpiceSharp.Components.Mosfets.Level2
 
                 check = false;
                 if (vds >= 0)
+                {
                     vbs = Semiconductor.LimitJunction(vbs, Vbs, Properties.TempVt, SourceVCritical, ref check);
+                }
                 else
                 {
                     vbd = Semiconductor.LimitJunction(vbd, Vbd, Properties.TempVt, DrainVCritical, ref check);
@@ -978,18 +1041,18 @@ namespace SpiceSharp.Components.Mosfets.Level2
         {
             double cdhat;
 
-            var s = _variables.SourcePrime.Value;
-            var vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
-            var vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
-            var vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
-            var vbd = vbs - vds;
-            var vgd = vgs - vds;
-            var vgdo = Vgs - Vds;
-            var delvbs = vbs - Vbs;
-            var delvbd = vbd - Vbd;
-            var delvgs = vgs - Vgs;
-            var delvds = vds - Vds;
-            var delvgd = vgd - vgdo;
+            double s = _variables.SourcePrime.Value;
+            double vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
+            double vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
+            double vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
+            double vbd = vbs - vds;
+            double vgd = vgs - vds;
+            double vgdo = Vgs - Vds;
+            double delvbs = vbs - Vbs;
+            double delvbd = vbd - Vbd;
+            double delvgs = vgs - Vgs;
+            double delvds = vds - Vds;
+            double delvgd = vgd - vgdo;
 
             // these are needed for convergence testing
             // NOTE: Cd does not include contributions for transient simulations... Should check for a way to include them!
@@ -1003,12 +1066,12 @@ namespace SpiceSharp.Components.Mosfets.Level2
                 cdhat = Id - (Gbd - Gmbs) * delvbd -
                     Gm * delvgd + Gds * delvds;
             }
-            var cbhat = Ibs + Ibd + Gbd * delvbd + Gbs * delvbs;
+            double cbhat = Ibs + Ibd + Gbd * delvbd + Gbs * delvbs;
 
             /*
              *  check convergence
              */
-            var tol = _config.RelativeTolerance * Math.Max(Math.Abs(cdhat), Math.Abs(Id)) + _config.AbsoluteTolerance;
+            double tol = _config.RelativeTolerance * Math.Max(Math.Abs(cdhat), Math.Abs(Id)) + _config.AbsoluteTolerance;
             if (Math.Abs(cdhat - Id) >= tol)
             {
                 _iteration.IsConvergent = false;

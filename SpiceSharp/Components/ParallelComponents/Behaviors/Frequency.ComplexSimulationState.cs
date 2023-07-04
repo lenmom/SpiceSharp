@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Numerics;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -14,7 +15,13 @@ namespace SpiceSharp.Components.ParallelComponents
             IComplexSimulationState
         {
             /// <inheritdoc/>
-            Complex IComplexSimulationState.Laplace => Parent.Laplace;
+            Complex IComplexSimulationState.Laplace
+            {
+                get
+                {
+                    return Parent.Laplace;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="ComplexSimulationState"/> class.

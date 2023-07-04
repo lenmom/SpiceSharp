@@ -46,7 +46,13 @@ namespace SpiceSharp.Components.Distributed
         /// </value>
         /// <param name="index">The index.</param>
         /// <returns>The value.</returns>
-        public double this[int index] => _values[index];
+        public double this[int index]
+        {
+            get
+            {
+                return _values[index];
+            }
+        }
 
         /// <summary>
         /// The derivative of the delayed signal with respect to the input.
@@ -56,7 +62,13 @@ namespace SpiceSharp.Components.Distributed
         /// <summary>
         /// Gets the values at the probed point.
         /// </summary>
-        public IReadOnlyList<double> Values => _values;
+        public IReadOnlyList<double> Values
+        {
+            get
+            {
+                return _values;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DelayedSignal"/> class.
@@ -69,7 +81,9 @@ namespace SpiceSharp.Components.Distributed
             Size = size;
             _values = new double[size];
             if (delay <= 0)
+            {
                 throw new ArgumentException(Properties.Resources.Delays_NonCausalDelay);
+            }
 
             // Setup our linked list
             _reference = _oldest = _probed = new Node(size)
@@ -85,7 +99,7 @@ namespace SpiceSharp.Components.Distributed
         /// <param name="breakpoint">If <c>true</c>, interpolation will be linear. Else cubic interpolation will be used if possible.</param>
         public void Probe(double time, bool breakpoint)
         {
-            var refTime = time - Delay;
+            double refTime = time - Delay;
             InputDerivative = 0.0;
 
             // Store the probe value
@@ -93,8 +107,10 @@ namespace SpiceSharp.Components.Distributed
 
             // Check that the time is increasing
             if (_probed.Older != null && _probed.Older.Time > time)
+            {
                 throw new SpiceSharpException(
                     Properties.Resources.Delays_NonIncreasingTime.FormatString(_probed.Older.Time, time));
+            }
 
             // Move the reference to the closest delayed timepoint
             MoveReferenceCloseTo(refTime);
@@ -104,19 +120,29 @@ namespace SpiceSharp.Components.Distributed
             {
                 if (_reference.Older == null)
                 {
-                    for (var i = 0; i < Size; i++)
+                    for (int i = 0; i < Size; i++)
+                    {
                         _values[i] = _reference.Values[i];
+                    }
+
                     if (_reference == _probed)
+                    {
                         InputDerivative = 1.0;
+                    }
                 }
                 else
                 {
-                    var f1 = (refTime - _reference.Time) / (_reference.Older.Time - _reference.Time);
-                    var f2 = (refTime - _reference.Older.Time) / (_reference.Time - _reference.Older.Time);
-                    for (var i = 0; i < Size; i++)
+                    double f1 = (refTime - _reference.Time) / (_reference.Older.Time - _reference.Time);
+                    double f2 = (refTime - _reference.Older.Time) / (_reference.Time - _reference.Older.Time);
+                    for (int i = 0; i < Size; i++)
+                    {
                         _values[i] = f1 * _reference.Older.Values[i] + f2 * _reference.Values[i];
+                    }
+
                     if (_reference == _probed)
+                    {
                         InputDerivative = f2;
+                    }
                 }
             }
             else
@@ -125,32 +151,39 @@ namespace SpiceSharp.Components.Distributed
                 if (breakpoint || _reference.Older == null)
                 {
                     // Linear interpolation
-                    var f1 = (refTime - _reference.Newer.Time) / (_reference.Time - _reference.Newer.Time);
-                    var f2 = (refTime - _reference.Time) / (_reference.Newer.Time - _reference.Time);
-                    for (var i = 0; i < Size; i++)
+                    double f1 = (refTime - _reference.Newer.Time) / (_reference.Time - _reference.Newer.Time);
+                    double f2 = (refTime - _reference.Time) / (_reference.Newer.Time - _reference.Time);
+                    for (int i = 0; i < Size; i++)
+                    {
                         _values[i] = f1 * _reference.Values[i] + f2 * _reference.Newer.Values[i];
+                    }
+
                     if (_reference.Newer == _probed)
+                    {
                         InputDerivative = f2;
+                    }
                 }
                 else
                 {
                     // Cubic interpolation
-                    var f1 = (refTime - _reference.Time) * (refTime - _reference.Newer.Time) /
+                    double f1 = (refTime - _reference.Time) * (refTime - _reference.Newer.Time) /
                              (_reference.Older.Time - _reference.Time) /
                              (_reference.Older.Time - _reference.Newer.Time);
-                    var f2 = (refTime - _reference.Older.Time) * (refTime - _reference.Newer.Time) /
+                    double f2 = (refTime - _reference.Older.Time) * (refTime - _reference.Newer.Time) /
                              (_reference.Time - _reference.Older.Time) / (_reference.Time - _reference.Newer.Time);
-                    var f3 = (refTime - _reference.Older.Time) * (refTime - _reference.Time) /
+                    double f3 = (refTime - _reference.Older.Time) * (refTime - _reference.Time) /
                              (_reference.Newer.Time - _reference.Older.Time) /
                              (_reference.Newer.Time - _reference.Time);
-                    for (var i = 0; i < Size; i++)
+                    for (int i = 0; i < Size; i++)
                     {
                         _values[i] = f1 * _reference.Older.Values[i] +
                                     f2 * _reference.Values[i] +
                                     f3 * _reference.Newer.Values[i];
                     }
                     if (_reference == _probed)
+                    {
                         InputDerivative = f3;
+                    }
                 }
             }
         }
@@ -162,8 +195,10 @@ namespace SpiceSharp.Components.Distributed
         public void SetProbedValues(params double[] values)
         {
             values.ThrowIfNotLength(nameof(values), Size);
-            for (var i = 0; i < Size; i++)
+            for (int i = 0; i < Size; i++)
+            {
                 _probed.Values[i] = values[i];
+            }
         }
 
         /// <summary>
@@ -171,12 +206,14 @@ namespace SpiceSharp.Components.Distributed
         /// </summary>
         public void AcceptProbedValues()
         {
-            var refTime = _probed.Time - Delay;
+            double refTime = _probed.Time - Delay;
 
             // We need at least 2 nodes before the accepted timepoint in case the timestep is truncated
             Node tmp = _oldest;
             while (tmp.Newer?.Newer != null && tmp.Newer.Newer.Time < refTime)
+            {
                 tmp = tmp.Newer;
+            }
 
             // If the tooOld variable is not our oldest node, then we can move some nodes to the front
             // We do this to save some time having to allocate nodes
@@ -185,7 +222,10 @@ namespace SpiceSharp.Components.Distributed
                 // Place the older nodes immediately after the _probed node
                 tmp.Older.Newer = _probed.Newer;
                 if (_probed.Newer != null)
+                {
                     _probed.Newer.Older = tmp.Older;
+                }
+
                 tmp.Older = null;
 
                 _oldest.Older = _probed;
@@ -221,8 +261,11 @@ namespace SpiceSharp.Components.Distributed
                 case 1: return _probed.Older.Values[index];
                 default:
                     Node elt = _probed;
-                    for (var i = 0; i < back; i++)
+                    for (int i = 0; i < back; i++)
+                    {
                         elt = elt?.Older;
+                    }
+
                     return elt?.Values[index] ?? _oldest.Values[index];
             }
         }
@@ -240,8 +283,11 @@ namespace SpiceSharp.Components.Distributed
                 case 1: return _probed.Older.Time;
                 default:
                     Node elt = _probed;
-                    for (var i = 0; i < back; i++)
+                    for (int i = 0; i < back; i++)
+                    {
                         elt = elt?.Older;
+                    }
+
                     return elt?.Time ?? double.NegativeInfinity;
             }
         }
@@ -253,8 +299,8 @@ namespace SpiceSharp.Components.Distributed
         private void MoveReferenceCloseTo(double time)
         {
             Node r = _reference;
-            var distance = Math.Abs(r.Time - time);
-            var hasMoved = false;
+            double distance = Math.Abs(r.Time - time);
+            bool hasMoved = false;
 
             // Move forward until the middle point is closest
             while (r.Newer != null && Math.Abs(r.Newer.Time - time) < distance)
@@ -290,8 +336,10 @@ namespace SpiceSharp.Components.Distributed
             };
 
             // Clear values
-            for (var i = 0; i < Size; i++)
+            for (int i = 0; i < Size; i++)
+            {
                 _values[i] = 0.0;
+            }
         }
     }
 }

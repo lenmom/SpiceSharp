@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Simulations
 {

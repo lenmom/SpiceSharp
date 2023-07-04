@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Entities;
+﻿using System;
+
+using SpiceSharp.Entities;
 using SpiceSharp.Simulations.Variables;
-using System;
 
 namespace SpiceSharp.Validation
 {
@@ -41,7 +42,9 @@ namespace SpiceSharp.Validation
             foreach (IEntity entity in entities)
             {
                 if (entity is IRuleSubject subject)
+                {
                     subject.Apply(rules);
+                }
             }
             return rules;
         }
@@ -60,7 +63,9 @@ namespace SpiceSharp.Validation
             foreach (IEntity entity in entities)
             {
                 if (entity is IRuleSubject subject)
+                {
                     subject.Apply(rules);
+                }
             }
             return rules;
         }

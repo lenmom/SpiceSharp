@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.VoltageDelays
 {
@@ -44,15 +45,33 @@ namespace SpiceSharp.Components.VoltageDelays
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_r"), ParameterInfo("Voltage accross the supply")]
-        public double Voltage => Variables.Right.Positive.Value - Variables.Right.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return Variables.Right.Positive.Value - Variables.Right.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_r"), ParameterInfo("Power supplied by the source")]
-        public double Power => Voltage * -Current;
+        public double Power
+        {
+            get
+            {
+                return Voltage * -Current;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("c"), ParameterName("i"), ParameterName("i_r"), ParameterInfo("Current through current source")]
-        public double Current => Branch.Value;
+        public double Current
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Biasing"/> class.
@@ -68,12 +87,12 @@ namespace SpiceSharp.Components.VoltageDelays
             Parameters = context.GetParameterSet<Parameters>();
             IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
             Variables = new TwoPort<double>(state, context);
-            var posNode = state.Map[Variables.Right.Positive];
-            var negNode = state.Map[Variables.Right.Negative];
-            var contPosNode = state.Map[Variables.Left.Positive];
-            var contNegNode = state.Map[Variables.Left.Negative];
+            int posNode = state.Map[Variables.Right.Positive];
+            int negNode = state.Map[Variables.Right.Negative];
+            int contPosNode = state.Map[Variables.Left.Positive];
+            int contNegNode = state.Map[Variables.Left.Negative];
             Branch = state.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            var branchEq = state.Map[Branch];
+            int branchEq = state.Map[Branch];
 
             BiasingElements = new ElementSet<double>(state.Solver, new[] {
                         new MatrixLocation(posNode, branchEq),

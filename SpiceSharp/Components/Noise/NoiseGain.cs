@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Components.CommonBehaviors;
+﻿using System.Numerics;
+
+using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System.Numerics;
 
 namespace SpiceSharp.Components.NoiseSources
 {
@@ -30,7 +31,7 @@ namespace SpiceSharp.Components.NoiseSources
         public void Compute(double gain)
         {
             Complex val = _variables.Positive.Value - _variables.Negative.Value;
-            var vgain = val.Real * val.Real + val.Imaginary * val.Imaginary;
+            double vgain = val.Real * val.Real + val.Imaginary * val.Imaginary;
             OutputNoiseDensity = vgain * gain;
         }
     }

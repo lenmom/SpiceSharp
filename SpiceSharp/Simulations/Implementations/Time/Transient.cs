@@ -1,12 +1,13 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations.IntegrationMethods;
 using SpiceSharp.Simulations.Time;
 using SpiceSharp.Validation;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Simulations
 {
@@ -48,13 +49,31 @@ namespace SpiceSharp.Simulations
         public new TimeSimulationStatistics Statistics { get; }
 
         /// <inheritdoc/>
-        TimeParameters IParameterized<TimeParameters>.Parameters => TimeParameters;
+        TimeParameters IParameterized<TimeParameters>.Parameters
+        {
+            get
+            {
+                return TimeParameters;
+            }
+        }
 
         /// <inheritdoc/>
-        ITimeSimulationState IStateful<ITimeSimulationState>.State => _time;
+        ITimeSimulationState IStateful<ITimeSimulationState>.State
+        {
+            get
+            {
+                return _time;
+            }
+        }
 
         /// <inheritdoc/>
-        IIntegrationMethod IStateful<IIntegrationMethod>.State => _method;
+        IIntegrationMethod IStateful<IIntegrationMethod>.State
+        {
+            get
+            {
+                return _method;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Transient"/> class.
@@ -132,9 +151,13 @@ namespace SpiceSharp.Simulations
             foreach (KeyValuePair<string, double> ic in TimeParameters.InitialConditions)
             {
                 if (state.ContainsKey(ic.Key))
+                {
                     _initialConditions.Add(new ConvergenceAid(state.GetSharedVariable(ic.Key), GetState<IBiasingSimulationState>(), ic.Value));
+                }
                 else
+                {
                     SpiceSharpWarning.Warning(this, Properties.Resources.Simulations_ConvergenceAidVariableNotFound.FormatString(ic.Key));
+                }
             }
         }
 
@@ -144,13 +167,15 @@ namespace SpiceSharp.Simulations
             if (TimeParameters.Validate)
             {
                 IBiasingSimulationState state = GetState<IBiasingSimulationState>();
-                var rules = new Biasing.Rules(state, BiasingParameters.NodeComparer);
+                Biasing.Rules rules = new Biasing.Rules(state, BiasingParameters.NodeComparer);
 
                 // We want to add our own connections for initial conditions
                 foreach (ConvergenceAid ic in _initialConditions)
                 {
                     foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
+                    {
                         rule.AddPath(null, ConductionTypes.Dc, ic.Variable, state.Map[0]);
+                    }
                 }
                 Validate(rules, entities);
             }
@@ -171,7 +196,7 @@ namespace SpiceSharp.Simulations
                 IBiasingSimulationState state = GetState<IBiasingSimulationState>();
                 foreach (ConvergenceAid ic in _initialConditions)
                 {
-                    var index = state.Map[ic.Variable];
+                    int index = state.Map[ic.Variable];
                     state.Solution[index] = ic.Value;
                     state.OldSolution[index] = ic.Value; // Just to make sure...
                 }
@@ -185,7 +210,9 @@ namespace SpiceSharp.Simulations
                     AfterLoad -= LoadInitialConditions;
                 }
                 else
+                {
                     Op(BiasingParameters.DcMaxIterations);
+                }
             }
             Statistics.TimePoints++;
 
@@ -194,11 +221,11 @@ namespace SpiceSharp.Simulations
             InitializeStates();
             _time.UseIc = false;
             _time.UseDc = false;
-            var exportargs = new ExportDataEventArgs(this);
+            ExportDataEventArgs exportargs = new ExportDataEventArgs(this);
 
             // Start our statistics
             Biasing.BiasingSimulationStatistics stats = ((BiasingSimulation)this).Statistics;
-            var startIters = stats.Iterations;
+            int startIters = stats.Iterations;
             TimeSpan startselapsed = stats.SolveTime.Elapsed;
             Statistics.TransientTime.Start();
             try
@@ -210,7 +237,9 @@ namespace SpiceSharp.Simulations
 
                     // Export the current timepoint
                     if (_method.Time >= TimeParameters.StartTime)
+                    {
                         OnExport(exportargs);
+                    }
 
                     // Detect the end of the simulation
                     if (_method.Time >= TimeParameters.StopTime)
@@ -226,7 +255,10 @@ namespace SpiceSharp.Simulations
 
                     // Continue integration
                     foreach (ITruncatingBehavior behavior in _truncatingBehaviors)
+                    {
                         _method.Truncate(behavior.Prepare());
+                    }
+
                     _method.Prepare();
 
                     // Find a valid time point
@@ -236,7 +268,7 @@ namespace SpiceSharp.Simulations
                         Probe();
 
                         // Try to solve the new point
-                        var converged = TimeIterate(TimeParameters.TransientMaxIterations);
+                        bool converged = TimeIterate(TimeParameters.TransientMaxIterations);
                         Statistics.TimePoints++;
 
                         // Did we fail to converge to a solution?
@@ -248,11 +280,17 @@ namespace SpiceSharp.Simulations
                         else
                         {
                             // If our integration method approves of our solution, continue to the next timepoint
-                            var max = double.PositiveInfinity;
+                            double max = double.PositiveInfinity;
                             foreach (ITruncatingBehavior behavior in _truncatingBehaviors)
+                            {
                                 max = Math.Min(behavior.Evaluate(), max);
+                            }
+
                             if (_method.Evaluate(max))
+                            {
                                 break;
+                            }
+
                             Statistics.Rejected++;
                         }
                     }
@@ -281,8 +319,8 @@ namespace SpiceSharp.Simulations
         {
             IBiasingSimulationState state = GetState<IBiasingSimulationState>();
             ISparsePivotingSolver<double> solver = state.Solver;
-            var iterno = 0;
-            var initTransient = _method.BaseTime.Equals(0.0);
+            int iterno = 0;
+            bool initTransient = _method.BaseTime.Equals(0.0);
 
             // Ignore operating condition point, just use the solution as-is
             if (_time.UseIc)
@@ -309,7 +347,9 @@ namespace SpiceSharp.Simulations
 
                     // Preordering is already done in the operating point calculation
                     if (Iteration.Mode == IterationModes.Junction || initTransient)
+                    {
                         _shouldReorder = true;
+                    }
 
                     if (_shouldReorder)
                     {
@@ -317,9 +357,12 @@ namespace SpiceSharp.Simulations
                         base.Statistics.ReorderTime.Start();
                         try
                         {
-                            var eliminated = solver.OrderAndFactor();
+                            int eliminated = solver.OrderAndFactor();
                             if (eliminated < solver.Size)
+                            {
                                 throw new SingularException(eliminated + 1);
+                            }
+
                             _shouldReorder = false;
                         }
                         finally
@@ -365,18 +408,27 @@ namespace SpiceSharp.Simulations
 
                     // Exceeded maximum number of iterations
                     if (iterno > maxIterations)
+                    {
                         return false;
+                    }
 
                     if (Iteration.IsConvergent && iterno != 1)
+                    {
                         Iteration.IsConvergent = IsConvergent();
+                    }
                     else
+                    {
                         Iteration.IsConvergent = false;
+                    }
 
                     if (initTransient)
                     {
                         initTransient = false;
                         if (iterno <= 1)
+                        {
                             _shouldReorder = true;
+                        }
+
                         Iteration.Mode = IterationModes.Float;
                     }
                     else
@@ -385,7 +437,10 @@ namespace SpiceSharp.Simulations
                         {
                             case IterationModes.Float:
                                 if (Iteration.IsConvergent)
+                                {
                                     return true;
+                                }
+
                                 break;
 
                             case IterationModes.Junction:
@@ -395,7 +450,10 @@ namespace SpiceSharp.Simulations
 
                             case IterationModes.Fix:
                                 if (Iteration.IsConvergent)
+                                {
                                     Iteration.Mode = IterationModes.Float;
+                                }
+
                                 break;
 
                             case IterationModes.None:
@@ -420,7 +478,9 @@ namespace SpiceSharp.Simulations
         protected virtual void InitializeStates()
         {
             foreach (ITimeBehavior behavior in _transientBehaviors)
+            {
                 behavior.InitializeStates();
+            }
         }
 
         /// <summary>
@@ -431,7 +491,9 @@ namespace SpiceSharp.Simulations
         protected void LoadInitialConditions(object sender, LoadStateEventArgs e)
         {
             foreach (ConvergenceAid ic in _initialConditions)
+            {
                 ic.Aid();
+            }
         }
 
         /// <summary>
@@ -440,7 +502,10 @@ namespace SpiceSharp.Simulations
         protected void Accept()
         {
             foreach (IAcceptBehavior behavior in _acceptBehaviors)
+            {
                 behavior.Accept();
+            }
+
             _method.Accept();
             Statistics.Accepted++;
         }
@@ -452,7 +517,9 @@ namespace SpiceSharp.Simulations
         {
             _method.Probe();
             foreach (IAcceptBehavior behavior in _acceptBehaviors)
+            {
                 behavior.Probe();
+            }
         }
     }
 }

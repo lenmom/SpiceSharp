@@ -1,7 +1,8 @@
-﻿using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations
 {
@@ -23,7 +24,13 @@ namespace SpiceSharp.Simulations
         public DCParameters DCParameters { get; } = new DCParameters();
 
         /// <inheritdoc/>
-        DCParameters IParameterized<DCParameters>.Parameters => DCParameters;
+        DCParameters IParameterized<DCParameters>.Parameters
+        {
+            get
+            {
+                return DCParameters;
+            }
+        }
 
         /// <summary>
         /// Occurs when iterating to a solution has failed.
@@ -66,7 +73,9 @@ namespace SpiceSharp.Simulations
         {
             sweeps.ThrowIfNull(nameof(sweeps));
             foreach (ISweep sweep in sweeps)
+            {
                 DCParameters.Sweeps.Add(sweep);
+            }
         }
 
         /// <inheritdoc/>
@@ -75,7 +84,7 @@ namespace SpiceSharp.Simulations
             // Base
             base.Execute();
 
-            var exportargs = new ExportDataEventArgs(this);
+            ExportDataEventArgs exportargs = new ExportDataEventArgs(this);
 
             // Setup the state
             Iteration.Mode = IterationModes.Junction;
@@ -83,15 +92,17 @@ namespace SpiceSharp.Simulations
             // Initialize
             ISweep[] sweeps = DCParameters.Sweeps.ToArray();
             _sweepEnumerators = new IEnumerator<double>[DCParameters.Sweeps.Count];
-            for (var i = 0; i < sweeps.Length; i++)
+            for (int i = 0; i < sweeps.Length; i++)
             {
                 _sweepEnumerators[i] = sweeps[i].CreatePoints(this);
                 if (!_sweepEnumerators[i].MoveNext())
+                {
                     throw new SpiceSharpException(Properties.Resources.Simulations_DC_NoSweepPoints.FormatString(sweeps[i].Name));
+                }
             }
 
             // Execute the sweeps
-            var level = sweeps.Length - 1;
+            int level = sweeps.Length - 1;
             while (level >= 0)
             {
                 // Fill the values up again by resetting
@@ -100,7 +111,10 @@ namespace SpiceSharp.Simulations
                     level++;
                     _sweepEnumerators[level] = sweeps[level].CreatePoints(this);
                     if (!_sweepEnumerators[level].MoveNext())
+                    {
                         throw new SpiceSharpException(Properties.Resources.Simulations_DC_NoSweepPoints.FormatString(sweeps[level].Name));
+                    }
+
                     Iteration.Mode = IterationModes.Junction;
                 }
 
@@ -116,9 +130,14 @@ namespace SpiceSharp.Simulations
 
                 // Remove all values that are greater or equal to the maximum value
                 while (level >= 0 && !_sweepEnumerators[level].MoveNext())
+                {
                     level--;
+                }
+
                 if (level < 0)
+                {
                     break;
+                }
             }
         }
 
@@ -130,10 +149,16 @@ namespace SpiceSharp.Simulations
         public double[] GetCurrentSweepValue()
         {
             if (_sweepEnumerators == null)
+            {
                 return null;
-            var result = new double[_sweepEnumerators.Length];
-            for (var i = 0; i < _sweepEnumerators.Length; i++)
+            }
+
+            double[] result = new double[_sweepEnumerators.Length];
+            for (int i = 0; i < _sweepEnumerators.Length; i++)
+            {
                 result[i] = _sweepEnumerators[i].Current;
+            }
+
             return result;
         }
     }

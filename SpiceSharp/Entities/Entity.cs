@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Diagnostics;
+﻿using System;
+
+using SpiceSharp.Diagnostics;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Entities
 {
@@ -95,7 +96,7 @@ namespace SpiceSharp.Entities
         /// <inheritdoc/>
         public override IEntity Clone()
         {
-            var clone = (Entity<P>)MemberwiseClone();
+            Entity<P> clone = (Entity<P>)MemberwiseClone();
             clone.Parameters = Parameters.Clone();
             return clone;
         }

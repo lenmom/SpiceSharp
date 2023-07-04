@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -41,7 +42,9 @@ namespace SpiceSharp.Components.Subcircuits
             public override void Update()
             {
                 if (Updated)
+                {
                     return;
+                }
 
                 // We need to keep track of the old solution
                 IVector<double> tmp = OldSolution;

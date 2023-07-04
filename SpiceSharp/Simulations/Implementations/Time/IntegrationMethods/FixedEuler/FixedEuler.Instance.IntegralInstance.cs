@@ -17,13 +17,26 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 private readonly IHistory<IVector<double>> _states;
 
                 /// <inheritdoc/>
-                public double Value => _states.Value[_index + 1];
+                public double Value
+                {
+                    get
+                    {
+                        return _states.Value[_index + 1];
+                    }
+                }
 
                 /// <inheritdoc/>
                 public double Derivative
                 {
-                    get => _states.Value[_index];
-                    set => _states.Value[_index] = value;
+                    get
+                    {
+                        return _states.Value[_index];
+                    }
+
+                    set
+                    {
+                        _states.Value[_index] = value;
+                    }
                 }
 
                 /// <summary>
@@ -41,14 +54,14 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// <inheritdoc/>
                 public JacobianInfo GetContributions(double coefficient, double currentValue)
                 {
-                    var g = coefficient / _method.Slope;
+                    double g = coefficient / _method.Slope;
                     return new JacobianInfo(g, Value - g * currentValue);
                 }
 
                 /// <inheritdoc/>
                 public JacobianInfo GetContributions(double coefficient)
                 {
-                    var h = 1 / _method.Slope;
+                    double h = 1 / _method.Slope;
                     IVector<double> s = _states.Value;
                     return new JacobianInfo(h * coefficient, s[_index + 1] - h * s[_index]);
                 }

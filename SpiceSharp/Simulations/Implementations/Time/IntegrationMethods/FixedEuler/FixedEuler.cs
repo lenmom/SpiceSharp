@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Attributes;
-using System;
+﻿using System;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -21,11 +22,18 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         [ParameterName("step"), ParameterInfo("The fixed timestep used.")]
         public double Step
         {
-            get => _step;
+            get
+            {
+                return _step;
+            }
+
             set
             {
                 if (value <= 0.0)
+                {
                     throw new ArgumentException(Properties.Resources.Simulations_Time_TimestepInvalid);
+                }
+
                 _step = value;
             }
         }

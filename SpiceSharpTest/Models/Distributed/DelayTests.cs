@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharpTest.Models
 {
@@ -14,20 +16,20 @@ namespace SpiceSharpTest.Models
         public void When_SimplePulsedTransient_Expect_Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", new Pulse(0, 5, 1e-7, 1e-7, 1e-7, 1e-5, 2e-5)),
                 new VoltageDelay("Delay1", "out", "0", "in", "0", 0.5e-5)
             );
 
             // Build the simulation
-            var tran = new Transient("tran", 1e-7, 10e-5);
-            var exports = new IExport<double>[]
+            Transient tran = new Transient("tran", 1e-7, 10e-5);
+            IExport<double>[] exports = new IExport<double>[]
             {
                 new GenericExport<double>(tran, () => tran.GetState<IIntegrationMethod>().Time),
                 new RealVoltageExport(tran, "in"),
                 new RealVoltageExport(tran, "out"),
             };
-            var references = new[]
+            double[][] references = new[]
             {
                 new[]
                 {
@@ -89,14 +91,14 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_SimpleSineTransient_Expect_NoException()
         {
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "1", "0", new Sine(0, 5, 50, 0, 0, 90)),
                 new VoltageDelay("BVD1", "2", "0", "1", "0", 1e-2),
                 new Resistor("R1", "1", "0", 10),
                 new Resistor("R2", "2", "0", 10)
             );
 
-            var tran = new Transient("tran", 1e-8, 1e-5);
+            Transient tran = new Transient("tran", 1e-8, 1e-5);
             tran.Run(ckt);
         }
 
@@ -104,7 +106,7 @@ namespace SpiceSharpTest.Models
         public void When_BreakpointsTransient_Expect_Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", new Pulse(0, 5, 1e-7, 1e-7, 1e-7, 1e-5, 2e-5)),
                 new VoltageDelay("Delay1", "out", "0", "in", "0", 0.5e-5)
                     // This will make the delay element add a breakpoint when the input changes rapidly
@@ -112,14 +114,14 @@ namespace SpiceSharpTest.Models
             );
 
             // Build the simulation
-            var tran = new Transient("tran", 1e-7, 10e-5);
-            var exports = new IExport<double>[]
+            Transient tran = new Transient("tran", 1e-7, 10e-5);
+            IExport<double>[] exports = new IExport<double>[]
             {
                 new GenericExport<double>(tran, () => tran.GetState<IIntegrationMethod>().Time),
                 new RealVoltageExport(tran, "in"),
                 new RealVoltageExport(tran, "out"),
             };
-            var references = new[]
+            double[][] references = new[]
             {
                 new[]
                 {
@@ -209,21 +211,21 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_SimpleSmallSignal_Expect_Reference()
         {
-            var delay = 1e-6;
+            double delay = 1e-6;
 
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 1.0)
                     .SetParameter("acmag", 1.0),
                 new VoltageDelay("Delay1", "out", "0", "in", "0", delay));
 
             // Build the analysis
-            var ac = new AC("ac", new DecadeSweep(1e-3, 1e5, 5));
-            var exports = new IExport<Complex>[]
+            AC ac = new AC("ac", new DecadeSweep(1e-3, 1e5, 5));
+            IExport<Complex>[] exports = new IExport<Complex>[]
             {
                 new ComplexVoltageExport(ac, "out")
             };
-            var references = new Func<double, Complex>[]
+            Func<double, Complex>[] references = new Func<double, Complex>[]
             {
                 frequency => Complex.Exp(-ac.GetState<IComplexSimulationState>().Laplace * delay)
             };

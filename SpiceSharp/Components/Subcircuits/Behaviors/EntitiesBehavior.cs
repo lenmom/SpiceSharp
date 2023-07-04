@@ -40,7 +40,13 @@ namespace SpiceSharp.Components.Subcircuits
         /// The local behaviors.
         /// </value>
         [ParameterName("behaviors"), ParameterInfo("The behaviors inside the subcircuit", IsPrincipal = true)]
-        public IBehaviorContainerCollection LocalBehaviors => _context.LocalBehaviors;
+        public IBehaviorContainerCollection LocalBehaviors
+        {
+            get
+            {
+                return _context.LocalBehaviors;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntitiesBehavior"/> class.

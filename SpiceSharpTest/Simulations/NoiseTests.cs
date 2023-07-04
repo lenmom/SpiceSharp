@@ -1,8 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System.Collections.Generic;
 
 namespace SpiceSharpTest.Simulations
 {
@@ -13,18 +15,18 @@ namespace SpiceSharpTest.Simulations
         public void When_NoiseRerun_Expect_Same()
         {
             // Create the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "in", "0", 10.0),
                 new Resistor("R1", "in", "out", 10),
                 new Capacitor("C1", "out", "0", 20)
             );
 
             // Create the transient analysis
-            var noise = new Noise("noise 1", "V1", "out", new DecadeSweep(1, 1e9, 10));
-            var export = new OutputNoiseDensityExport(noise);
+            Noise noise = new Noise("noise 1", "V1", "out", new DecadeSweep(1, 1e9, 10));
+            OutputNoiseDensityExport export = new OutputNoiseDensityExport(noise);
 
             // Run the simulation a first time for building the reference values
-            var r = new List<double>();
+            List<double> r = new List<double>();
             void BuildReference(object sender, ExportDataEventArgs args)
             {
                 r.Add(export.Value);
@@ -35,7 +37,7 @@ namespace SpiceSharpTest.Simulations
             noise.ExportSimulationData -= BuildReference;
 
             // Rerun the simulation for building the reference values
-            var index = 0;
+            int index = 0;
             void CheckReference(object sender, ExportDataEventArgs args)
             {
                 Assert.AreEqual(r[index++], export.Value, 1e-20);

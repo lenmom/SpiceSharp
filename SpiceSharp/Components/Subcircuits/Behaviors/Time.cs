@@ -34,7 +34,9 @@ namespace SpiceSharp.Components.Subcircuits
         void ITimeBehavior.InitializeStates()
         {
             foreach (ITimeBehavior behavior in _behaviors)
+            {
                 behavior.InitializeStates();
+            }
         }
     }
 }

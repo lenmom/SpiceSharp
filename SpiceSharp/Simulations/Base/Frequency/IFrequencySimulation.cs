@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Behaviors;
-using System.Numerics;
+﻿using System.Numerics;
+
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Simulations
 {

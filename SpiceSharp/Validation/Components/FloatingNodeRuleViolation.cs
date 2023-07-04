@@ -46,7 +46,13 @@ namespace SpiceSharp.Validation
         /// <value>
         /// The subject that caused the violation.
         /// </value>
-        public IRuleSubject Subject => null;
+        public IRuleSubject Subject
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FloatingNodeRuleViolation" /> class.
@@ -59,7 +65,10 @@ namespace SpiceSharp.Validation
         {
             Rule = rule.ThrowIfNull(nameof(rule));
             if (type == ConductionTypes.All)
+            {
                 throw new SpiceSharpException("This is not a floating node!");
+            }
+
             FixedVariable = fixedVariable;
             FloatingVariable = floatingVariable;
             Type = type;

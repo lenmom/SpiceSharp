@@ -23,15 +23,29 @@ namespace SpiceSharp.Algebra
         /// <inheritdoc/>
         public T this[int row, int column]
         {
-            get => GetMatrixValue(new MatrixLocation(row, column));
-            set => SetMatrixValue(new MatrixLocation(row, column), value);
+            get
+            {
+                return GetMatrixValue(new MatrixLocation(row, column));
+            }
+
+            set
+            {
+                SetMatrixValue(new MatrixLocation(row, column), value);
+            }
         }
 
         /// <inheritdoc/>
         public T this[MatrixLocation location]
         {
-            get => GetMatrixValue(location);
-            set => SetMatrixValue(location, value);
+            get
+            {
+                return GetMatrixValue(location);
+            }
+
+            set
+            {
+                SetMatrixValue(location, value);
+            }
         }
 
         /// <summary>
@@ -64,16 +78,20 @@ namespace SpiceSharp.Algebra
             row1.GreaterThan(nameof(row1), 0);
             row2.GreaterThan(nameof(row2), 0);
             if (row1 == row2 || (row1 > Size && row2 > Size))
+            {
                 return;
+            }
 
             // Expand the matrix if necessary
-            var needed = Math.Max(row1, row2);
+            int needed = Math.Max(row1, row2);
             if (needed > Size)
+            {
                 Expand(needed);
+            }
 
-            var offset1 = (row1 - 1) * _allocatedSize;
-            var offset2 = (row2 - 1) * _allocatedSize;
-            for (var i = 0; i < Size; i++)
+            int offset1 = (row1 - 1) * _allocatedSize;
+            int offset2 = (row2 - 1) * _allocatedSize;
+            for (int i = 0; i < Size; i++)
             {
                 T tmp = _array[offset1 + i];
                 _array[offset1 + i] = _array[offset2 + i];
@@ -87,16 +105,20 @@ namespace SpiceSharp.Algebra
             column1.GreaterThan(nameof(column1), 0);
             column2.GreaterThan(nameof(column2), 0);
             if (column1 == column2 || (column1 > Size && column2 > Size))
+            {
                 return;
+            }
 
             // Expand the matrix if necessary
-            var needed = Math.Max(column1, column2);
+            int needed = Math.Max(column1, column2);
             if (needed > Size)
+            {
                 Expand(needed);
+            }
 
             column1--;
             column2--;
-            for (var i = 0; i < _allocatedSize * _allocatedSize; i += _allocatedSize)
+            for (int i = 0; i < _allocatedSize * _allocatedSize; i += _allocatedSize)
             {
                 T tmp = _array[column1 + i];
                 _array[column1 + i] = _array[column2 + i];
@@ -107,8 +129,10 @@ namespace SpiceSharp.Algebra
         /// <inheritdoc/>
         public void Reset()
         {
-            for (var i = 0; i < _array.Length; i++)
+            for (int i = 0; i < _array.Length; i++)
+            {
                 _array[i] = default;
+            }
         }
 
         /// <inheritdoc/>
@@ -134,35 +158,54 @@ namespace SpiceSharp.Algebra
         private T GetMatrixValue(MatrixLocation location)
         {
             if (location.Row == 0 || location.Column == 0)
+            {
                 return _trashCan;
+            }
+
             if (location.Row > Size || location.Column > Size)
+            {
                 return default;
+            }
+
             return _array[(location.Row - 1) * _allocatedSize + location.Column - 1];
         }
         private void SetMatrixValue(MatrixLocation location, T value)
         {
             if (location.Row == 0 || location.Column == 0)
+            {
                 _trashCan = value;
+            }
             else
             {
                 if (!EqualityComparer<T>.Default.Equals(value, default) && (location.Row > Size || location.Column > Size))
+                {
                     Expand(Math.Max(location.Row, location.Column));
+                }
+
                 _array[(location.Row - 1) * _allocatedSize + location.Column - 1] = value;
             }
         }
         private void Expand(int newSize)
         {
-            var oldSize = Size;
+            int oldSize = Size;
             Size = newSize;
             if (newSize <= _allocatedSize)
+            {
                 return;
+            }
+
             newSize = Math.Max(newSize, (int)(_allocatedSize * _expansionFactor));
 
             // Create a new array and copy its contents
-            var nArray = new T[newSize * newSize];
-            for (var r = 0; r < oldSize; r++)
-                for (var c = 0; c < oldSize; c++)
+            T[] nArray = new T[newSize * newSize];
+            for (int r = 0; r < oldSize; r++)
+            {
+                for (int c = 0; c < oldSize; c++)
+                {
                     nArray[r * newSize + c] = _array[r * _allocatedSize + c];
+                }
+            }
+
             _array = nArray;
             _allocatedSize = newSize;
         }

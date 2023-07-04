@@ -18,7 +18,9 @@ namespace SpiceSharp.Components.Switches
         public void SetZeroStateOn(bool flag)
         {
             if (flag)
+            {
                 ZeroState = true;
+            }
         }
 
         /// <summary>
@@ -29,7 +31,9 @@ namespace SpiceSharp.Components.Switches
         public void SetZeroStateOff(bool flag)
         {
             if (flag)
+            {
                 ZeroState = false;
+            }
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
+
 using SpiceSharp.Attributes;
-using System;
 
 namespace SpiceSharpTest.General
 {
@@ -32,7 +34,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_GreaterThan_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 GreaterThan1 = 1.5
             };
@@ -43,7 +45,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_LessThan_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 LessThan1 = 0.5
             };
@@ -54,7 +56,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_GreaterThanOrEquals_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 GreaterThanOrEquals1 = 1.5
             };
@@ -65,7 +67,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_LessThanOrEquals_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 LessThanOrEquals1 = 0.5
             };
@@ -76,7 +78,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_LowerLimit_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 LowerLimit1 = 1.5
             };
@@ -88,7 +90,7 @@ namespace SpiceSharpTest.General
         [Test]
         public void When_UpperLimit_Expect_Reference()
         {
-            var p = new TestParameters
+            TestParameters p = new TestParameters
             {
                 UpperLimit1 = 1.5
             };

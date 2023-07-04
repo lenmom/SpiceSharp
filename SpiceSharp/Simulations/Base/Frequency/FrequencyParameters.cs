@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Attributes;
-using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations
 {
@@ -62,7 +63,7 @@ namespace SpiceSharp.Simulations
         /// <returns>A solver that can be used to solve equations.</returns>
         public ISparsePivotingSolver<Complex> CreateSolver()
         {
-            var solver = new SparseComplexSolver();
+            SparseComplexSolver solver = new SparseComplexSolver();
             solver.Parameters.AbsolutePivotThreshold = AbsolutePivotThreshold;
             solver.Parameters.RelativePivotThreshold = RelativePivotThreshold;
             return solver;

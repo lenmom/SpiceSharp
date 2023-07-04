@@ -35,8 +35,15 @@ namespace SpiceSharp.Algebra
         /// <returns>The value.</returns>
         public T this[int index]
         {
-            get => GetVectorValue(index);
-            set => SetVectorValue(index, value);
+            get
+            {
+                return GetVectorValue(index);
+            }
+
+            set
+            {
+                SetVectorValue(index, value);
+            }
         }
 
         /// <summary>
@@ -60,7 +67,10 @@ namespace SpiceSharp.Algebra
         public DenseVector(int length)
         {
             if (length < 0 && length > int.MaxValue - 1)
+            {
                 throw new ArgumentOutOfRangeException(nameof(length));
+            }
+
             Length = length;
             _values = new T[length + 1];
         }
@@ -76,9 +86,15 @@ namespace SpiceSharp.Algebra
         public T GetVectorValue(int index)
         {
             if (index < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
             if (index > Length)
+            {
                 return default;
+            }
+
             return _values[index];
         }
 
@@ -90,9 +106,15 @@ namespace SpiceSharp.Algebra
         public void SetVectorValue(int index, T value)
         {
             if (index < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
             if (index > Length)
+            {
                 Expand(index);
+            }
+
             _values[index] = value;
         }
 
@@ -104,13 +126,25 @@ namespace SpiceSharp.Algebra
         public void SwapElements(int index1, int index2)
         {
             if (index1 < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index1));
+            }
+
             if (index2 < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index2));
+            }
+
             if (index1 > Length || index2 > Length)
+            {
                 Expand(Math.Max(index1, index2));
+            }
+
             if (index1 == index2)
+            {
                 return;
+            }
+
             T tmp = _values[index1];
             _values[index1] = _values[index2];
             _values[index2] = tmp;
@@ -121,8 +155,10 @@ namespace SpiceSharp.Algebra
         /// </summary>
         public void Reset()
         {
-            for (var i = 0; i < _values.Length; i++)
+            for (int i = 0; i < _values.Length; i++)
+            {
                 _values[i] = default;
+            }
         }
 
         /// <summary>
@@ -142,11 +178,19 @@ namespace SpiceSharp.Algebra
         {
             target.ThrowIfNull(nameof(target));
             if (Length != target.Length)
+            {
                 throw new ArgumentException(Properties.Resources.Algebra_VectorLengthMismatch.FormatString(target.Length, Length), nameof(target));
+            }
+
             if (target == this)
+            {
                 return;
-            for (var i = 1; i <= Length; i++)
+            }
+
+            for (int i = 1; i <= Length; i++)
+            {
                 target[i] = this[i];
+            }
         }
 
         /// <summary>
@@ -164,7 +208,10 @@ namespace SpiceSharp.Algebra
         {
             Length = newSize;
             if (newSize + 1 <= _values.Length)
+            {
                 return;
+            }
+
             newSize = Math.Max(newSize, (int)(_values.Length * _expansionFactor));
             Array.Resize(ref _values, newSize + 1);
         }

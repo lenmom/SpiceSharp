@@ -59,8 +59,15 @@ namespace SpiceSharp.Components.Capacitors
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin)]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>

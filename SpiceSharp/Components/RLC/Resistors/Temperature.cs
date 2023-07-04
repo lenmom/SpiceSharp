@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -45,7 +46,9 @@ namespace SpiceSharp.Components.Resistors
             _temperature = context.GetState<ITemperatureSimulationState>();
             Parameters = context.GetParameterSet<Parameters>();
             if (context.ModelBehaviors != null)
+            {
                 _mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
+            }
         }
 
         /// <inheritdoc/>
@@ -56,17 +59,23 @@ namespace SpiceSharp.Components.Resistors
 
             // Default Value Processing for Resistor Instance
             if (!Parameters.Temperature.Given)
+            {
                 Parameters.Temperature = new GivenParameter<double>(_temperature.Temperature, false);
+            }
 
             if (_mbp != null)
             {
                 if (!Parameters.Resistance.Given)
                 {
                     if (!Parameters.Width.Given)
+                    {
                         Parameters.Width = new GivenParameter<double>(_mbp.DefaultWidth, false);
+                    }
 
                     if (!_mbp.SheetResistance.Equals(0.0) && Parameters.Length > 0)
+                    {
                         resistance = _mbp.SheetResistance * (Parameters.Length - _mbp.Narrow) / (Parameters.Width - _mbp.Narrow);
+                    }
                     else
                     {
                         SpiceSharpWarning.Warning(this, Properties.Resources.Resistors_ZeroResistance.FormatString(Name));
@@ -74,12 +83,16 @@ namespace SpiceSharp.Components.Resistors
                     }
                 }
 
-                var difference = Parameters.Temperature - _mbp.NominalTemperature;
+                double difference = Parameters.Temperature - _mbp.NominalTemperature;
 
                 if (_mbp.ExponentialCoefficient.Given)
+                {
                     factor = Math.Pow(1.01, _mbp.ExponentialCoefficient * difference);
+                }
                 else
+                {
                     factor = 1.0 + _mbp.TemperatureCoefficient1 * difference + _mbp.TemperatureCoefficient2 * difference * difference;
+                }
             }
             else
             {

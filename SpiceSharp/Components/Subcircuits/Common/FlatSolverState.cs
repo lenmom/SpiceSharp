@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations;
 using SpiceSharp.Simulations.Variables;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -17,13 +18,31 @@ namespace SpiceSharp.Components.Subcircuits
         where S : ISolverSimulationState<T>
     {
         /// <inheritdoc/>
-        public override ISparsePivotingSolver<T> Solver => Parent.Solver;
+        public override ISparsePivotingSolver<T> Solver
+        {
+            get
+            {
+                return Parent.Solver;
+            }
+        }
 
         /// <inheritdoc/>
-        public override IVector<T> Solution => Parent.Solution;
+        public override IVector<T> Solution
+        {
+            get
+            {
+                return Parent.Solution;
+            }
+        }
 
         /// <inheritdoc/>
-        public override IVariableMap Map => Parent.Map;
+        public override IVariableMap Map
+        {
+            get
+            {
+                return Parent.Map;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcircuitSolverState{T, S}"/> class.
@@ -51,7 +70,9 @@ namespace SpiceSharp.Components.Subcircuits
         {
             // Don't make the ground node local
             if (Parent.Comparer.Equals(name, Constants.Ground))
+            {
                 return Parent.GetSharedVariable(name);
+            }
 
             return Parent.GetSharedVariable(Name.Combine(name));
         }

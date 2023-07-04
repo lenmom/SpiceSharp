@@ -23,7 +23,7 @@ namespace SpiceSharp.General
             type.ThrowIfNull(nameof(type));
             return _interfaces.GetOrAdd(type, t =>
             {
-                var result = new List<Type>(8);
+                List<Type> result = new List<Type>(8);
                 t = t.GetTypeInfo().BaseType;
                 while (t != null && t != typeof(object))
                 {

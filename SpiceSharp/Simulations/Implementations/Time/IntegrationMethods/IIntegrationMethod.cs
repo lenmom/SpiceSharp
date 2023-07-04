@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Algebra;
-using System;
+﻿using System;
+
+using SpiceSharp.Algebra;
 
 namespace SpiceSharp.Simulations
 {

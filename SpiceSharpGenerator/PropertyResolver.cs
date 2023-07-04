@@ -1,7 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
+using Microsoft.CodeAnalysis;
 
 namespace SpiceSharpGenerator
 {
@@ -34,42 +35,64 @@ namespace SpiceSharpGenerator
             Generated.Clear();
             foreach ((IFieldSymbol field, SyntaxTriviaList trivia) in _fields)
             {
-                var g = new GeneratedProperty(field);
+                GeneratedProperty g = new GeneratedProperty(field);
                 Generated.Add(g);
-                var name = g.Variable;
+                string name = g.Variable;
 
                 // We first want to copy the trivia
-                foreach (var line in trivia.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (string line in trivia.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (!string.IsNullOrWhiteSpace(line))
+                    {
                         yield return line.Trim();
+                    }
                 }
 
                 // then we also show the attributes
-                var sb = new StringBuilder(32);
-                var checks = new List<string>(4);
+                StringBuilder sb = new StringBuilder(32);
+                List<string> checks = new List<string>(4);
                 sb.Append("[");
-                var isFirst = true;
+                bool isFirst = true;
                 foreach (AttributeData attribute in field.GetAttributes())
                 {
                     if (attribute.IsAttribute("LessThanAttribute"))
+                    {
                         checks.Add($"Utility.LessThan(value, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("GreaterThanAttribute"))
+                    {
                         checks.Add($"Utility.GreaterThan(value, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("LessThanOrEqualsAttribute"))
+                    {
                         checks.Add($"Utility.LessThanOrEquals(value, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("GreaterThanOrEqualsAttribute"))
+                    {
                         checks.Add($"Utility.GreaterThanOrEquals(value, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("LowerLimitAttribute"))
+                    {
                         checks.Add($"value = Utility.LowerLimit(value, this, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("UpperLimitAttribute"))
+                    {
                         checks.Add($"value = Utility.UpperLimit(value, this, nameof({name}), {attribute.ConstructorArguments[0].Value.Format()});");
+                    }
                     else if (attribute.IsAttribute("FiniteAttribute"))
+                    {
                         checks.Add($"Utility.Finite(value, nameof({name}));");
+                    }
+
                     if (isFirst)
+                    {
                         isFirst = false;
+                    }
                     else
+                    {
                         sb.Append(", ");
+                    }
+
                     sb.Append(attribute.ToString());
                 }
                 sb.Append("]");
@@ -81,8 +104,11 @@ namespace SpiceSharpGenerator
                 yield return $"\tget => {field.Name};";
                 yield return $"\tset";
                 yield return "\t{";
-                foreach (var check in checks)
+                foreach (string check in checks)
+                {
                     yield return "\t\t" + check;
+                }
+
                 yield return $"\t\t{field.Name} = value;";
                 yield return "\t}";
                 yield return "}";
@@ -97,7 +123,7 @@ namespace SpiceSharpGenerator
         /// </returns>
         public string Create()
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             sb.AppendLine($@"using System;
 using SpiceSharp;
 using System.Collections.Generic;

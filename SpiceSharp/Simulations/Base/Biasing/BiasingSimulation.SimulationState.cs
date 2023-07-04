@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Simulations
 {
@@ -12,7 +13,14 @@ namespace SpiceSharp.Simulations
             private readonly VariableMap _map;
             public IVector<double> Solution { get; private set; }
             public IVector<double> OldSolution { get; private set; }
-            public IVariableMap Map => _map;
+            public IVariableMap Map
+            {
+                get
+                {
+                    return _map;
+                }
+            }
+
             public ISparsePivotingSolver<double> Solver { get; }
 
             /// <summary>
@@ -26,7 +34,7 @@ namespace SpiceSharp.Simulations
             {
                 Solver = solver.ThrowIfNull(nameof(solver));
 
-                var gnd = new SolverVariable<double>(this, Constants.Ground, 0, Units.Volt);
+                SolverVariable<double> gnd = new SolverVariable<double>(this, Constants.Ground, 0, Units.Volt);
                 _map = new VariableMap(gnd);
                 Add(Constants.Ground, gnd);
             }
@@ -35,7 +43,9 @@ namespace SpiceSharp.Simulations
             {
                 name.ThrowIfNull(nameof(name));
                 if (TryGetValue(name, out IVariable<double> result))
+                {
                     return result;
+                }
 
                 // We create a private variable and then make it shared by adding it to the solved variable set
                 result = CreatePrivateVariable(name, Units.Volt);
@@ -45,8 +55,8 @@ namespace SpiceSharp.Simulations
 
             public IVariable<double> CreatePrivateVariable(string name, IUnit unit)
             {
-                var index = _map.Count;
-                var result = new SolverVariable<double>(this, name, index, unit);
+                int index = _map.Count;
+                SolverVariable<double> result = new SolverVariable<double>(this, name, index, unit);
                 _map.Add(result, index);
                 return result;
             }

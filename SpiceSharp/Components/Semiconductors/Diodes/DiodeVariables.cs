@@ -40,9 +40,13 @@ namespace SpiceSharp.Components.Diodes
             Negative = factory.GetSharedVariable(context.Nodes[1]);
 
             if (mbp.Resistance > 0)
+            {
                 PosPrime = factory.CreatePrivateVariable(name.Combine("pos"), Units.Volt);
+            }
             else
+            {
                 PosPrime = Positive;
+            }
         }
 
         /// <summary>
@@ -52,9 +56,9 @@ namespace SpiceSharp.Components.Diodes
         /// <returns>The matrix locations.</returns>
         public MatrixLocation[] GetMatrixLocations(IVariableMap map)
         {
-            var pos = map[Positive];
-            var posPrime = map[PosPrime];
-            var neg = map[Negative];
+            int pos = map[Positive];
+            int posPrime = map[PosPrime];
+            int neg = map[Negative];
 
             return new[]
             {
@@ -90,11 +94,20 @@ namespace SpiceSharp.Components.Diodes
             if (obj is DiodeVariables<T> dv)
             {
                 if (!Positive.Equals(dv.Positive))
+                {
                     return false;
+                }
+
                 if (!Negative.Equals(dv.Negative))
+                {
                     return false;
+                }
+
                 if (!PosPrime.Equals(dv.PosPrime))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;
@@ -108,7 +121,7 @@ namespace SpiceSharp.Components.Diodes
         /// </returns>
         public override int GetHashCode()
         {
-            var hash = Positive.GetHashCode();
+            int hash = Positive.GetHashCode();
             hash = (hash * 13) ^ Negative.GetHashCode();
             hash = (hash * 13) ^ PosPrime.GetHashCode();
             return hash;

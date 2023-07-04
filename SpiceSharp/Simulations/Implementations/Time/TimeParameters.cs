@@ -1,7 +1,8 @@
-using SpiceSharp.Attributes;
-using SpiceSharp.ParameterSets;
 using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations
 {
@@ -97,10 +98,13 @@ namespace SpiceSharp.Simulations
         /// <inheritdoc/>
         public virtual TimeParameters Clone()
         {
-            var clone = (TimeParameters)MemberwiseClone();
+            TimeParameters clone = (TimeParameters)MemberwiseClone();
             clone.InitialConditions = new(InitialConditions.Comparer);
             foreach (KeyValuePair<string, double> ic in InitialConditions)
+            {
                 clone.InitialConditions.Add(ic.Key, ic.Value);
+            }
+
             return clone;
         }
     }

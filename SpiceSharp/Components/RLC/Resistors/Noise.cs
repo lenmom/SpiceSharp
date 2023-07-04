@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.NoiseSources;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -18,13 +19,31 @@ namespace SpiceSharp.Components.Resistors
         private readonly NoiseThermal _thermal;
 
         /// <inheritdoc/>
-        public double OutputNoiseDensity => _thermal.OutputNoiseDensity;
+        public double OutputNoiseDensity
+        {
+            get
+            {
+                return _thermal.OutputNoiseDensity;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalOutputNoise => _thermal.TotalOutputNoise;
+        public double TotalOutputNoise
+        {
+            get
+            {
+                return _thermal.TotalOutputNoise;
+            }
+        }
 
         /// <inheritdoc/>
-        public double TotalInputNoise => _thermal.TotalInputNoise;
+        public double TotalInputNoise
+        {
+            get
+            {
+                return _thermal.TotalInputNoise;
+            }
+        }
 
         /// <summary>
         /// Gets the thermal noise source of the resistor.
@@ -33,7 +52,13 @@ namespace SpiceSharp.Components.Resistors
         /// The thermal noise source.
         /// </value>
         [ParameterName("thermal"), ParameterInfo("The thermal noise source")]
-        public INoiseSource Thermal => _thermal;
+        public INoiseSource Thermal
+        {
+            get
+            {
+                return _thermal;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Noise"/> class.

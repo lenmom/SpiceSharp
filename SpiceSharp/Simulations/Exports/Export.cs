@@ -18,7 +18,10 @@ namespace SpiceSharp.Simulations
             get
             {
                 if (Extractor == null)
+                {
                     LazyLoad();
+                }
+
                 return Extractor != null;
             }
         }
@@ -33,7 +36,11 @@ namespace SpiceSharp.Simulations
         /// </summary>
         public S Simulation
         {
-            get => _simulation;
+            get
+            {
+                return _simulation;
+            }
+
             set
             {
                 if (_simulation != null)
@@ -67,7 +74,9 @@ namespace SpiceSharp.Simulations
                     // Try initializing (lazy loading)
                     LazyLoad();
                     if (Extractor == null)
+                    {
                         return default;
+                    }
                 }
 
                 return Extractor();
@@ -97,11 +106,15 @@ namespace SpiceSharp.Simulations
         protected void LazyLoad()
         {
             if (EqualityComparer<S>.Default.Equals(_simulation, default))
+            {
                 return;
+            }
 
             // If we're already too far, emulate a call from the simulation
             if (Simulation.Status == SimulationStatus.Setup || Simulation.Status == SimulationStatus.Running)
+            {
                 Initialize(Simulation, EventArgs.Empty);
+            }
         }
 
         /// <summary>

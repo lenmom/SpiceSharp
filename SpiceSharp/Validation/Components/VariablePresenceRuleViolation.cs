@@ -30,7 +30,13 @@ namespace SpiceSharp.Validation
         /// <value>
         /// The subject that caused the violation.
         /// </value>
-        public IRuleSubject Subject => null;
+        public IRuleSubject Subject
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VariablePresenceRuleViolation"/> class.

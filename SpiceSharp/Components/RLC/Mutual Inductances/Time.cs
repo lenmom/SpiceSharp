@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.MutualInductances
 {
@@ -39,8 +40,8 @@ namespace SpiceSharp.Components.MutualInductances
             load1.UpdateFlux += UpdateFlux1;
             load2.UpdateFlux += UpdateFlux2;
 
-            var br1 = state.Map[_branch1];
-            var br2 = state.Map[_branch2];
+            int br1 = state.Map[_branch1];
+            int br2 = state.Map[_branch2];
             _elements = new ElementSet<double>(state.Solver,
                 new MatrixLocation(br1, br2),
                 new MatrixLocation(br2, br1));
@@ -76,7 +77,9 @@ namespace SpiceSharp.Components.MutualInductances
         void IBiasingBehavior.Load()
         {
             if (_time.UseDc)
+            {
                 return;
+            }
 
             // Load Y-matrix
             _elements.Add(-_conductance, -_conductance);

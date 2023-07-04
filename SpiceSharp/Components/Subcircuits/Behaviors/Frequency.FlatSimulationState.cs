@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -16,7 +17,13 @@ namespace SpiceSharp.Components.Subcircuits
             IComplexSimulationState
         {
             /// <inheritdoc/>
-            public Complex Laplace => Parent.Laplace;
+            public Complex Laplace
+            {
+                get
+                {
+                    return Parent.Laplace;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="FlatSimulationState"/> class.

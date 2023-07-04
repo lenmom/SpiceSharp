@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -34,12 +35,15 @@ namespace SpiceSharp.Components.ParallelComponents
         /// <inheritdoc/>
         public Parameters Clone()
         {
-            var clone = new Parameters
+            Parameters clone = new Parameters
             {
                 Entities = Entities?.Clone()
             };
             foreach (KeyValuePair<Type, IWorkDistributor> pair in WorkDistributors)
+            {
                 clone.WorkDistributors.Add(pair.Key, pair.Value);
+            }
+
             return clone;
         }
 

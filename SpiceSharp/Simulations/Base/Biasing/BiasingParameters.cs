@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
+
 using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.ParameterSets;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Simulations
 {
@@ -146,7 +147,7 @@ namespace SpiceSharp.Simulations
         /// <returns>A solver that can be used to solve equations.</returns>
         public ISparsePivotingSolver<double> CreateSolver()
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
             solver.Parameters.AbsolutePivotThreshold = AbsolutePivotThreshold;
             solver.Parameters.RelativePivotThreshold = RelativePivotThreshold;
             return solver;
@@ -155,10 +156,13 @@ namespace SpiceSharp.Simulations
         /// <inheritdoc/>
         public BiasingParameters Clone()
         {
-            var clone = (BiasingParameters)MemberwiseClone();
+            BiasingParameters clone = (BiasingParameters)MemberwiseClone();
             clone.Nodesets = new Dictionary<string, double>();
             foreach (KeyValuePair<string, double> pair in Nodesets)
+            {
                 clone.Nodesets.Add(pair.Key, pair.Value);
+            }
+
             return clone;
         }
 
@@ -181,8 +185,15 @@ namespace SpiceSharp.Simulations
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin)]
         public double TemperatureCelsius
         {
-            get => Temperature - Constants.CelsiusKelvin;
-            set => Temperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return Temperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                Temperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>
@@ -204,8 +215,15 @@ namespace SpiceSharp.Simulations
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin)]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>

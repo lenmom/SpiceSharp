@@ -15,15 +15,21 @@ namespace SpiceSharp.Components.ParallelComponents
         public bool Execute(IReadOnlyList<Func<bool>> methods)
         {
             methods.ThrowIfNull(nameof(methods));
-            var tasks = new Task<bool>[methods.Count];
-            for (var i = 0; i < methods.Count; i++)
+            Task<bool>[] tasks = new Task<bool>[methods.Count];
+            for (int i = 0; i < methods.Count; i++)
+            {
                 tasks[i] = Task.Run(methods[i]);
+            }
+
             Task.WaitAll(tasks);
 
             // Combine the results synchronously
-            var result = true;
-            for (var i = 0; i < tasks.Length; i++)
+            bool result = true;
+            for (int i = 0; i < tasks.Length; i++)
+            {
                 result &= tasks[i].Result;
+            }
+
             return result;
         }
     }

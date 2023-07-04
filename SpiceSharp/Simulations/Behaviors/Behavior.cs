@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Entities;
+﻿using System;
+
+using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
-using System;
 
 namespace SpiceSharp.Behaviors
 {

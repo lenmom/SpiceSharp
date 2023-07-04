@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Attributes;
-using System;
+﻿using System;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -23,13 +24,19 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             get
             {
                 if (_maxStep == 0.0)
+                {
                     return (StopTime - StartTime) / 50.0;
+                }
+
                 return _maxStep;
             }
             set
             {
                 if (value < 0.0)
+                {
                     throw new ArgumentException(Properties.Resources.Simulations_Time_TimestepInvalid);
+                }
+
                 _maxStep = value;
             }
         }
@@ -49,13 +56,19 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             get
             {
                 if (_minStep == 0.0)
+                {
                     return MaxStep * 1e-9;
+                }
+
                 return _minStep;
             }
             set
             {
                 if (value < 0.0)
+                {
                     throw new ArgumentException(Properties.Resources.Simulations_Time_TimestepInvalid);
+                }
+
                 _minStep = value;
             }
         }
@@ -71,11 +84,18 @@ namespace SpiceSharp.Simulations.IntegrationMethods
         [ParameterName("expansion"), ParameterInfo("The maximum timestep expansion factor.")]
         public virtual double MaximumExpansion
         {
-            get => _maxExpansion;
+            get
+            {
+                return _maxExpansion;
+            }
+
             set
             {
                 if (value < 1)
+                {
                     throw new ArgumentException(Properties.Resources.Simulations_Time_MaximumExpansionTooSmall);
+                }
+
                 _maxExpansion = value;
             }
         }

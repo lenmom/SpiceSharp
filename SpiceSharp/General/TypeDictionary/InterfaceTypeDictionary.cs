@@ -16,13 +16,31 @@ namespace SpiceSharp.General
         private readonly Dictionary<Type, TypeValues<V>> _interfaces;
 
         /// <inheritdoc/>
-        public IEnumerable<Type> Keys => _interfaces.Keys;
+        public IEnumerable<Type> Keys
+        {
+            get
+            {
+                return _interfaces.Keys;
+            }
+        }
 
         /// <inheritdoc/>
-        public IEnumerable<V> Values => _dictionary.Values;
+        public IEnumerable<V> Values
+        {
+            get
+            {
+                return _dictionary.Values;
+            }
+        }
 
         /// <inheritdoc/>
-        public int Count => _dictionary.Count;
+        public int Count
+        {
+            get
+            {
+                return _dictionary.Count;
+            }
+        }
 
         /// <inheritdoc/>
         public V this[Type key]
@@ -31,7 +49,10 @@ namespace SpiceSharp.General
             {
                 key.ThrowIfNull(nameof(key));
                 if (_interfaces.TryGetValue(key, out TypeValues<V> result))
+                {
                     return result.Value;
+                }
+
                 return _dictionary[key];
             }
         }
@@ -86,9 +107,15 @@ namespace SpiceSharp.General
             if (_dictionary.TryGetValue(key, out V existing))
             {
                 if (!existing.Equals(value))
+                {
                     return false;
+                }
+
                 foreach (Type type in InterfaceCache.Get(key))
+                {
                     _interfaces[type].Remove(value);
+                }
+
                 _dictionary.Remove(key);
                 return true;
             }
@@ -100,7 +127,10 @@ namespace SpiceSharp.General
         {
             key.ThrowIfNull(nameof(key));
             if (_interfaces.TryGetValue(key, out TypeValues<V> result))
+            {
                 return result.Values;
+            }
+
             return Enumerable.Empty<V>();
         }
 
@@ -109,7 +139,10 @@ namespace SpiceSharp.General
         {
             key.ThrowIfNull(nameof(key));
             if (_interfaces.TryGetValue(key, out TypeValues<V> result))
+            {
                 return result.Count;
+            }
+
             return 0;
         }
 
@@ -120,7 +153,10 @@ namespace SpiceSharp.General
             if (_interfaces.TryGetValue(key, out TypeValues<V> result))
             {
                 if (result.IsAmbiguous)
+                {
                     throw new AmbiguousTypeException(key);
+                }
+
                 value = result.Value;
                 return true;
             }

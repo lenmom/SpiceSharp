@@ -14,9 +14,12 @@ namespace SpiceSharp.Components.ParallelComponents
         public void Execute(IReadOnlyList<Action> methods)
         {
             methods.ThrowIfNull(nameof(methods));
-            var tasks = new Task[methods.Count];
-            for (var i = 0; i < methods.Count; i++)
+            Task[] tasks = new Task[methods.Count];
+            for (int i = 0; i < methods.Count; i++)
+            {
                 tasks[i] = Task.Run(methods[i]);
+            }
+
             Task.WaitAll(tasks);
         }
 
@@ -24,7 +27,10 @@ namespace SpiceSharp.Components.ParallelComponents
         public R Execute<R>(IReadOnlyList<Func<R>> methods)
         {
             if (this is IWorkDistributor<R> wd)
+            {
                 return wd.Execute(methods);
+            }
+
             throw new ArgumentException("Return type not supported.");
         }
     }

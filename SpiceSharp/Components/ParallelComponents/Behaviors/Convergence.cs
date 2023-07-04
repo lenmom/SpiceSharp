@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -33,7 +34,9 @@ namespace SpiceSharp.Components.ParallelComponents
                 if (context.TryGetState<IIterationSimulationState>(out IIterationSimulationState parent))
                 {
                     if (!(parent is IterationSimulationState))
+                    {
                         context.AddLocalState<IIterationSimulationState>(new IterationSimulationState(parent));
+                    }
                 }
             }
         }
@@ -46,7 +49,9 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_convergenceWorkload != null)
             {
                 foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
+                {
                     _convergenceWorkload.Functions.Add(behavior.IsConvergent);
+                }
             }
         }
 
@@ -54,12 +59,17 @@ namespace SpiceSharp.Components.ParallelComponents
         bool IConvergenceBehavior.IsConvergent()
         {
             if (_convergenceWorkload != null)
+            {
                 return _convergenceWorkload.Execute();
+            }
             else
             {
-                var convergence = true;
+                bool convergence = true;
                 foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
+                {
                     convergence &= behavior.IsConvergent();
+                }
+
                 return convergence;
             }
         }

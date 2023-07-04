@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components
 {
@@ -58,7 +59,9 @@ namespace SpiceSharp.Components
             {
                 time -= _td;
                 if (time <= 0)
+                {
                     Value = 0;
+                }
                 else
                 {
                     // Compute waveform value
@@ -70,7 +73,7 @@ namespace SpiceSharp.Components
             /// <inheritdoc/>
             public void Probe()
             {
-                var time = _method?.Time ?? 0.0;
+                double time = _method?.Time ?? 0.0;
                 At(time);
             }
 

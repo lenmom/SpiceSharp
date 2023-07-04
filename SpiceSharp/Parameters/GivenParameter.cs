@@ -48,7 +48,10 @@ namespace SpiceSharp
         public override string ToString()
         {
             if (Given)
+            {
                 return "{0} (set)".FormatString(Value);
+            }
+
             return "{0} (not set)".FormatString(Value);
         }
 
@@ -88,7 +91,10 @@ namespace SpiceSharp
             if (obj is GivenParameter<T> gp)
             {
                 if (!gp.Value.Equals(Value))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;
@@ -116,7 +122,10 @@ namespace SpiceSharp
         public bool Equals(GivenParameter<T> value)
         {
             if (!Value.Equals(value.Value))
+            {
                 return false;
+            }
+
             return true;
         }
 

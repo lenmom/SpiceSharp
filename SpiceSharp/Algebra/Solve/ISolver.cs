@@ -1,5 +1,6 @@
-﻿using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Algebra
 {

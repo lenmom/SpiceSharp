@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Threading;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.ParallelComponents
 {

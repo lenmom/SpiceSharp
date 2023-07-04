@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Diagnostics;
-using System;
 
 namespace SpiceSharp.ParameterSets
 {

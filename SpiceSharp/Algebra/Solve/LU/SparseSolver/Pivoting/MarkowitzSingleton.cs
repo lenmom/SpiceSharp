@@ -21,15 +21,19 @@ namespace SpiceSharp.Algebra.Solve
             markowitz.ThrowIfNull(nameof(markowitz));
             matrix.ThrowIfNull(nameof(matrix));
             if (eliminationStep < 1 || eliminationStep > max)
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
 
             // No singletons left, so don't bother
             if (markowitz.Singletons == 0)
+            {
                 return Pivot<ISparseMatrixElement<T>>.Empty;
+            }
 
             // Find the first valid singleton we can use
             int singletons = 0, index;
-            for (var i = max + 1; i >= eliminationStep; i--)
+            for (int i = max + 1; i >= eliminationStep; i--)
             {
                 // First check the current pivot, else
                 // search from last to first as this tends to push the higher markowitz
@@ -38,7 +42,9 @@ namespace SpiceSharp.Algebra.Solve
 
                 // Not a singleton, let's skip this one...
                 if (markowitz.Product(index) != 0)
+                {
                     continue;
+                }
 
                 // Keep track of how many singletons we have found
                 singletons++;
@@ -64,9 +70,11 @@ namespace SpiceSharp.Algebra.Solve
                     if (chosen.Row <= max && chosen.Column <= max)
                     {
                         // Check if it is a valid pivot
-                        var magnitude = markowitz.Magnitude(chosen.Value);
+                        double magnitude = markowitz.Magnitude(chosen.Value);
                         if (magnitude > markowitz.AbsolutePivotThreshold)
+                        {
                             return new Pivot<ISparseMatrixElement<T>>(chosen, PivotInfo.Good);
+                        }
                     }
                 }
 
@@ -87,7 +95,7 @@ namespace SpiceSharp.Algebra.Solve
 
                     // First find the biggest magnitude in the column, not counting the pivot candidate
                     ISparseMatrixElement<T> element = chosen.Above;
-                    var largest = 0.0;
+                    double largest = 0.0;
                     while (element != null && element.Row >= eliminationStep)
                     {
                         largest = Math.Max(largest, markowitz.Magnitude(element.Value));
@@ -103,16 +111,20 @@ namespace SpiceSharp.Algebra.Solve
                     // Check if the pivot is valid
                     if (chosen.Row <= max && chosen.Column <= max)
                     {
-                        var magnitude = markowitz.Magnitude(chosen.Value);
+                        double magnitude = markowitz.Magnitude(chosen.Value);
                         if (magnitude > markowitz.AbsolutePivotThreshold &&
                             magnitude > markowitz.RelativePivotThreshold * largest)
+                        {
                             return new Pivot<ISparseMatrixElement<T>>(chosen, PivotInfo.Good);
+                        }
                     }
                 }
 
                 // Don't continue if no more singletons are available
                 if (singletons >= markowitz.Singletons)
+                {
                     break;
+                }
             }
 
             // All singletons were unacceptable...

@@ -19,7 +19,13 @@ namespace SpiceSharp.Behaviors
         public event EventHandler<BehaviorsNotFoundEventArgs> BehaviorsNotFound;
 
         /// <inheritdoc/>
-        public int Count => _dictionary.Count;
+        public int Count
+        {
+            get
+            {
+                return _dictionary.Count;
+            }
+        }
 
         /// <inheritdoc/>
         public IEnumerable<string> Keys
@@ -29,8 +35,10 @@ namespace SpiceSharp.Behaviors
                 _lock.EnterReadLock();
                 try
                 {
-                    foreach (var key in _dictionary.Keys)
+                    foreach (string key in _dictionary.Keys)
+                    {
                         yield return key;
+                    }
                 }
                 finally
                 {
@@ -49,11 +57,16 @@ namespace SpiceSharp.Behaviors
                 try
                 {
                     if (_dictionary.TryGetValue(name, out IBehaviorContainer result))
+                    {
                         return result;
-                    var args = new BehaviorsNotFoundEventArgs(name);
+                    }
+
+                    BehaviorsNotFoundEventArgs args = new BehaviorsNotFoundEventArgs(name);
                     OnBehaviorsNotFound(args);
                     if (args.Behaviors != null)
+                    {
                         return args.Behaviors;
+                    }
 
                     // The behaviors could not be found...
                     throw new BehaviorsNotFoundException(name, Properties.Resources.Behaviors_NoBehaviorFor.FormatString(name));
@@ -66,7 +79,13 @@ namespace SpiceSharp.Behaviors
         }
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => _dictionary.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return _dictionary.Comparer;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BehaviorContainerCollection" /> class.
@@ -94,7 +113,10 @@ namespace SpiceSharp.Behaviors
             try
             {
                 if (_dictionary.ContainsKey(behaviors.Name))
+                {
                     throw new ArgumentException(Properties.Resources.Behaviors_BehaviorsAlreadyExist.FormatString(behaviors.Name));
+                }
+
                 _lock.EnterWriteLock();
                 try
                 {
@@ -118,11 +140,13 @@ namespace SpiceSharp.Behaviors
             _lock.EnterReadLock();
             try
             {
-                var list = new List<T>(_values.Count);
+                List<T> list = new List<T>(_values.Count);
                 foreach (IBehaviorContainer elt in _values)
                 {
                     if (elt.TryGetValue(out T value))
+                    {
                         list.Add(value);
+                    }
                 }
                 return new BehaviorList<T>(list.ToArray());
             }
@@ -139,10 +163,12 @@ namespace SpiceSharp.Behaviors
             try
             {
                 if (_dictionary.TryGetValue(name, out ebd))
+                {
                     return true;
+                }
 
                 // Try asking our event
-                var args = new BehaviorsNotFoundEventArgs(name);
+                BehaviorsNotFoundEventArgs args = new BehaviorsNotFoundEventArgs(name);
                 OnBehaviorsNotFound(args);
                 if (args.Behaviors != null)
                 {

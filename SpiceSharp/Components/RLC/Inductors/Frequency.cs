@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Inductors
 {
@@ -26,15 +27,33 @@ namespace SpiceSharp.Components.Inductors
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("The complex voltage")]
-        public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterInfo("The complex current")]
-        public Complex ComplexCurrent => Branch.Value;
+        public Complex ComplexCurrent
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("The complex power")]
-        public Complex ComplexPower => -Branch.Value * (_variables.Positive.Value - _variables.Negative.Value);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return -Branch.Value * (_variables.Positive.Value - _variables.Negative.Value);
+            }
+        }
 
         /// <inheritdoc/>
         public new IVariable<Complex> Branch { get; }
@@ -51,9 +70,9 @@ namespace SpiceSharp.Components.Inductors
             _variables = new OnePort<Complex>(_complex, context);
             Branch = _complex.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
 
-            var pos = _complex.Map[_variables.Positive];
-            var neg = _complex.Map[_variables.Negative];
-            var br = _complex.Map[Branch];
+            int pos = _complex.Map[_variables.Positive];
+            int neg = _complex.Map[_variables.Negative];
+            int br = _complex.Map[Branch];
 
             _elements = new ElementSet<Complex>(_complex.Solver,
                 new MatrixLocation(pos, br),

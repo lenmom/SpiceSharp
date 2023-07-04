@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Entities;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using SpiceSharp.Entities;
 
 namespace SpiceSharp
 {
@@ -14,20 +15,44 @@ namespace SpiceSharp
         private readonly IEntityCollection _entities;
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => _entities.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return _entities.Comparer;
+            }
+        }
 
         /// <summary>
         /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
         /// </summary>
-        public int Count => _entities.Count;
+        public int Count
+        {
+            get
+            {
+                return _entities.Count;
+            }
+        }
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="ICollection{T}" /> is read-only.
         /// </summary>
-        public bool IsReadOnly => _entities.IsReadOnly;
+        public bool IsReadOnly
+        {
+            get
+            {
+                return _entities.IsReadOnly;
+            }
+        }
 
         /// <inheritdoc/>
-        public IEntity this[string name] => _entities[name];
+        public IEntity this[string name]
+        {
+            get
+            {
+                return _entities[name];
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Circuit"/> class.
@@ -55,9 +80,14 @@ namespace SpiceSharp
             : this()
         {
             if (entities == null)
+            {
                 return;
+            }
+
             foreach (IEntity entity in entities)
+            {
                 Add(entity);
+            }
         }
 
         /// <summary>
@@ -68,9 +98,14 @@ namespace SpiceSharp
             : this()
         {
             if (entities == null)
+            {
                 return;
+            }
+
             foreach (IEntity entity in entities)
+            {
                 Add(entity);
+            }
         }
 
         /// <summary>
@@ -82,7 +117,9 @@ namespace SpiceSharp
         {
             ckt.ThrowIfNull(nameof(ckt));
             foreach (IEntity entity in ckt)
+            {
                 Add(entity);
+            }
         }
 
         /// <inheritdoc/>

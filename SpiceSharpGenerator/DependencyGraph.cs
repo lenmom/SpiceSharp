@@ -1,7 +1,8 @@
-﻿using SpiceSharpGenerator.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using SpiceSharpGenerator.Diagnostics;
 
 namespace SpiceSharpGenerator
 {
@@ -50,7 +51,7 @@ namespace SpiceSharpGenerator
         /// </returns>
         public bool Contains(T dependsOnItem, T item)
         {
-            var key = Tuple.Create(item, dependsOnItem);
+            Tuple<T, T> key = Tuple.Create(item, dependsOnItem);
             return _edges.Contains(key);
         }
 
@@ -110,9 +111,15 @@ namespace SpiceSharpGenerator
         public void MakeDependency(T dependsOnItem, T item)
         {
             if (!_nodes.Contains(dependsOnItem))
+            {
                 Add(dependsOnItem);
+            }
+
             if (!_nodes.Contains(item))
+            {
                 Add(item);
+            }
+
             _edges.Add(Tuple.Create(item, dependsOnItem));
         }
 
@@ -126,8 +133,8 @@ namespace SpiceSharpGenerator
         public IEnumerable<T> OrderByIndependentFirst()
         {
             // Set of all items that do not depend on anything else
-            var s = new HashSet<T>(_nodes.Where(n => _edges.All(e => !e.Item2.Equals(n))));
-            var edges = new HashSet<Tuple<T, T>>(_edges);
+            HashSet<T> s = new HashSet<T>(_nodes.Where(n => _edges.All(e => !e.Item2.Equals(n))));
+            HashSet<Tuple<T, T>> edges = new HashSet<Tuple<T, T>>(_edges);
 
             // while S is non-empty do
             while (s.Any())
@@ -158,7 +165,9 @@ namespace SpiceSharpGenerator
 
             // If there are still edges left, then we have a cyclic dependency
             if (edges.Any())
+            {
                 throw new CyclicDependencyException();
+            }
         }
     }
 }

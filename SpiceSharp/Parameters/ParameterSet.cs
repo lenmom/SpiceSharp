@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Diagnostics;
-using System;
+﻿using System;
+
+using SpiceSharp.Diagnostics;
 
 namespace SpiceSharp.ParameterSets
 {
@@ -55,7 +56,9 @@ namespace SpiceSharp.ParameterSets
             {
                 Func<P> method = eps.GetPropertyGetter(name);
                 if (method != null)
+                {
                     return method.Invoke();
+                }
             }
             throw new ParameterNotFoundException(this, name, typeof(P));
         }
@@ -82,7 +85,10 @@ namespace SpiceSharp.ParameterSets
         {
             // If we have a generic implementation for it, use that instead
             if (this is IImportParameterSet<P> ips)
+            {
                 return ips.GetParameterSetter(name);
+            }
+
             return null;
         }
 
@@ -91,7 +97,10 @@ namespace SpiceSharp.ParameterSets
         {
             // If we have a generic implementation for it, use that instead
             if (this is IExportPropertySet<P> eps)
+            {
                 return eps.GetPropertyGetter(name);
+            }
+
             return null;
         }
     }

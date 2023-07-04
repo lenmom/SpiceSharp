@@ -56,9 +56,15 @@ namespace SpiceSharp.Algebra
             if (obj is MatrixLocation ml)
             {
                 if (Row != ml.Row)
+                {
                     return false;
+                }
+
                 if (Column != ml.Column)
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;
@@ -74,9 +80,15 @@ namespace SpiceSharp.Algebra
         public bool Equals(MatrixLocation other)
         {
             if (Row != other.Row)
+            {
                 return false;
+            }
+
             if (Column != other.Column)
+            {
                 return false;
+            }
+
             return true;
         }
 

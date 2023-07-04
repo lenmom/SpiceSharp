@@ -13,16 +13,35 @@ namespace SpiceSharp.Algebra.Solve
             private readonly SparseLUSolver<T> _parent;
 
             /// <inheritdoc/>
-            public int ElementCount => _parent.Vector.ElementCount;
+            public int ElementCount
+            {
+                get
+                {
+                    return _parent.Vector.ElementCount;
+                }
+            }
 
             /// <inheritdoc/>
-            public int Length => _parent.Vector.Length;
+            public int Length
+            {
+                get
+                {
+                    return _parent.Vector.Length;
+                }
+            }
 
             /// <inheritdoc/>
             public T this[int index]
             {
-                get => _parent.Vector[index];
-                set => _parent.Vector[index] = value;
+                get
+                {
+                    return _parent.Vector[index];
+                }
+
+                set
+                {
+                    _parent.Vector[index] = value;
+                }
             }
 
             /// <inheritdoc/>

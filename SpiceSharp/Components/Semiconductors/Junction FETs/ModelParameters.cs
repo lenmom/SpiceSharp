@@ -20,8 +20,15 @@ namespace SpiceSharp.Components.JFETs
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>
@@ -175,7 +182,9 @@ namespace SpiceSharp.Components.JFETs
         public void SetNjf(bool flag)
         {
             if (flag)
+            {
                 JFETType = 1.0;
+            }
         }
 
         /// <summary>
@@ -186,7 +195,9 @@ namespace SpiceSharp.Components.JFETs
         public void SetPjf(bool flag)
         {
             if (flag)
+            {
                 JFETType = -1.0;
+            }
         }
 
         /// <summary>
@@ -201,7 +212,10 @@ namespace SpiceSharp.Components.JFETs
             get
             {
                 if (JFETType > 0.0)
+                {
                     return "njf";
+                }
+
                 return "pjf";
             }
         }

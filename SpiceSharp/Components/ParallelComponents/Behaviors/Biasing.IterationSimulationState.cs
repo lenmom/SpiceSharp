@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Threading;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -16,13 +17,31 @@ namespace SpiceSharp.Components.ParallelComponents
             private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
 
             /// <inheritdoc/>
-            IterationModes IIterationSimulationState.Mode => _parent.Mode;
+            IterationModes IIterationSimulationState.Mode
+            {
+                get
+                {
+                    return _parent.Mode;
+                }
+            }
 
             /// <inheritdoc/>
-            double IIterationSimulationState.SourceFactor => _parent.SourceFactor;
+            double IIterationSimulationState.SourceFactor
+            {
+                get
+                {
+                    return _parent.SourceFactor;
+                }
+            }
 
             /// <inheritdoc/>
-            double IIterationSimulationState.Gmin => _parent.Gmin;
+            double IIterationSimulationState.Gmin
+            {
+                get
+                {
+                    return _parent.Gmin;
+                }
+            }
 
             /// <inheritdoc/>
             bool IIterationSimulationState.IsConvergent

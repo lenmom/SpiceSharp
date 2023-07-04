@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Algebra;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.Mosfets
 {
@@ -56,14 +57,22 @@ namespace SpiceSharp.Components.Mosfets
             ModelParameters mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
 
             if (!mbp.DrainResistance.Equals(0.0) || !mbp.SheetResistance.Equals(0.0) && bp.DrainSquares > 0)
+            {
                 DrainPrime = factory.CreatePrivateVariable(context.Behaviors.Name.Combine("drain"), Units.Volt);
+            }
             else
+            {
                 DrainPrime = Drain;
+            }
 
             if (!mbp.SourceResistance.Equals(0.0) || !mbp.SheetResistance.Equals(0.0) && bp.SourceSquares > 0)
+            {
                 SourcePrime = factory.CreatePrivateVariable(context.Behaviors.Name.Combine("source"), Units.Volt);
+            }
             else
+            {
                 SourcePrime = Source;
+            }
         }
 
         /// <summary>
@@ -73,12 +82,12 @@ namespace SpiceSharp.Components.Mosfets
         /// <returns>The matrix locations.</returns>
         public MatrixLocation[] GetMatrixLocations(IVariableMap map)
         {
-            var d = map[Drain];
-            var dp = map[DrainPrime];
-            var s = map[Source];
-            var sp = map[SourcePrime];
-            var g = map[Gate];
-            var b = map[Bulk];
+            int d = map[Drain];
+            int dp = map[DrainPrime];
+            int s = map[Source];
+            int sp = map[SourcePrime];
+            int g = map[Gate];
+            int b = map[Bulk];
 
             return new[]
             {
@@ -141,17 +150,34 @@ namespace SpiceSharp.Components.Mosfets
             if (obj is MosfetVariables<T> mv)
             {
                 if (!Drain.Equals(mv.Drain))
+                {
                     return false;
+                }
+
                 if (!DrainPrime.Equals(mv.DrainPrime))
+                {
                     return false;
+                }
+
                 if (!Source.Equals(mv.Source))
+                {
                     return false;
+                }
+
                 if (!SourcePrime.Equals(mv.SourcePrime))
+                {
                     return false;
+                }
+
                 if (!Gate.Equals(mv.Gate))
+                {
                     return false;
+                }
+
                 if (!Bulk.Equals(mv.Bulk))
+                {
                     return false;
+                }
             }
             return true;
         }
@@ -164,7 +190,7 @@ namespace SpiceSharp.Components.Mosfets
         /// </returns>
         public override int GetHashCode()
         {
-            var hash = Drain.GetHashCode();
+            int hash = Drain.GetHashCode();
             hash = (hash * 13) ^ DrainPrime.GetHashCode();
             hash = (hash * 13) ^ Source.GetHashCode();
             hash = (hash * 13) ^ SourcePrime.GetHashCode();

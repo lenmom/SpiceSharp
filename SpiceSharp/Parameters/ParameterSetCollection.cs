@@ -1,8 +1,9 @@
-﻿using SpiceSharp.General;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
+using SpiceSharp.General;
 
 namespace SpiceSharp.ParameterSets
 {
@@ -19,13 +20,17 @@ namespace SpiceSharp.ParameterSets
         public virtual P GetParameterSet<P>() where P : IParameterSet, ICloneable<P>
         {
             if (this is IParameterized<P> parameterized)
+            {
                 return parameterized.Parameters;
+            }
             else
             {
                 foreach (IParameterSet ps in ParameterSets)
                 {
                     if (ps is P result)
+                    {
                         return result;
+                    }
                 }
             }
             throw new TypeNotFoundException(typeof(P), Properties.Resources.ParameterSets_NotDefined.FormatString(typeof(P).FullName));
@@ -78,7 +83,9 @@ namespace SpiceSharp.ParameterSets
             foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TrySetParameter(name, value))
+                {
                     return;
+                }
             }
             base.SetParameter(name, value);
         }
@@ -90,7 +97,9 @@ namespace SpiceSharp.ParameterSets
             foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TrySetParameter(name, value))
+                {
                     return true;
+                }
             }
             return base.TrySetParameter(name, value);
         }
@@ -102,7 +111,9 @@ namespace SpiceSharp.ParameterSets
             foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TryGetProperty(name, out P value))
+                {
                     return value;
+                }
             }
             return base.GetProperty<P>(name);
         }
@@ -114,7 +125,9 @@ namespace SpiceSharp.ParameterSets
             foreach (IParameterSet ps in ParameterSets)
             {
                 if (ps.TryGetProperty(name, out value))
+                {
                     return true;
+                }
             }
             return base.TryGetProperty(name, out value);
         }
@@ -127,7 +140,9 @@ namespace SpiceSharp.ParameterSets
             {
                 Action<P> setter = ps.CreateParameterSetter<P>(name);
                 if (setter != null)
+                {
                     return setter;
+                }
             }
             return base.CreateParameterSetter<P>(name);
         }
@@ -140,7 +155,9 @@ namespace SpiceSharp.ParameterSets
             {
                 Func<P> getter = ps.CreatePropertyGetter<P>(name);
                 if (getter != null)
+                {
                     return getter;
+                }
             }
             return base.CreatePropertyGetter<P>(name);
         }

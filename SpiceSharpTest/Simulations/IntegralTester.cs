@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharpTest.Simulations
 {
@@ -28,8 +29,8 @@ namespace SpiceSharpTest.Simulations
 
         public override void CreateBehaviors(ISimulation simulation)
         {
-            var eb = new BehaviorContainer("dF/dx");
-            var context = new BindingContext(this, simulation, eb);
+            BehaviorContainer eb = new BehaviorContainer("dF/dx");
+            BindingContext context = new BindingContext(this, simulation, eb);
             eb.Add(new IntegralTesterBehavior(context, _reference, _initial, _relTol, _absTol));
             simulation.EntityBehaviors.Add(eb);
         }
@@ -61,7 +62,10 @@ namespace SpiceSharpTest.Simulations
             void IBiasingBehavior.Load()
             {
                 if (_time.UseDc || _method.Time.Equals(0.0))
+                {
                     return;
+                }
+
                 _integral.Derivative = _biasing.Solution[1];
                 _integral.Integrate();
             }
@@ -71,7 +75,9 @@ namespace SpiceSharpTest.Simulations
             void IAcceptBehavior.Accept()
             {
                 if (_method.Time > 0)
+                {
                     Helper.AreEqual(_reference(_method.Time), _integral.Value, _relTol, _absTol);
+                }
             }
         }
     }

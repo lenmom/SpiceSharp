@@ -18,7 +18,11 @@ namespace SpiceSharp.Components.Switches
         [Finite]
         public override double Threshold
         {
-            get => _threshold;
+            get
+            {
+                return _threshold;
+            }
+
             set
             {
                 Utility.Finite(value, nameof(Threshold));
@@ -33,7 +37,11 @@ namespace SpiceSharp.Components.Switches
         [Finite]
         public override double Hysteresis
         {
-            get => _hysteresis;
+            get
+            {
+                return _hysteresis;
+            }
+
             set
             {
                 Utility.Finite(value, nameof(Hysteresis));

@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Mosfets.Level3;
 using SpiceSharp.Entities;
-using System;
 
 namespace SpiceSharp.Components
 {
@@ -31,9 +32,13 @@ namespace SpiceSharp.Components
             : base(name)
         {
             if (nmos)
+            {
                 Parameters.SetNmos(true);
+            }
             else
+            {
                 Parameters.SetPmos(true);
+            }
         }
     }
 }

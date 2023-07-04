@@ -25,8 +25,21 @@
             /// </summary>
             public Element PreviousInVector { get; set; }
 
-            ISparseVectorElement<T> ISparseVectorElement<T>.Below => NextInVector;
-            ISparseVectorElement<T> ISparseVectorElement<T>.Above => PreviousInVector;
+            ISparseVectorElement<T> ISparseVectorElement<T>.Below
+            {
+                get
+                {
+                    return NextInVector;
+                }
+            }
+
+            ISparseVectorElement<T> ISparseVectorElement<T>.Above
+            {
+                get
+                {
+                    return PreviousInVector;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Element"/> class.

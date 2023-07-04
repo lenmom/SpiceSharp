@@ -15,7 +15,13 @@ namespace SpiceSharp.Simulations
         private readonly Dictionary<string, V> _map = new Dictionary<string, V>();
 
         /// <inheritdoc/>
-        public IEqualityComparer<string> Comparer => _map.Comparer;
+        public IEqualityComparer<string> Comparer
+        {
+            get
+            {
+                return _map.Comparer;
+            }
+        }
 
         /// <summary>
         /// Gets the number of variables in the dictionary.
@@ -23,7 +29,13 @@ namespace SpiceSharp.Simulations
         /// <value>
         /// The number of variables in the dictionary.
         /// </value>
-        public int Count => _map.Count;
+        public int Count
+        {
+            get
+            {
+                return _map.Count;
+            }
+        }
 
         /// <summary>
         /// Gets an enumerable collection that contains the identifiers of all variables in the set.
@@ -31,7 +43,13 @@ namespace SpiceSharp.Simulations
         /// <value>
         /// An enumerable of all the identifiers in the dictionary.
         /// </value>
-        public IEnumerable<string> Keys => _map.Keys;
+        public IEnumerable<string> Keys
+        {
+            get
+            {
+                return _map.Keys;
+            }
+        }
 
         /// <summary>
         /// Gets an enumerable collection that contains the variables in the set.
@@ -39,7 +57,13 @@ namespace SpiceSharp.Simulations
         /// <value>
         /// An enumerable of all the variables in the dictionary.
         /// </value>
-        public IEnumerable<V> Values => _map.Values;
+        public IEnumerable<V> Values
+        {
+            get
+            {
+                return _map.Values;
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="IVariable"/> with the specified identifier.
@@ -57,7 +81,10 @@ namespace SpiceSharp.Simulations
             {
                 name.ThrowIfNull(nameof(name));
                 if (_map.TryGetValue(name, out V node))
+                {
                     return node;
+                }
+
                 throw new KeyNotFoundException(Properties.Resources.VariableNotFound.FormatString(name));
             }
         }

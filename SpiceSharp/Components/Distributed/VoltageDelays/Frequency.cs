@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.VoltageDelays
 {
@@ -29,15 +30,33 @@ namespace SpiceSharp.Components.VoltageDelays
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
-        public Complex ComplexVoltage => _variables.Right.Positive.Value - _variables.Right.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Right.Positive.Value - _variables.Right.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
-        public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
-        public Complex ComplexCurrent => Branch.Value;
+        public Complex ComplexCurrent
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -50,12 +69,12 @@ namespace SpiceSharp.Components.VoltageDelays
             _complex = context.GetState<IComplexSimulationState>();
 
             _variables = new TwoPort<Complex>(_complex, context);
-            var posNode = _complex.Map[_variables.Right.Positive];
-            var negNode = _complex.Map[_variables.Right.Negative];
-            var contPosNode = _complex.Map[_variables.Left.Positive];
-            var contNegNode = _complex.Map[_variables.Left.Negative];
+            int posNode = _complex.Map[_variables.Right.Positive];
+            int negNode = _complex.Map[_variables.Right.Negative];
+            int contPosNode = _complex.Map[_variables.Left.Positive];
+            int contNegNode = _complex.Map[_variables.Left.Negative];
             Branch = _complex.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            var branchEq = _complex.Map[Branch];
+            int branchEq = _complex.Map[Branch];
 
             _elements = new ElementSet<Complex>(_complex.Solver, new[] {
                         new MatrixLocation(posNode, branchEq),

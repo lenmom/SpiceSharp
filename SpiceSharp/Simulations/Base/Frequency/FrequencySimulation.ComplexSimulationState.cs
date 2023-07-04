@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations.Variables;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations.Variables;
 
 namespace SpiceSharp.Simulations
 {
@@ -23,7 +24,13 @@ namespace SpiceSharp.Simulations
             public Complex Laplace { get; set; } = new Complex();
 
             /// <inheritdoc/>
-            public IVariableMap Map => _map;
+            public IVariableMap Map
+            {
+                get
+                {
+                    return _map;
+                }
+            }
 
             /// <inheritdoc/>
             public ISparsePivotingSolver<Complex> Solver { get; }
@@ -39,7 +46,7 @@ namespace SpiceSharp.Simulations
             {
                 Solver = solver.ThrowIfNull(nameof(solver));
 
-                var gnd = new SolverVariable<Complex>(this, Constants.Ground, 0, Units.Volt);
+                SolverVariable<Complex> gnd = new SolverVariable<Complex>(this, Constants.Ground, 0, Units.Volt);
                 _map = new VariableMap(gnd);
                 Add(Constants.Ground, gnd);
             }
@@ -48,7 +55,9 @@ namespace SpiceSharp.Simulations
             public IVariable<Complex> GetSharedVariable(string name)
             {
                 if (TryGetValue(name, out IVariable<Complex> result))
+                {
                     return result;
+                }
 
                 // We create a private variable and then make it shared
                 result = CreatePrivateVariable(name, Units.Volt);
@@ -59,8 +68,8 @@ namespace SpiceSharp.Simulations
             /// <inheritdoc/>
             public IVariable<Complex> CreatePrivateVariable(string name, IUnit unit)
             {
-                var index = _map.Count;
-                var result = new SolverVariable<Complex>(this, name, index, unit);
+                int index = _map.Count;
+                SolverVariable<Complex> result = new SolverVariable<Complex>(this, name, index, unit);
                 _map.Add(result, index);
                 return result;
             }

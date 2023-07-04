@@ -1,7 +1,8 @@
-using SpiceSharp.Attributes;
-using SpiceSharp.Simulations.Sweeps;
 using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
+using SpiceSharp.Simulations.Sweeps;
 
 namespace SpiceSharp.Simulations
 {
@@ -35,19 +36,34 @@ namespace SpiceSharp.Simulations
         public double Final { get; set; }
 
         /// <inheritdoc/>
-        protected override double A => Initial;
+        protected override double A
+        {
+            get
+            {
+                return Initial;
+            }
+        }
 
         /// <inheritdoc/>
-        protected override double R => _r;
+        protected override double R
+        {
+            get
+            {
+                return _r;
+            }
+        }
 
         /// <inheritdoc/>
         protected override int N
         {
             get
             {
-                var n = Math.Log(Final / Initial) / Math.Log(_r);
+                double n = Math.Log(Final / Initial) / Math.Log(_r);
                 if (double.IsNaN(n) || double.IsInfinity(n))
+                {
                     throw new ArgumentException(Properties.Resources.Sweeps_Unreachable.FormatString(Final));
+                }
+
                 return (int)Math.Round(n);
             }
         }
@@ -62,8 +78,15 @@ namespace SpiceSharp.Simulations
         [GreaterThan(0)]
         public int PointsPerOctave
         {
-            get => (int)Math.Round(LogOctave / Math.Log(_r));
-            set => _r = Math.Exp(LogOctave / value);
+            get
+            {
+                return (int)Math.Round(LogOctave / Math.Log(_r));
+            }
+
+            set
+            {
+                _r = Math.Exp(LogOctave / value);
+            }
         }
 
         /// <summary>

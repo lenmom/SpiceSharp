@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.SamplerBehaviors
 {
@@ -42,7 +43,9 @@ namespace SpiceSharp.Components.SamplerBehaviors
 
             // Find the first timepoint that is eligible for targeting
             while (_continue && _points.Current < -_parameters.MinDelta)
+            {
                 _continue = _points.MoveNext();
+            }
         }
 
         /// <inheritdoc/>
@@ -59,7 +62,9 @@ namespace SpiceSharp.Components.SamplerBehaviors
         {
             // Nothing left...
             if (!_continue)
+            {
                 return;
+            }
 
             // If time has caught up with the currently targeted point, let's export it ourselves!
             if (_method.Time > _points.Current - _parameters.MinDelta)
@@ -69,7 +74,9 @@ namespace SpiceSharp.Components.SamplerBehaviors
 
                 // Find the next point that is eligible for targetting
                 while (_continue && _points.Current < _method.Time + _parameters.MinDelta)
+                {
                     _continue = _points.MoveNext();
+                }
             }
         }
 

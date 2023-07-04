@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Capacitors
 {
@@ -46,7 +47,9 @@ namespace SpiceSharp.Components.Capacitors
             // Get parameters
             Parameters = context.GetParameterSet<Parameters>();
             if (context.ModelBehaviors != null)
+            {
                 _mbp = context.ModelBehaviors.GetParameterSet<ModelParameters>();
+            }
 
             // Connections
             _temperature = context.GetState<ITemperatureSimulationState>();
@@ -56,16 +59,20 @@ namespace SpiceSharp.Components.Capacitors
         void ITemperatureBehavior.Temperature()
         {
             if (!Parameters.Temperature.Given)
+            {
                 Parameters.Temperature = new GivenParameter<double>(_temperature.Temperature, false);
+            }
 
             double capacitance;
             if (!Parameters.Capacitance.Given)
             {
                 // We need a model!
                 if (_mbp == null)
+                {
                     throw new SpiceSharpException(Properties.Resources.Components_NoModel.FormatString(Name));
+                }
 
-                var width = Parameters.Width.Given
+                double width = Parameters.Width.Given
                     ? Parameters.Width.Value
                     : _mbp.DefaultWidth;
                 capacitance = _mbp.JunctionCap *
@@ -76,13 +83,15 @@ namespace SpiceSharp.Components.Capacitors
                                   (width - _mbp.Narrow));
             }
             else
+            {
                 capacitance = Parameters.Capacitance;
+            }
 
-            var factor = 1.0;
+            double factor = 1.0;
 
             if (_mbp != null)
             {
-                var temperatureDiff = Parameters.Temperature - _mbp.NominalTemperature;
+                double temperatureDiff = Parameters.Temperature - _mbp.NominalTemperature;
                 factor = 1.0 + _mbp.TemperatureCoefficient1 * temperatureDiff + _mbp.TemperatureCoefficient2 * temperatureDiff * temperatureDiff;
             }
 

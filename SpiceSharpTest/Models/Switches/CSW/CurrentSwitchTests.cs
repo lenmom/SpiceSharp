@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharpTest.Models
 {
@@ -12,13 +14,13 @@ namespace SpiceSharpTest.Models
     {
         private CurrentSwitch CreateCurrentSwitch(string name, string pos, string neg, string contSource, string model)
         {
-            var vsw = new CurrentSwitch(name, pos, neg, contSource) { Model = model };
+            CurrentSwitch vsw = new CurrentSwitch(name, pos, neg, contSource) { Model = model };
             return vsw;
         }
 
         private CurrentSwitchModel CreateCurrentSwitchModel(string name, string parameters)
         {
-            var model = new CurrentSwitchModel(name);
+            CurrentSwitchModel model = new CurrentSwitchModel(name);
             ApplyParameters(model, parameters);
             return model;
         }
@@ -30,7 +32,7 @@ namespace SpiceSharpTest.Models
             // numerical error can lead to a big output change, causing a very different output than the reference.
 
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch"),
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001"),
                 new CurrentSource("I1", "0", "in", 0.0),
@@ -40,7 +42,7 @@ namespace SpiceSharpTest.Models
                 );
 
             // Create the simulation, exports and references
-            var dc = new DC("DC", "I1", -3, 3, 10e-3);
+            DC dc = new DC("DC", "I1", -3, 3, 10e-3);
             IExport<double>[] exports = { new RealVoltageExport(dc, "out") };
             double[][] references =
             {
@@ -206,7 +208,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_SimpleSwitchSmallSignal_Expect_Reference()
         {
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new CurrentSource("I1", "0", "in", -1),
                 new VoltageSource("V1", "in", "0", 0),
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch"),
@@ -215,9 +217,9 @@ namespace SpiceSharpTest.Models
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001")
                 );
 
-            var ac = new AC("ac", new DecadeSweep(1, 1e6, 2));
-            var exports = new IExport<Complex>[] { new ComplexVoltageExport(ac, "out") };
-            var reference = new Func<double, Complex>[] { f => 0.5 };
+            AC ac = new AC("ac", new DecadeSweep(1, 1e6, 2));
+            IExport<Complex>[] exports = new IExport<Complex>[] { new ComplexVoltageExport(ac, "out") };
+            Func<double, Complex>[] reference = new Func<double, Complex>[] { f => 0.5 };
             AnalyzeAC(ac, ckt, exports, reference);
             DestroyExports(exports);
         }
@@ -226,7 +228,7 @@ namespace SpiceSharpTest.Models
         public void When_SimpleSwitchTransient_Expect_Spice3f5Reference()
         {
             // Build the switch
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 CreateCurrentSwitch("S1", "0", "OUT", "V1", "MYSW"),
                 CreateCurrentSwitchModel("MYSW", "Ron=1 Roff=1e6 It=0.5 Ih=-0.4"),
                 new CurrentSource("I1", "0", "IN", new Pulse(0, 1, 0.0, 0.4e-3, 0.4e-3, 0.1e-3, 1e-3)),
@@ -236,7 +238,7 @@ namespace SpiceSharpTest.Models
                 );
 
             // Build simulation, exports and references
-            var tran = new Transient("Tran 1", 0.1e-3, 3e-3);
+            Transient tran = new Transient("Tran 1", 0.1e-3, 3e-3);
             IExport<double>[] exports = { new GenericExport<double>(tran, () => tran.GetState<IIntegrationMethod>().Time), new RealVoltageExport(tran, "OUT") };
             double[][] references =
             {
@@ -303,7 +305,7 @@ namespace SpiceSharpTest.Models
         public void When_BooleanParameter_Expect_DirectAccess()
         {
             // Create voltage source
-            var s = new CurrentSwitch("SW 1");
+            CurrentSwitch s = new CurrentSwitch("SW 1");
             SpiceSharp.Components.Switches.Parameters p = s.Parameters;
 
             // Check on
@@ -319,7 +321,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplier_Expect_Reference()
         {
             // Build the circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch"),
                 CreateCurrentSwitch("S2", "out", "0", "V1", "myswitch"),
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001"),
@@ -328,7 +330,7 @@ namespace SpiceSharpTest.Models
                 new VoltageSource("V2", "vdd", "0", 5.0),
                 new Resistor("R1", "vdd", "out", 1e3)
                 );
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch")
                     .SetParameter("m", 2.0),
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001"),
@@ -338,7 +340,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "vdd", "out", 1e3)
                 );
 
-            var dc = new DC("dc", "I1", 0.0, 1.0, 0.1);
+            DC dc = new DC("dc", "I1", 0.0, 1.0, 0.1);
             RealVoltageExport[] exports = new[] { new RealVoltageExport(dc, "out") };
             Compare(dc, ckt_ref, ckt_act, exports);
             DestroyExports(exports);
@@ -347,7 +349,7 @@ namespace SpiceSharpTest.Models
         [Test]
         public void When_ParallelMultiplierAC_Expect_Reference()
         {
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new CurrentSource("I1", "0", "in", -1),
                 new VoltageSource("V1", "in", "0", 0),
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch"),
@@ -356,7 +358,7 @@ namespace SpiceSharpTest.Models
                 new Resistor("R1", "out", "vdd", 1e3),
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001")
                 );
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new CurrentSource("I1", "0", "in", -1),
                 new VoltageSource("V1", "in", "0", 0),
                 CreateCurrentSwitch("S1", "out", "0", "V1", "myswitch")
@@ -366,7 +368,7 @@ namespace SpiceSharpTest.Models
                 CreateCurrentSwitchModel("myswitch", "IT=0.5 RON=1 ROFF=1e3 IH=0.2001")
                 );
 
-            var ac = new AC("ac", new DecadeSweep(1, 1e6, 2));
+            AC ac = new AC("ac", new DecadeSweep(1, 1e6, 2));
             ComplexVoltageExport[] exports = new[] { new ComplexVoltageExport(ac, "out") };
             Compare(ac, ckt_ref, ckt_act, exports);
             DestroyExports(exports);

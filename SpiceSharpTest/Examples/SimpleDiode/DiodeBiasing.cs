@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharpTest.DiodeBehaviors
 {
@@ -28,8 +29,8 @@ namespace SpiceSharpTest.DiodeBehaviors
             _variableB = biasingState.GetSharedVariable(context.Nodes[1]);
 
             // Get the rows in the solver that represent the KCL equations
-            var rowA = biasingState.Map[_variableA];
-            var rowB = biasingState.Map[_variableB];
+            int rowA = biasingState.Map[_variableA];
+            int rowB = biasingState.Map[_variableB];
             _elements = new ElementSet<double>(biasingState.Solver,
                 new MatrixLocation[]
                 {
@@ -53,12 +54,12 @@ namespace SpiceSharpTest.DiodeBehaviors
         public void Load()
         {
             // Let us calculate the derivatives and the current
-            var voltage = _variableA.Value - _variableB.Value;
-            var current = Parameters.Iss * (Math.Exp(voltage / Vte) - 1.0);
-            var derivative = current / Vte;
+            double voltage = _variableA.Value - _variableB.Value;
+            double current = Parameters.Iss * (Math.Exp(voltage / Vte) - 1.0);
+            double derivative = current / Vte;
 
             // Load the Y-matrix and RHS vector
-            var rhs = current - voltage * derivative;
+            double rhs = current - voltage * derivative;
             _elements.Add(
                 // Y-matrix contributions
                 derivative, -derivative,

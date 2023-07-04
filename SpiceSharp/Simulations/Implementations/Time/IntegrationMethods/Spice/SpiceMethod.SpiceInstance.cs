@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations.Histories;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations.Histories;
 
 namespace SpiceSharp.Simulations.IntegrationMethods
 {
@@ -124,7 +125,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             {
                 RegisteredStates.Add(state);
                 if (state is ITruncatable truncatable)
+                {
                     TruncatableStates.Add(truncatable);
+                }
             }
 
             /// <inheritdoc/>
@@ -153,7 +156,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             /// <inheritdoc/>
             public virtual void Prepare()
             {
-                var delta = Math.Min(Delta, Parameters.MaxStep);
+                double delta = Math.Min(Delta, Parameters.MaxStep);
 
                 // Breakpoints
                 if (Time.Equals(Breakpoints.First) || Breakpoints.First - Time <= Parameters.MinStep)
@@ -162,12 +165,14 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                     Order = 1;
 
                     // Limit the next timestep
-                    var mt = Math.Min(_saveDelta, Breakpoints.Delta);
+                    double mt = Math.Min(_saveDelta, Breakpoints.Delta);
                     delta = Math.Min(delta, 0.1 * mt);
 
                     // Spice will divide the first timestep by 10
                     if (BaseTime.Equals(0.0))
+                    {
                         delta /= 10.0;
+                    }
 
                     // Don't go below MinStep without reason
                     delta = Math.Max(delta, 2.0 * Parameters.MinStep);
@@ -227,11 +232,16 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                 // Accept all the registered states
                 foreach (IIntegrationState state in RegisteredStates)
+                {
                     state.Accept();
+                }
 
                 // Clear the breakpoints
                 while (Time > Breakpoints.First)
+                {
                     Breakpoints.ClearBreakpoint();
+                }
+
                 Break = false;
             }
 
@@ -246,7 +256,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                 // Is the previously tried timestep already at the minimum?
                 if (States.Value.Delta <= Parameters.MinStep)
+                {
                     throw new TimestepTooSmallException(States.Value.Delta, BaseTime);
+                }
 
                 // Limit the timestep and cut the order
                 Delta = Math.Max(States.Value.Delta / 8.0, Parameters.MinStep);
@@ -264,9 +276,14 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 if (BaseTime.Equals(0.0))
                 {
                     if (maxTimestep < States.Value.Delta)
+                    {
                         Delta = maxTimestep;
+                    }
                     else
+                    {
                         Delta = States.Value.Delta;
+                    }
+
                     return true;
                 }
                 else
@@ -275,9 +292,14 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                     // Truncate the timestep
                     foreach (ITruncatable truncatable in TruncatableStates)
+                    {
                         newDelta = Math.Min(newDelta, truncatable.Truncate());
+                    }
+
                     if (newDelta <= 0.0)
+                    {
                         throw new TimestepTooSmallException(newDelta, BaseTime);
+                    }
 
                     if (newDelta > 0.9 * States.Value.Delta)
                     {
@@ -289,13 +311,20 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                             // Truncate the timestep using the higher order
                             newDelta = double.PositiveInfinity;
                             foreach (ITruncatable truncatable in TruncatableStates)
+                            {
                                 newDelta = Math.Min(newDelta, truncatable.Truncate());
+                            }
+
                             if (newDelta <= 0.0)
+                            {
                                 throw new TimestepTooSmallException(newDelta, BaseTime);
+                            }
 
                             // Is the higher (more expensive) order useful?
                             if (newDelta <= 1.05 * States.Value.Delta)
+                            {
                                 Order--;
+                            }
                         }
                     }
                     else
@@ -310,16 +339,23 @@ namespace SpiceSharp.Simulations.IntegrationMethods
 
                 // Limit the maximum timestep
                 if (newDelta > Parameters.MaxStep)
+                {
                     newDelta = Parameters.MaxStep;
+                }
+
                 if (newDelta > maxTimestep)
+                {
                     newDelta = maxTimestep;
+                }
 
                 // Check for timesteps that became too small
                 if (newDelta <= Parameters.MinStep)
                 {
                     // Was the previously tried timestep already at the minimum?
                     if (States.Value.Delta <= Parameters.MinStep)
+                    {
                         throw new TimestepTooSmallException(newDelta, BaseTime);
+                    }
 
                     // Else let's just try one more time with the minimum timestep
                     newDelta = Parameters.MinStep;
@@ -335,7 +371,9 @@ namespace SpiceSharp.Simulations.IntegrationMethods
             {
                 maxTimestep.GreaterThan(nameof(maxTimestep), 0);
                 if (maxTimestep < Delta)
+                {
                     Delta = maxTimestep;
+                }
             }
         }
     }

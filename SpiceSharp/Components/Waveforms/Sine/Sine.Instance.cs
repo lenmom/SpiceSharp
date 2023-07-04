@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components
 {
@@ -44,19 +45,25 @@ namespace SpiceSharp.Components
             /// <inheritdoc/>
             public void Probe()
             {
-                var time = _method?.Time ?? 0.0;
+                double time = _method?.Time ?? 0.0;
                 time -= _td;
 
                 // Calculate sine wave result (no offset)
                 double result;
                 if (time <= 0.0)
+                {
                     result = 0.0;
+                }
                 else
+                {
                     result = _va * Math.Sin(_freq * time + _phase);
+                }
 
                 // Modify with theta
                 if (!_theta.Equals(0.0))
+                {
                     result *= Math.Exp(-time * _theta);
+                }
 
                 // Return result (with offset)
                 Value = _vo + result;

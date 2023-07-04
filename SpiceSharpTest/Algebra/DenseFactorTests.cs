@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp.Algebra;
 
 namespace SpiceSharpTest.Algebra
@@ -22,24 +23,32 @@ namespace SpiceSharpTest.Algebra
                 new[] { 4.0, 2.0, -0.5 }
             };
 
-            var solver = new DenseRealSolver();
-            for (var r = 0; r < matrixElements.Length; r++)
-                for (var c = 0; c < matrixElements[r].Length; c++)
+            DenseRealSolver solver = new DenseRealSolver();
+            for (int r = 0; r < matrixElements.Length; r++)
+            {
+                for (int c = 0; c < matrixElements[r].Length; c++)
+                {
                     solver[r + 1, c + 1] = matrixElements[r][c];
+                }
+            }
 
             // Factor
             solver.Factor();
 
             // Compare
-            for (var r = 0; r < matrixElements.Length; r++)
-                for (var c = 0; c < matrixElements[r].Length; c++)
+            for (int r = 0; r < matrixElements.Length; r++)
+            {
+                for (int c = 0; c < matrixElements[r].Length; c++)
+                {
                     Assert.AreEqual(expected[r][c], solver[r + 1, c + 1], 1e-12);
+                }
+            }
         }
 
         [Test]
         public void When_OrderAndFactoring_Expect_Reference()
         {
-            var solver = new DenseRealSolver();
+            DenseRealSolver solver = new DenseRealSolver();
             solver[1, 1] = 1;
             solver[1, 4] = -1;
             solver[2, 1] = -1;

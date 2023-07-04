@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.VoltageDelays;
 using SpiceSharp.ParameterSets;
-using System;
 
 namespace SpiceSharp.Components
 {

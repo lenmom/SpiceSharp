@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using System;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -27,7 +28,9 @@ namespace SpiceSharp.Components.Subcircuits
         void IFrequencyUpdateBehavior.Update()
         {
             foreach (IFrequencyUpdateBehavior behavior in Behaviors)
+            {
                 behavior.Update();
+            }
         }
     }
 }

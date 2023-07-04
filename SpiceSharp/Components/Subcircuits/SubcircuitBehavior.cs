@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Behaviors;
-using System;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Components.Subcircuits
 {

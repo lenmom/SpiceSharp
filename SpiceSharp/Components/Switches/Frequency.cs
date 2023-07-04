@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Switches
 {
@@ -25,7 +26,13 @@ namespace SpiceSharp.Components.Switches
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="Frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("The complex voltage")]
-        public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="Frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterInfo("The complex current")]
@@ -33,14 +40,20 @@ namespace SpiceSharp.Components.Switches
         {
             get
             {
-                var gNow = CurrentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
+                double gNow = CurrentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
                 return ComplexVoltage * gNow;
             }
         }
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="Frequency"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("The complex power")]
-        public Complex ComplexPower => ComplexPower * Complex.Conjugate(ComplexCurrent);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return ComplexPower * Complex.Conjugate(ComplexCurrent);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -64,7 +77,7 @@ namespace SpiceSharp.Components.Switches
         void IFrequencyBehavior.Load()
         {
             // Get the current state
-            var gNow = CurrentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
+            double gNow = CurrentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
             gNow *= Parameters.ParallelMultiplier;
 
             // Load the Y-matrix

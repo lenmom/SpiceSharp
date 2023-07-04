@@ -1,7 +1,8 @@
-﻿using SpiceSharp.ParameterSets;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Validation
 {
@@ -17,7 +18,13 @@ namespace SpiceSharp.Validation
         /// <value>
         /// The number of violated rules.
         /// </value>
-        public int ViolationCount => this.Sum(r => r.ViolationCount);
+        public int ViolationCount
+        {
+            get
+            {
+                return this.Sum(r => r.ViolationCount);
+            }
+        }
 
         /// <summary>
         /// Gets the violated rules.
@@ -32,7 +39,9 @@ namespace SpiceSharp.Validation
                 foreach (IRule rule in this)
                 {
                     foreach (IRuleViolation violation in rule.Violations)
+                    {
                         yield return violation;
+                    }
                 }
             }
         }
@@ -51,7 +60,9 @@ namespace SpiceSharp.Validation
         public virtual void Reset()
         {
             foreach (IRule rule in this)
+            {
                 rule.Reset();
+            }
         }
 
         /// <summary>
@@ -66,7 +77,9 @@ namespace SpiceSharp.Validation
             foreach (IRule rule in this)
             {
                 if (rule is R r)
+                {
                     yield return r;
+                }
             }
         }
 

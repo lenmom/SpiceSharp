@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Behaviors;
-using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -17,12 +18,24 @@ namespace SpiceSharp.Components.Subcircuits
         /// <value>
         /// The bridges.
         /// </value>
-        public IReadOnlyList<Bridge<string>> Bridges => ((SubcircuitSimulation)Simulation).Nodes;
+        public IReadOnlyList<Bridge<string>> Bridges
+        {
+            get
+            {
+                return ((SubcircuitSimulation)Simulation).Nodes;
+            }
+        }
 
         /// <summary>
         /// Gets the current simulation entity behaviors.
         /// </summary>
-        public IBehaviorContainerCollection LocalBehaviors => Simulation.EntityBehaviors;
+        public IBehaviorContainerCollection LocalBehaviors
+        {
+            get
+            {
+                return Simulation.EntityBehaviors;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubcircuitBindingContext"/> class.
@@ -44,7 +57,7 @@ namespace SpiceSharp.Components.Subcircuits
         public void AddLocalState<TState>(TState state)
             where TState : ISimulationState
         {
-            var localSim = (SubcircuitSimulation)Simulation;
+            SubcircuitSimulation localSim = (SubcircuitSimulation)Simulation;
             localSim.LocalStates.Add(state);
         }
 

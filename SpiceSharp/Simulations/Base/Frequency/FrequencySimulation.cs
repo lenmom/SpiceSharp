@@ -1,11 +1,12 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations.Frequency;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace SpiceSharp.Simulations
 {
@@ -64,13 +65,31 @@ namespace SpiceSharp.Simulations
         public event EventHandler<LoadStateEventArgs> AfterFrequencyLoad;
 
         /// <inheritdoc/>
-        IComplexSimulationState IStateful<IComplexSimulationState>.State => _state;
+        IComplexSimulationState IStateful<IComplexSimulationState>.State
+        {
+            get
+            {
+                return _state;
+            }
+        }
 
         /// <inheritdoc/>
-        FrequencyParameters IParameterized<FrequencyParameters>.Parameters => FrequencyParameters;
+        FrequencyParameters IParameterized<FrequencyParameters>.Parameters
+        {
+            get
+            {
+                return FrequencyParameters;
+            }
+        }
 
         /// <inheritdoc/>
-        IVariableDictionary<IVariable<Complex>> ISimulation<IVariable<Complex>>.Solved => _state;
+        IVariableDictionary<IVariable<Complex>> ISimulation<IVariable<Complex>>.Solved
+        {
+            get
+            {
+                return _state;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FrequencySimulation"/> class.
@@ -117,9 +136,13 @@ namespace SpiceSharp.Simulations
         protected override void Validate(IEntityCollection entities)
         {
             if (FrequencyParameters.Validate)
+            {
                 Validate(new Rules(GetState<IBiasingSimulationState>(), FrequencyParameters.Frequencies), entities);
+            }
             else
+            {
                 base.Validate(entities);
+            }
         }
 
         /// <summary>
@@ -160,9 +183,12 @@ namespace SpiceSharp.Simulations
                 Statistics.ComplexReorderTime.Start();
                 try
                 {
-                    var eliminated = solver.OrderAndFactor();
+                    int eliminated = solver.OrderAndFactor();
                     if (eliminated < solver.Size)
+                    {
                         throw new SingularException(eliminated + 1);
+                    }
+
                     _shouldReorderAc = false;
                 }
                 finally
@@ -175,7 +201,7 @@ namespace SpiceSharp.Simulations
                 Statistics.ComplexDecompositionTime.Start();
                 try
                 {
-                    var factored = solver.Factor();
+                    bool factored = solver.Factor();
                     if (!factored)
                     {
                         _shouldReorderAc = true;
@@ -201,7 +227,9 @@ namespace SpiceSharp.Simulations
 
             // Update with the found solution
             foreach (IFrequencyUpdateBehavior behavior in _frequencyUpdateBehaviors)
+            {
                 behavior.Update();
+            }
 
             // Reset values
             _state.Solution[0] = 0.0;
@@ -244,7 +272,9 @@ namespace SpiceSharp.Simulations
 
             // Initialize the parameters
             foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+            {
                 behavior.InitializeParameters();
+            }
         }
 
         /// <summary>
@@ -276,7 +306,9 @@ namespace SpiceSharp.Simulations
         protected virtual void LoadFrequencyBehaviors()
         {
             foreach (IFrequencyBehavior behavior in _frequencyBehaviors)
+            {
                 behavior.Load();
+            }
         }
     }
 }

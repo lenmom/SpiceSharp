@@ -1,8 +1,10 @@
-﻿using NUnit.Framework;
+﻿using System.Numerics;
+
+using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
-using System.Numerics;
 
 namespace SpiceSharpTest.Models
 {
@@ -14,14 +16,14 @@ namespace SpiceSharpTest.Models
         /// </summary>
         private JFET CreateJFET(string name, string d, string g, string s, string model)
         {
-            var fet = new JFET(name) { Model = model };
+            JFET fet = new JFET(name) { Model = model };
             fet.Connect(d, g, s);
             return fet;
         }
 
         private JFETModel CreateJFETModel(string name, string parameters)
         {
-            var model = new JFETModel(name);
+            JFETModel model = new JFETModel(name);
             ApplyParameters(model, parameters);
             return model;
         }
@@ -30,7 +32,7 @@ namespace SpiceSharpTest.Models
         public void When_SimpleDC_Expect_Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.0),
                 new VoltageSource("V2", "d", "0", 0.0),
                 CreateJFET("J1", "d", "g", "0", "JX"),
@@ -38,20 +40,20 @@ namespace SpiceSharpTest.Models
             );
 
             // Build the simulation
-            var dc = new DC("dc", new[] {
+            DC dc = new DC("dc", new[] {
                 new ParameterSweep("V1", new LinearSweep(0, 0.8, 0.1)),
                 new ParameterSweep("V2", new LinearSweep(0.0, 5.0, 0.1))
             });
 
             // Create exports
-            var exports = new IExport<double>[]
+            IExport<double>[] exports = new IExport<double>[]
             {
                 new RealPropertyExport(dc, "V1", "i"),
                 new RealPropertyExport(dc, "V2", "i"),
             };
 
             // Create references
-            var references = new[]
+            double[][] references = new[]
             {
                 new[]
                 {
@@ -300,7 +302,7 @@ namespace SpiceSharpTest.Models
         public void When_SimpleSmallSignal_Expect_Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.5)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "d", "0", 2.0),
@@ -309,17 +311,17 @@ namespace SpiceSharpTest.Models
             );
 
             // Create the simulation
-            var ac = new AC("ac", new DecadeSweep(0.1, 10e9, 10));
+            AC ac = new AC("ac", new DecadeSweep(0.1, 10e9, 10));
 
             // Create exports
-            var exports = new IExport<Complex>[]
+            IExport<Complex>[] exports = new IExport<Complex>[]
             {
                 new ComplexPropertyExport(ac, "V1", "i"),
                 new ComplexPropertyExport(ac, "V2", "i"),
             };
 
             // Create references
-            var r1 = new[]
+            double[] r1 = new[]
             {
                 -1.442331332258340e-02, -2.875494240790893e-12, -1.442331332258340e-02, -3.620032771199431e-12,
                 -1.442331332258340e-02, -4.557351247190625e-12, -1.442331332258340e-02, -5.737365295560120e-12,
@@ -378,7 +380,7 @@ namespace SpiceSharpTest.Models
                 -1.442331332258340e-02, -1.814314210237523e-01, -1.442331332258340e-02, -2.284086264247283e-01,
                 -1.442331332258340e-02, -2.875494240790912e-01
             };
-            var r2 = new[]
+            double[] r2 = new[]
             {
                 -1.032509398000000e-03, 1.986917653159220e-12, -1.032509398000000e-03, 2.501381124704572e-12,
                 -1.032509398000000e-03, 3.149052262472860e-12, -1.032509398000000e-03, 3.964421916294999e-12,
@@ -442,7 +444,7 @@ namespace SpiceSharpTest.Models
                 new Complex[r1.Length / 2],
                 new Complex[r2.Length / 2]
             };
-            for (var i = 0; i < r1.Length / 2; i++)
+            for (int i = 0; i < r1.Length / 2; i++)
             {
                 references[0][i] = new Complex(r1[i * 2], r1[i * 2 + 1]);
                 references[1][i] = new Complex(r2[i * 2], r2[i * 2 + 1]);
@@ -457,7 +459,7 @@ namespace SpiceSharpTest.Models
         public void When_SimpleTransient_Expect_Reference()
         {
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "g", "0", new Pulse(0, 0.7, 1e-9, 1e-7, 1e-7, 1e-6, 2e-6)),
                 new VoltageSource("V2", "d", "0", 2.0),
                 CreateJFET("J1", "d", "g", "0", "JX"),
@@ -465,10 +467,10 @@ namespace SpiceSharpTest.Models
             );
 
             // Build the simulation
-            var tran = new Transient("tran", 1e-6, 10e-6);
+            Transient tran = new Transient("tran", 1e-6, 10e-6);
 
             // Build the exports
-            var exports = new IExport<double>[]
+            IExport<double>[] exports = new IExport<double>[]
             {
                 new GenericExport<double>(tran, () => tran.GetState<IIntegrationMethod>().Time),
                 new RealPropertyExport(tran, "V1", "i"),
@@ -482,7 +484,7 @@ namespace SpiceSharpTest.Models
             // Spice# does not have this, it will always start from the real "last iteration" value, so it converges faster!
             // There was an edge case where Spice 3f5 could not reach convergence due to this, causing the timepoints to be
             // different. Hence ITL4 (number of transient iterations) was set to 100 to avoid this in Spice 3f5.
-            var references = new[]
+            double[][] references = new[]
             {
                 new[]
                 {
@@ -639,7 +641,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplier_Expect_Reference()
         {
             // Build the circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.5)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "d", "0", 2.0),
@@ -647,7 +649,7 @@ namespace SpiceSharpTest.Models
                 CreateJFET("J2", "d", "g", "0", "JX"),
                 CreateJFETModel("JX", "IS=1.500E-12 BETA=696.7E-6 VTO=-0.241 CGS=1e-12 CGD=5e-12")
             );
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.5)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "d", "0", 2.0),
@@ -656,7 +658,7 @@ namespace SpiceSharpTest.Models
                 CreateJFETModel("JX", "IS=1.500E-12 BETA=696.7E-6 VTO=-0.241 CGS=1e-12 CGD=5e-12")
             );
 
-            var op = new OP("op");
+            OP op = new OP("op");
             op.BiasingParameters.Gmin = 0.0; // May interfere with comparison
             RealCurrentExport[] exports = new[] { new RealCurrentExport(op, "V1"), new RealCurrentExport(op, "V2") };
             Compare(op, ckt_ref, ckt_act, exports);
@@ -667,7 +669,7 @@ namespace SpiceSharpTest.Models
         public void When_ParallelMultiplierAC_Expect_Reference()
         {
             // Build the circuit
-            var ckt_ref = new Circuit(
+            Circuit ckt_ref = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.5)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "d", "0", 2.0),
@@ -675,7 +677,7 @@ namespace SpiceSharpTest.Models
                 CreateJFET("J2", "d", "g", "0", "JX"),
                 CreateJFETModel("JX", "IS=1.500E-12 BETA=696.7E-6 VTO=-0.241 CGS=1e-12 CGD=5e-12")
             );
-            var ckt_act = new Circuit(
+            Circuit ckt_act = new Circuit(
                 new VoltageSource("V1", "g", "0", 0.5)
                     .SetParameter("acmag", 1.0),
                 new VoltageSource("V2", "d", "0", 2.0),
@@ -685,7 +687,7 @@ namespace SpiceSharpTest.Models
             );
 
             // Create the simulation
-            var ac = new AC("ac", new DecadeSweep(0.1, 10e9, 10));
+            AC ac = new AC("ac", new DecadeSweep(0.1, 10e9, 10));
             ac.BiasingParameters.Gmin = 0.0; // May interfere with comparison
             ComplexCurrentExport[] exports = new[] { new ComplexCurrentExport(ac, "V1"), new ComplexCurrentExport(ac, "V2") };
             Compare(ac, ckt_ref, ckt_act, exports);

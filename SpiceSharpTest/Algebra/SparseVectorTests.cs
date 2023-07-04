@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp.Algebra;
 
 namespace SpiceSharpTest.Algebra
@@ -11,15 +12,18 @@ namespace SpiceSharpTest.Algebra
         {
             // Test swapping of elements in all possible combinations
 
-            for (var i = 0; i < 32; i++)
+            for (int i = 0; i < 32; i++)
             {
                 // Setup
-                var vector = new SparseVector<double>(5);
-                var fill = i;
-                for (var k = 1; k <= 5; k++)
+                SparseVector<double> vector = new SparseVector<double>(5);
+                int fill = i;
+                for (int k = 1; k <= 5; k++)
                 {
                     if ((fill & 0x01) != 0)
+                    {
                         vector[k] = k;
+                    }
+
                     fill = (fill >> 1) & 0b011111;
                 }
 
@@ -28,18 +32,27 @@ namespace SpiceSharpTest.Algebra
 
                 // Check
                 fill = i;
-                for (var k = 1; k <= 5; k++)
+                for (int k = 1; k <= 5; k++)
                 {
-                    var realk = k;
+                    int realk = k;
                     if (k == 2)
+                    {
                         realk = 4;
+                    }
                     else if (k == 4)
+                    {
                         realk = 2;
+                    }
 
                     if ((fill & 0x01) != 0)
+                    {
                         Assert.AreEqual(k, vector[realk], 1e-12);
+                    }
                     else
+                    {
                         Assert.AreEqual(vector.FindElement(realk), null);
+                    }
+
                     fill = (fill >> 1) & 0b011111;
                 }
             }
@@ -49,19 +62,23 @@ namespace SpiceSharpTest.Algebra
         [TestCase(1), TestCase(2), TestCase(3)]
         public void When_RemoveElement_Expect_Reference(int index)
         {
-            var vector = new SparseVector<double>();
+            SparseVector<double> vector = new SparseVector<double>();
             vector.GetElement(1).Value = 1;
             vector.GetElement(2).Value = 2;
             vector.GetElement(3).Value = 3;
 
             vector.RemoveElement(index);
 
-            for (var i = 1; i <= 3; i++)
+            for (int i = 1; i <= 3; i++)
             {
                 if (i == index)
+                {
                     Assert.AreEqual(null, vector.FindElement(i));
+                }
                 else
+                {
                     Assert.AreEqual(i, vector.FindElement(i).Value);
+                }
             }
         }
     }

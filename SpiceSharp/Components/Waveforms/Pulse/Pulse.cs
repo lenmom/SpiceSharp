@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Simulations.IntegrationMethods;
-using System;
 
 namespace SpiceSharp.Components
 {
@@ -125,13 +126,17 @@ namespace SpiceSharp.Components
             TimeParameters tp = null;
             context?.TryGetState(out method);
             context?.TryGetSimulationParameterSet(out tp);
-            var step = 1.0;
+            double step = 1.0;
             if (!RiseTime.Given || !FallTime.Given)
             {
                 if (tp is SpiceMethod sm)
+                {
                     step = sm.InitialStep;
+                }
                 else if (tp != null)
+                {
                     step = tp.StopTime / 50.0;
+                }
             }
             return new Instance(method,
                 InitialValue,

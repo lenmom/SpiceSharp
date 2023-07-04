@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+
 using SpiceSharp;
 using SpiceSharp.Components;
 using SpiceSharp.Simulations;
@@ -13,7 +14,7 @@ namespace SpiceSharpTest.Examples
         {
             // <example_customcomponent_nonlinearresistor_test>
             // Build the circuit
-            var ckt = new Circuit(
+            Circuit ckt = new Circuit(
                 new VoltageSource("V1", "out", "0", 0.0),
                 new NonlinearResistor("RNL1", "out", "0")
                     .SetParameter("a", 2.0e3)
@@ -21,12 +22,12 @@ namespace SpiceSharpTest.Examples
             );
 
             // Setup the simulation and export our current
-            var dc = new DC("DC", "V1", -2.0, 2.0, 1e-2);
-            var currentExport = new RealPropertyExport(dc, "V1", "i");
+            DC dc = new DC("DC", "V1", -2.0, 2.0, 1e-2);
+            RealPropertyExport currentExport = new RealPropertyExport(dc, "V1", "i");
             dc.ExportSimulationData += (sender, args) =>
             {
-                var current = -currentExport.Value;
-                System.Console.Write("{0}, ".FormatString(current));
+                double current = -currentExport.Value;
+                System.Diagnostics.Debug.WriteLine("{0}, ".FormatString(current));
             };
             dc.Run(ckt);
 

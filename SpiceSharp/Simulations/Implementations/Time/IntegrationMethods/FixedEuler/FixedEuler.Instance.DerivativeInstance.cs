@@ -19,12 +19,25 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// <inheritdoc/>
                 public double Value
                 {
-                    get => _states.Value[_index];
-                    set => _states.Value[_index] = value;
+                    get
+                    {
+                        return _states.Value[_index];
+                    }
+
+                    set
+                    {
+                        _states.Value[_index] = value;
+                    }
                 }
 
                 /// <inheritdoc/>
-                public double Derivative => _states.Value[_index + 1];
+                public double Derivative
+                {
+                    get
+                    {
+                        return _states.Value[_index + 1];
+                    }
+                }
 
                 /// <summary>
                 /// Initializes a new instance of the <see cref="DerivativeInstance"/> class.
@@ -41,7 +54,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// <inheritdoc/>
                 public JacobianInfo GetContributions(double coefficient, double currentValue)
                 {
-                    var g = _method.Slope * coefficient;
+                    double g = _method.Slope * coefficient;
                     return new JacobianInfo(
                         g,
                         Derivative - g * currentValue);
@@ -50,7 +63,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 /// <inheritdoc/>
                 public JacobianInfo GetContributions(double coefficient)
                 {
-                    var h = _method.Slope;
+                    double h = _method.Slope;
                     IVector<double> s = _states.Value;
                     return new JacobianInfo(
                         h * coefficient,

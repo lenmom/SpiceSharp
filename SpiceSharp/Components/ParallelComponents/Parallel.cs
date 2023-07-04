@@ -1,11 +1,12 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Components.ParallelComponents;
 using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components
 {
@@ -39,11 +40,13 @@ namespace SpiceSharp.Components
         {
             get
             {
-                var list = new List<string>();
+                List<string> list = new List<string>();
                 foreach (IEntity entity in Parameters.Entities)
                 {
                     if (entity is IComponent component)
+                    {
                         list.AddRange(component.Nodes);
+                    }
                 }
                 return list.AsReadOnly();
             }
@@ -75,9 +78,12 @@ namespace SpiceSharp.Components
         public Parallel(string name, params IEntity[] entities)
             : base(name)
         {
-            var collection = new EntityCollection();
+            EntityCollection collection = new EntityCollection();
             foreach (IEntity entity in entities)
+            {
                 collection.Add(entity);
+            }
+
             Parameters.Entities = collection;
         }
 
@@ -90,21 +96,24 @@ namespace SpiceSharp.Components
         public Parallel(string name, IEnumerable<IEntity> entities)
             : base(name)
         {
-            var collection = new EntityCollection();
+            EntityCollection collection = new EntityCollection();
             foreach (IEntity entity in entities)
+            {
                 collection.Add(entity);
+            }
+
             Parameters.Entities = collection;
         }
 
         /// <inheritdoc/>
         public override void CreateBehaviors(ISimulation simulation)
         {
-            var behaviors = new BehaviorContainer(Name);
+            BehaviorContainer behaviors = new BehaviorContainer(Name);
             if (Parameters.Entities != null || Parameters.Entities.Count > 0)
             {
                 // Create our local simulation and binding context to allow behaviors to do stuff
-                var localSim = new ParallelSimulation(simulation, this);
-                var context = new ParallelBindingContext(this, localSim, behaviors);
+                ParallelSimulation localSim = new ParallelSimulation(simulation, this);
+                ParallelBindingContext context = new ParallelBindingContext(this, localSim, behaviors);
 
                 // Let's create our behaviors
                 // Note: we do this first, such that any parallel simulation states can be added to the local simulation
@@ -126,7 +135,9 @@ namespace SpiceSharp.Components
                 foreach (IBehavior behavior in behaviors)
                 {
                     if (behavior is IParallelBehavior parallelBehavior)
+                    {
                         parallelBehavior.FetchBehaviors(context);
+                    }
                 }
             }
             simulation.EntityBehaviors.Add(behaviors);
@@ -138,7 +149,9 @@ namespace SpiceSharp.Components
             foreach (IEntity entity in Parameters.Entities)
             {
                 if (entity is IRuleSubject subject)
+                {
                     subject.Apply(rules);
+                }
             }
         }
     }

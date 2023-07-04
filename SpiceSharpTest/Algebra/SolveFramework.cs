@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+
+using SpiceSharp.Algebra;
 
 namespace SpiceSharpTest.Algebra
 {
@@ -15,17 +16,19 @@ namespace SpiceSharpTest.Algebra
         /// <param name="filename">The filename.</param>
         protected static void ReadMatrix(SparseRealSolver solver, string filename)
         {
-            using var sr = new StreamReader(filename);
+            using StreamReader sr = new StreamReader(filename);
 
             // The first line is a comment
             sr.ReadLine();
 
             // The second line tells us the dimensions
-            var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
+            string line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
             Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(?<columns>\d+)\s+(\d+)");
-            var size = int.Parse(match.Groups["rows"].Value);
+            int size = int.Parse(match.Groups["rows"].Value);
             if (int.Parse(match.Groups["columns"].Value) != size)
+            {
                 throw new Exception("Matrix is not square");
+            }
 
             // All subsequent lines are of the format [row] [column] [value]
             while (!sr.EndOfStream)
@@ -33,14 +36,19 @@ namespace SpiceSharpTest.Algebra
                 // Read the next line
                 line = sr.ReadLine();
                 if (line == null)
+                {
                     break;
+                }
 
                 match = Regex.Match(line, @"^(?<row>\d+)\s+(?<column>\d+)\s+(?<value>.*)\s*$");
                 if (!match.Success)
+                {
                     throw new Exception("Could not recognize file");
-                var row = int.Parse(match.Groups["row"].Value);
-                var column = int.Parse(match.Groups["column"].Value);
-                var value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+                }
+
+                int row = int.Parse(match.Groups["row"].Value);
+                int column = int.Parse(match.Groups["column"].Value);
+                double value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
 
                 // Set the value in the matrix
                 solver.GetElement(new MatrixLocation(row, column)).Value = value;
@@ -54,15 +62,15 @@ namespace SpiceSharpTest.Algebra
         /// <param name="filename">The filename.</param>
         protected static void ReadRhs(SparseRealSolver solver, string filename)
         {
-            using var sr = new StreamReader(filename);
+            using StreamReader sr = new StreamReader(filename);
 
             // The first line is a comment
             sr.ReadLine();
 
             // The second line tells us the dimensions
-            var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
+            string line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
             Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
-            var size = int.Parse(match.Groups["rows"].Value);
+            int size = int.Parse(match.Groups["rows"].Value);
 
             // All subsequent lines are of the format [row] [column] [value]
             while (!sr.EndOfStream)
@@ -70,13 +78,18 @@ namespace SpiceSharpTest.Algebra
                 // Read the next line
                 line = sr.ReadLine();
                 if (line == null)
+                {
                     break;
+                }
 
                 match = Regex.Match(line, @"^(?<row>\d+)\s+(?<value>.*)\s*$");
                 if (!match.Success)
+                {
                     throw new Exception("Could not recognize file");
-                var row = int.Parse(match.Groups["row"].Value);
-                var value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+                }
+
+                int row = int.Parse(match.Groups["row"].Value);
+                double value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
 
                 // Set the value in the matrix
                 solver.GetElement(row).Value = value;
@@ -90,15 +103,15 @@ namespace SpiceSharpTest.Algebra
         /// <param name="filename">The filename.</param>
         protected static void ReadVector(IVector<double> vector, string filename)
         {
-            using var sr = new StreamReader(filename);
+            using StreamReader sr = new StreamReader(filename);
 
             // The first line is a comment
             sr.ReadLine();
 
             // The second line tells us the dimensions
-            var line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
+            string line = sr.ReadLine() ?? throw new Exception("Invalid Mtx file");
             Match match = Regex.Match(line, @"^(?<rows>\d+)\s+(\d+)");
-            var size = int.Parse(match.Groups["rows"].Value);
+            int size = int.Parse(match.Groups["rows"].Value);
 
             // All subsequent lines are of the format [row] [column] [value]
             while (!sr.EndOfStream)
@@ -106,13 +119,18 @@ namespace SpiceSharpTest.Algebra
                 // Read the next line
                 line = sr.ReadLine();
                 if (line == null)
+                {
                     break;
+                }
 
                 match = Regex.Match(line, @"^(?<row>\d+)\s+(?<value>.*)\s*$");
                 if (!match.Success)
+                {
                     throw new Exception("Could not recognize file");
-                var row = int.Parse(match.Groups["row"].Value);
-                var value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+                }
+
+                int row = int.Parse(match.Groups["row"].Value);
+                double value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
 
                 // Set the value in the matrix
                 vector[row] = value;
@@ -127,37 +145,39 @@ namespace SpiceSharpTest.Algebra
         /// <returns></returns>
         protected static SparseRealSolver ReadSpice3f5File(string matFilename, string vecFilename)
         {
-            var solver = new SparseRealSolver();
+            SparseRealSolver solver = new SparseRealSolver();
 
             // Read the spice file
             string line;
-            using (var reader = new StreamReader(matFilename))
+            using (StreamReader reader = new StreamReader(matFilename))
             {
                 // The file is organized using (row) (column) (value) (imag value)
                 while (!reader.EndOfStream && (line = reader.ReadLine()) != null)
                 {
                     if (line == "first")
+                    {
                         continue;
+                    }
 
                     // Try to read an element
                     Match match = Regex.Match(line, @"^(?<row>\d+)\s+(?<col>\d+)\s+(?<value>[^\s]+)(\s+[^\s]+)?$");
                     if (match.Success)
                     {
-                        var row = int.Parse(match.Groups["row"].Value);
-                        var col = int.Parse(match.Groups["col"].Value);
-                        var value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+                        int row = int.Parse(match.Groups["row"].Value);
+                        int col = int.Parse(match.Groups["col"].Value);
+                        double value = double.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
                         solver.GetElement(new MatrixLocation(row, col)).Value = value;
                     }
                 }
             }
 
             // Read the vector file
-            using (var reader = new StreamReader(vecFilename))
+            using (StreamReader reader = new StreamReader(vecFilename))
             {
-                var index = 1;
+                int index = 1;
                 while (!reader.EndOfStream && (line = reader.ReadLine()) != null)
                 {
-                    var value = double.Parse(line, CultureInfo.InvariantCulture);
+                    double value = double.Parse(line, CultureInfo.InvariantCulture);
                     solver.GetElement(index).Value = value;
                     index++;
                 }

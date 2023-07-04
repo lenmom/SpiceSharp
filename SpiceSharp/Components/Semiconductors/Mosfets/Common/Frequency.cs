@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.Mosfets
 {
@@ -42,15 +43,33 @@ namespace SpiceSharp.Components.Mosfets
 
         /// <include file='../common/docs.xml' path='docs/members/GateSourceCapacitance/*'/>
         [ParameterName("cgs"), ParameterInfo("Gate-source capacitance", Units = "F")]
-        public double Cgs => _charges.Cgs;
+        public double Cgs
+        {
+            get
+            {
+                return _charges.Cgs;
+            }
+        }
 
         /// <include file='../common/docs.xml' path='docs/members/GateDrainCapacitance/*'/>
         [ParameterName("cgd"), ParameterInfo("Gate-drain capacitance", Units = "F")]
-        public double Cgd => _charges.Cgd;
+        public double Cgd
+        {
+            get
+            {
+                return _charges.Cgd;
+            }
+        }
 
         /// <include file='../common/docs.xml' path='docs/members/GateBulkCapacitance/*'/>
         [ParameterName("cgb"), ParameterInfo("Gate-bulk capacitance", Units = "F")]
-        public double Cgb => _charges.Cgb;
+        public double Cgb
+        {
+            get
+            {
+                return _charges.Cgb;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -91,19 +110,19 @@ namespace SpiceSharp.Components.Mosfets
             }
 
             // Charge oriented model parameters
-            var gateSourceOverlapCap = ModelParameters.GateSourceOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
-            var gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
-            var gateBulkOverlapCap = ModelParameters.GateBulkOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Properties.EffectiveLength;
+            double gateSourceOverlapCap = ModelParameters.GateSourceOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
+            double gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
+            double gateBulkOverlapCap = ModelParameters.GateBulkOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Properties.EffectiveLength;
 
             // Meyer"s model parameters
-            var capgs = _charges.Cgs * 2 + gateSourceOverlapCap;
-            var capgd = _charges.Cgd * 2 + gateDrainOverlapCap;
-            var capgb = _charges.Cgb * 2 + gateBulkOverlapCap;
-            var xgs = capgs * _complex.Laplace.Imaginary;
-            var xgd = capgd * _complex.Laplace.Imaginary;
-            var xgb = capgb * _complex.Laplace.Imaginary;
-            var xbd = _charges.Cbd * _complex.Laplace.Imaginary;
-            var xbs = _charges.Cbs * _complex.Laplace.Imaginary;
+            double capgs = _charges.Cgs * 2 + gateSourceOverlapCap;
+            double capgd = _charges.Cgd * 2 + gateDrainOverlapCap;
+            double capgb = _charges.Cgb * 2 + gateBulkOverlapCap;
+            double xgs = capgs * _complex.Laplace.Imaginary;
+            double xgd = capgd * _complex.Laplace.Imaginary;
+            double xgb = capgb * _complex.Laplace.Imaginary;
+            double xbd = _charges.Cbd * _complex.Laplace.Imaginary;
+            double xbs = _charges.Cbs * _complex.Laplace.Imaginary;
 
             // Load Y-matrix
             _elements.Add(

@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Behaviors;
-using System;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -25,7 +26,9 @@ namespace SpiceSharp.Components.ParallelComponents
         {
             Parameters parameters = context.GetParameterSet<Parameters>();
             if (parameters.WorkDistributors.TryGetValue(typeof(ITimeBehavior), out IWorkDistributor dist) && dist != null)
+            {
                 _initWorkload = new Workload(dist, parameters.Entities.Count);
+            }
         }
 
         /// <inheritdoc />
@@ -35,7 +38,9 @@ namespace SpiceSharp.Components.ParallelComponents
             if (_initWorkload != null)
             {
                 foreach (ITimeBehavior behavior in _timeBehaviors)
+                {
                     _initWorkload.Actions.Add(behavior.InitializeStates);
+                }
             }
         }
 
@@ -43,11 +48,15 @@ namespace SpiceSharp.Components.ParallelComponents
         void ITimeBehavior.InitializeStates()
         {
             if (_initWorkload != null)
+            {
                 _initWorkload.Execute();
+            }
             else
             {
                 foreach (ITimeBehavior behavior in _timeBehaviors)
+                {
                     behavior.InitializeStates();
+                }
             }
         }
     }

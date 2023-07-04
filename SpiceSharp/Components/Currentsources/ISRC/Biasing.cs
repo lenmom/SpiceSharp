@@ -1,10 +1,12 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
+
 using IndependentSourceParameters = SpiceSharp.Components.CommonBehaviors.IndependentSourceParameters;
 
 namespace SpiceSharp.Components.CurrentSources
@@ -45,11 +47,23 @@ namespace SpiceSharp.Components.CurrentSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_r"), ParameterInfo("Voltage accross the supply")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_r"), ParameterInfo("Power supplied by the source")]
-        public double Power => (_variables.Positive.Value - _variables.Negative.Value) * -Current;
+        public double Power
+        {
+            get
+            {
+                return (_variables.Positive.Value - _variables.Negative.Value) * -Current;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("c"), ParameterName("i"), ParameterName("i_r"), ParameterInfo("Current through current source")]
@@ -94,9 +108,13 @@ namespace SpiceSharp.Components.CurrentSources
             {
                 // Use the waveform if possible
                 if (Waveform != null)
+                {
                     value = Waveform.Value;
+                }
                 else
+                {
                     value = Parameters.DcValue * _iteration.SourceFactor;
+                }
             }
             else
             {

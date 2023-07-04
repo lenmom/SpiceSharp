@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -36,7 +37,9 @@ namespace SpiceSharp.Components.Subcircuits
                 context.AddLocalState<IBiasingSimulationState>(_state);
             }
             else
+            {
                 context.AddLocalState<IBiasingSimulationState>(new FlatSimulationState(Name, parent, context.Bridges));
+            }
         }
 
         /// <inheritdoc/>
@@ -61,7 +64,9 @@ namespace SpiceSharp.Components.Subcircuits
                 while (!_state.Apply());
             }
             else
+            {
                 LoadBehaviors();
+            }
         }
 
         /// <summary>
@@ -70,16 +75,21 @@ namespace SpiceSharp.Components.Subcircuits
         protected virtual void LoadBehaviors()
         {
             foreach (IBiasingBehavior behavior in Behaviors)
+            {
                 behavior.Load();
+            }
         }
 
         /// <inheritdoc/>
         bool IConvergenceBehavior.IsConvergent()
         {
             _state?.Update();
-            var result = true;
+            bool result = true;
             foreach (IConvergenceBehavior behavior in _convergenceBehaviors)
+            {
                 result &= behavior.IsConvergent();
+            }
+
             return result;
         }
     }

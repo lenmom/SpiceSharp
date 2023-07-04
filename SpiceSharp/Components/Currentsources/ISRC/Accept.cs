@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using System;
 
 namespace SpiceSharp.Components.CurrentSources
 {

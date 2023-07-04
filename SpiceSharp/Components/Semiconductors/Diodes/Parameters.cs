@@ -49,8 +49,15 @@ namespace SpiceSharp.Components.Diodes
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public GivenParameter<double> TemperatureCelsius
         {
-            get => new GivenParameter<double>(Temperature - Constants.CelsiusKelvin, Temperature.Given);
-            set => Temperature = new GivenParameter<double>(value + Constants.CelsiusKelvin, value.Given);
+            get
+            {
+                return new GivenParameter<double>(Temperature - Constants.CelsiusKelvin, Temperature.Given);
+            }
+
+            set
+            {
+                Temperature = new GivenParameter<double>(value + Constants.CelsiusKelvin, value.Given);
+            }
         }
 
         /// <summary>

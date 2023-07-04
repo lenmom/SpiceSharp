@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+using SpiceSharp.Entities;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
 using SpiceSharp.Validation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace SpiceSharp.Components
 {
@@ -21,7 +22,13 @@ namespace SpiceSharp.Components
         private string[] _connections;
 
         /// <inheritdoc/>
-        public IReadOnlyList<string> Nodes => new ReadOnlyCollection<string>(_connections);
+        public IReadOnlyList<string> Nodes
+        {
+            get
+            {
+                return new ReadOnlyCollection<string>(_connections);
+            }
+        }
 
         /// <inheritdoc/>
         public string Model { get; set; }
@@ -44,14 +51,21 @@ namespace SpiceSharp.Components
             if (_connections == null)
             {
                 if (nodes == null || nodes.Length == 0)
+                {
                     return this;
+                }
                 else
+                {
                     throw new NodeMismatchException(Name, 0, nodes.Length);
+                }
             }
 
             if (nodes == null || nodes.Length != _connections.Length)
+            {
                 throw new NodeMismatchException(Name, _connections.Length, nodes?.Length ?? 0);
-            for (var i = 0; i < nodes.Length; i++)
+            }
+
+            for (int i = 0; i < nodes.Length; i++)
             {
                 nodes[i].ThrowIfNull("node{0}".FormatString(i + 1));
                 _connections[i] = nodes[i];
@@ -67,12 +81,16 @@ namespace SpiceSharp.Components
             // Map the connections to variables
             if (_connections != null)
             {
-                var variables = new IVariable[_connections.Length];
-                for (var i = 0; i < _connections.Length; i++)
+                IVariable[] variables = new IVariable[_connections.Length];
+                for (int i = 0; i < _connections.Length; i++)
+                {
                     variables[i] = p.Factory.GetSharedVariable(_connections[i]);
+                }
 
                 foreach (IConductiveRule rule in rules.GetRules<IConductiveRule>())
+                {
                     rule.AddPath(this, variables);
+                }
             }
         }
 
@@ -80,14 +98,17 @@ namespace SpiceSharp.Components
         public override string ToString()
         {
             if (_connections != null && _connections.Length > 0)
+            {
                 return "{0} {1} {2}".FormatString(Name, string.Join(", ", _connections), Model ?? "");
+            }
+
             return "{0} {1}".FormatString(Name, Model ?? "");
         }
 
         /// <inheritdoc/>
         public override IEntity Clone()
         {
-            var clone = (Component)MemberwiseClone();
+            Component clone = (Component)MemberwiseClone();
             clone._connections = (string[])_connections.Clone();
             return clone;
         }
@@ -117,7 +138,7 @@ namespace SpiceSharp.Components
         /// <inheritdoc/>
         public override IEntity Clone()
         {
-            var clone = (Component<P>)base.Clone();
+            Component<P> clone = (Component<P>)base.Clone();
             clone.Parameters = Parameters.Clone();
             return clone;
         }

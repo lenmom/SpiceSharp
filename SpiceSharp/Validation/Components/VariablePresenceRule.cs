@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Validation
 {
@@ -30,7 +31,9 @@ namespace SpiceSharp.Validation
             get
             {
                 if (ViolationCount > 0)
+                {
                     yield return new VariablePresenceRuleViolation(this, _search);
+                }
             }
         }
 
@@ -62,7 +65,9 @@ namespace SpiceSharp.Validation
             foreach (IVariable v in variables)
             {
                 if (v.Equals(_search))
+                {
                     ViolationCount = 0;
+                }
             }
         }
 
@@ -77,7 +82,9 @@ namespace SpiceSharp.Validation
             foreach (IVariable v in variables)
             {
                 if (v.Equals(_search))
+                {
                     ViolationCount = 0;
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Attributes;
-using System;
+﻿using System;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Diodes
 {
@@ -16,7 +17,13 @@ namespace SpiceSharp.Components.Diodes
         /// The capacitance.
         /// </value>
         [ParameterName("cd"), ParameterInfo("Diode capacitance")]
-        public double Capacitance => LocalCapacitance * Parameters.ParallelMultiplier / Parameters.SeriesMultiplier;
+        public double Capacitance
+        {
+            get
+            {
+                return LocalCapacitance * Parameters.ParallelMultiplier / Parameters.SeriesMultiplier;
+            }
+        }
 
         /// <summary>
         /// The junction capacitance of a single diode (not including parallel or series multipliers).
@@ -30,7 +37,13 @@ namespace SpiceSharp.Components.Diodes
         /// The capacitor charge.
         /// </value>
         [ParameterName("charge"), ParameterInfo("Diode capacitor charge")]
-        public double CapCharge => LocalCapCharge * Parameters.ParallelMultiplier;
+        public double CapCharge
+        {
+            get
+            {
+                return LocalCapCharge * Parameters.ParallelMultiplier;
+            }
+        }
 
         /// <summary>
         /// The charge on the junction capacitance of a single diode (not including parallel or series multipliers).
@@ -54,18 +67,18 @@ namespace SpiceSharp.Components.Diodes
         protected void CalculateCapacitance(double vd)
         {
             // charge storage elements
-            var czero = TempJunctionCap * Parameters.Area;
+            double czero = TempJunctionCap * Parameters.Area;
             if (vd < TempDepletionCap)
             {
-                var arg = 1 - vd / ModelParameters.JunctionPotential;
-                var sarg = Math.Exp(-ModelParameters.GradingCoefficient * Math.Log(arg));
+                double arg = 1 - vd / ModelParameters.JunctionPotential;
+                double sarg = Math.Exp(-ModelParameters.GradingCoefficient * Math.Log(arg));
                 LocalCapCharge = ModelParameters.TransitTime * LocalCurrent + ModelParameters.JunctionPotential * czero *
                             (1 - arg * sarg) / (1 - ModelParameters.GradingCoefficient);
                 LocalCapacitance = ModelParameters.TransitTime * LocalConductance + czero * sarg;
             }
             else
             {
-                var czof2 = czero / ModelTemperature.F2;
+                double czof2 = czero / ModelTemperature.F2;
                 LocalCapCharge = ModelParameters.TransitTime * LocalCurrent + czero * TempFactor1 + czof2 *
                             (ModelTemperature.F3 * (vd - TempDepletionCap) + ModelParameters.GradingCoefficient /
                              (ModelParameters.JunctionPotential + ModelParameters.JunctionPotential) *

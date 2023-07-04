@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.Semiconductors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Mosfets.Level3
 {
@@ -39,7 +40,13 @@ namespace SpiceSharp.Components.Mosfets.Level3
         protected const double MaximumExponentArgument = 709.0;
 
         /// <inheritdoc/>
-        Mosfets.TemperatureProperties IMosfetBiasingBehavior.Properties => Properties;
+        Mosfets.TemperatureProperties IMosfetBiasingBehavior.Properties
+        {
+            get
+            {
+                return Properties;
+            }
+        }
 
         /// <inheritdoc/>
         public event EventHandler<MosfetContributionEventArgs> UpdateContributions;
@@ -147,38 +154,38 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 DrainSatCur = Parameters.ParallelMultiplier * Properties.TempSatCurDensity * Parameters.DrainArea;
                 SourceSatCur = Parameters.ParallelMultiplier * Properties.TempSatCurDensity * Parameters.SourceArea;
             }
-            var Beta = Properties.TempTransconductance * Parameters.ParallelMultiplier * Properties.EffectiveWidth / Properties.EffectiveLength;
+            double Beta = Properties.TempTransconductance * Parameters.ParallelMultiplier * Properties.EffectiveWidth / Properties.EffectiveLength;
 
             // Get the current voltages
-            Initialize(out var vgs, out var vds, out var vbs, out var check);
-            var vbd = vbs - vds;
-            var vgd = vgs - vds;
+            Initialize(out double vgs, out double vds, out double vbs, out bool check);
+            double vbd = vbs - vds;
+            double vgd = vgs - vds;
 
             if (ModelParameters.Version == ModelParameters.Versions.NgSpice)
             {
                 if (vbs <= -3 * Properties.TempVt)
                 {
-                    var arg = 3 * Properties.TempVt / (vbs * Math.E);
+                    double arg = 3 * Properties.TempVt / (vbs * Math.E);
                     arg = arg * arg * arg;
                     con.Bs.C = -SourceSatCur * (1 + arg) + _config.Gmin * vbs;
                     con.Bs.G = SourceSatCur * 3 * arg / vbs + _config.Gmin;
                 }
                 else
                 {
-                    var evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / Properties.TempVt));
+                    double evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / Properties.TempVt));
                     con.Bs.G = SourceSatCur * evbs / Properties.TempVt + _config.Gmin;
                     con.Bs.C = SourceSatCur * (evbs - 1) + _config.Gmin * vbs;
                 }
                 if (vbd <= -3 * Properties.TempVt)
                 {
-                    var arg = 3 * Properties.TempVt / (vbd * Math.E);
+                    double arg = 3 * Properties.TempVt / (vbd * Math.E);
                     arg = arg * arg * arg;
                     con.Bd.C = -DrainSatCur * (1 + arg) + _config.Gmin * vbd;
                     con.Bd.G = DrainSatCur * 3 * arg / vbd + _config.Gmin;
                 }
                 else
                 {
-                    var evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / Properties.TempVt));
+                    double evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / Properties.TempVt));
                     con.Bd.G = DrainSatCur * evbd / Properties.TempVt + _config.Gmin;
                     con.Bd.C = DrainSatCur * (evbd - 1) + _config.Gmin * vbd;
                 }
@@ -193,7 +200,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 }
                 else
                 {
-                    var evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / Properties.TempVt));
+                    double evbs = Math.Exp(Math.Min(MaximumExponentArgument, vbs / Properties.TempVt));
                     con.Bs.G = SourceSatCur * evbs / Properties.TempVt + _config.Gmin;
                     con.Bs.C = SourceSatCur * (evbs - 1);
                 }
@@ -205,7 +212,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 }
                 else
                 {
-                    var evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / Properties.TempVt));
+                    double evbd = Math.Exp(Math.Min(MaximumExponentArgument, vbd / Properties.TempVt));
                     con.Bd.G = DrainSatCur * evbd / Properties.TempVt + _config.Gmin;
                     con.Bd.C = DrainSatCur * (evbd - 1);
                 }
@@ -213,9 +220,13 @@ namespace SpiceSharp.Components.Mosfets.Level3
 
             // Now to determine whether the user was able to correctly identify the source and drain of his device.
             if (vds >= 0)
+            {
                 Mode = 1;
+            }
             else
+            {
                 Mode = -1;
+            }
 
             {
                 /*
@@ -228,9 +239,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
 				 * gate, channel and bulk for mosfets based on
 				 * semi-empirical equations */
 
-                var coeff0 = 0.0631353e0;
-                var coeff1 = 0.8013292e0;
-                var coeff2 = -0.01110777e0;
+                double coeff0 = 0.0631353e0;
+                double coeff1 = 0.8013292e0;
+                double coeff2 = -0.01110777e0;
                 double oneoverxl;   /* 1/effective length */
                 double eta; /* eta from model after length factor */
                 double phibs;   /* phi - vbs */
@@ -263,9 +274,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dvtdvb;
                 double csonco;
                 double cdonco;
-                var dxndvb = 0.0;
-                var dvodvb = 0.0;
-                var dvodvd = 0.0;
+                double dxndvb = 0.0;
+                double dvodvb = 0.0;
+                double dvodvd = 0.0;
                 double vgsx;
                 double dvtdvd;
                 double onfg;
@@ -277,20 +288,20 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dvsdvg;
                 double dvsdvb;
                 double dvsdvd;
-                var xn = 0.0;
+                double xn = 0.0;
                 double vdsc;
-                var onvdsc = 0.0;
+                double onvdsc = 0.0;
                 double dvsdga;
                 double vdsx;
                 double dcodvb;
                 double cdnorm;
                 double cdo;
                 double cd1;
-                var fdrain = 0.0;
+                double fdrain = 0.0;
                 double fd2;
-                var dfddvg = 0.0;
-                var dfddvb = 0.0;
-                var dfddvd = 0.0;
+                double dfddvg = 0.0;
+                double dfddvb = 0.0;
+                double dfddvd = 0.0;
                 double gdsat;
                 double cdsat;
                 double gdoncd;
@@ -313,7 +324,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 double dlonxl;
                 double xlfact;
                 double diddl;
-                var gds0 = 0.0;
+                double gds0 = 0.0;
                 double emoncd;
                 double ondvt;
                 double onxn;
@@ -326,7 +337,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
 				 *     reference con.Ds.C equations to source and
 				 *     charge equations to bulk
 				 */
-                var vdsat = 0.0;
+                double vdsat = 0.0;
                 oneoverxl = 1.0 / Properties.EffectiveLength;
                 eta = ModelParameters.Eta * 8.15e-22 / (ModelTemperature.Properties.OxideCapFactor * Properties.EffectiveLength * Properties.EffectiveLength * Properties.EffectiveLength);
 
@@ -389,7 +400,7 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 dvtdvb = dqbdvb;
 
                 // Joint weak inversion and strong inversion
-                var von = vth;
+                double von = vth;
                 if (ModelParameters.FastSurfaceStateDensity != 0.0)
                 {
                     csonco = Constants.Charge * ModelParameters.FastSurfaceStateDensity *
@@ -450,7 +461,10 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 // Current factors in linear region
                 vdsx = Math.Min(Mode * vds, vdsat);
                 if (vdsx == 0.0)
+                {
                     goto line900;
+                }
+
                 cdo = vgsx - vth - 0.5 * (1.0 + fbody) * vdsx;
                 dcodvb = -dvtdvb - 0.5 * dfbdvb * vdsx;
 
@@ -461,12 +475,19 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 if (ModelParameters.Version == ModelParameters.Versions.NgSpice)
                 {
                     if ((Mode * vds) > vdsat)
+                    {
                         con.Ds.G = -dvtdvd * vdsx;
+                    }
                     else
+                    {
                         con.Ds.G = vgsx - vth - (1.0 + fbody + dvtdvd) * vdsx;
+                    }
                 }
                 else
+                {
                     con.Ds.G = vgsx - vth - (1.0 + fbody + dvtdvd) * vdsx;
+                }
+
                 Gmbs = dcodvb * vdsx;
 
                 // Drain current without velocity saturation effect
@@ -477,7 +498,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 con.Ds.G = Beta * con.Ds.G + dfgdvd * cd1;
                 Gmbs *= Beta;
                 if (ModelParameters.Version == ModelParameters.Versions.NgSpice)
+                {
                     Gmbs += dfgdvb * cd1;
+                }
 
                 // Celocity saturation factor
                 if (ModelParameters.MaxDriftVelocity > 0.0)
@@ -490,12 +513,19 @@ namespace SpiceSharp.Components.Mosfets.Level3
                     if (ModelParameters.Version == ModelParameters.Versions.NgSpice)
                     {
                         if ((Mode * vds) > vdsat)
+                        {
                             dfddvd = -dfgdvd * arga;
+                        }
                         else
+                        {
                             dfddvd = -dfgdvd * arga - fd2 * onvdsc;
+                        }
                     }
                     else
+                    {
                         dfddvd = -dfgdvd * arga - fd2 * onvdsc;
+                    }
+
                     dfddvb = -dfgdvb * arga;
 
                     // Drain current
@@ -512,7 +542,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
                     if (ModelParameters.Version == ModelParameters.Versions.NgSpice)
                     {
                         if ((ModelParameters.MaxDriftVelocity > 0.0) || (ModelTemperature.Properties.Alpha == 0.0) || ModelParameters.BadMos)
+                        {
                             goto line700;
+                        }
                         else
                         {
                             arga = Mode * vds / vdsat;
@@ -528,13 +560,21 @@ namespace SpiceSharp.Components.Mosfets.Level3
                         }
                     }
                     else
+                    {
                         goto line700;
+                    }
                 }
 
                 if (ModelParameters.MaxDriftVelocity <= 0.0)
+                {
                     goto line510;
+                }
+
                 if (ModelTemperature.Properties.Alpha == 0.0)
+                {
                     goto line700;
+                }
+
                 cdsat = con.Ds.C;
                 gdsat = cdsat * (1.0 - fdrain) * onvdsc;
                 gdsat = Math.Max(1.0e-12, gdsat);
@@ -546,9 +586,14 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 dgdvb = gdoncd * Gmbs - gdonfd * dfddvb + gdonfg * dfgdvb;
 
                 if (ModelParameters.BadMos)
+                {
                     emax = cdsat * oneoverxl / gdsat;
+                }
                 else
+                {
                     emax = ModelParameters.Kappa * cdsat * oneoverxl / gdsat;
+                }
+
                 emoncd = emax / cdsat;
                 emongd = emax / gdsat;
                 demdvg = emoncd * Gm - emongd * dgdvg;
@@ -703,7 +748,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
             if (!Parameters.Off || _iteration.Mode != IterationModes.Fix)
             {
                 if (check)
+                {
                     _iteration.IsConvergent = false;
+                }
             }
 
             // Save things away for next time
@@ -771,16 +818,16 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 _iteration.Mode == IterationModes.Fix && !Parameters.Off)
             {
                 // General iteration
-                var s = _variables.SourcePrime.Value;
+                double s = _variables.SourcePrime.Value;
                 vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
                 vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
                 vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
 
                 // now some common crunching for some more useful quantities
-                var vbd = vbs - vds;
-                var vgd = vgs - vds;
-                var vgdo = Vgs - Vds;
-                var von = ModelParameters.MosfetType * Von;
+                double vbd = vbs - vds;
+                double vgd = vgs - vds;
+                double vgdo = Vgs - Vds;
+                double von = ModelParameters.MosfetType * Von;
 
                 /*
 				 * limiting
@@ -805,7 +852,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
 
                 check = false;
                 if (vds >= 0)
+                {
                     vbs = Semiconductor.LimitJunction(vbs, Vbs, Properties.TempVt, SourceVCritical, ref check);
+                }
                 else
                 {
                     vbd = Semiconductor.LimitJunction(vbd, Vbd, Properties.TempVt, DrainVCritical, ref check);
@@ -844,18 +893,18 @@ namespace SpiceSharp.Components.Mosfets.Level3
         {
             double cdhat;
 
-            var s = _variables.SourcePrime.Value;
-            var vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
-            var vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
-            var vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
-            var vbd = vbs - vds;
-            var vgd = vgs - vds;
-            var vgdo = Vgs - Vds;
-            var delvbs = vbs - Vbs;
-            var delvbd = vbd - Vbd;
-            var delvgs = vgs - Vgs;
-            var delvds = vds - Vds;
-            var delvgd = vgd - vgdo;
+            double s = _variables.SourcePrime.Value;
+            double vbs = ModelParameters.MosfetType * (_variables.Bulk.Value - s);
+            double vgs = ModelParameters.MosfetType * (_variables.Gate.Value - s);
+            double vds = ModelParameters.MosfetType * (_variables.DrainPrime.Value - s);
+            double vbd = vbs - vds;
+            double vgd = vgs - vds;
+            double vgdo = Vgs - Vds;
+            double delvbs = vbs - Vbs;
+            double delvbd = vbd - Vbd;
+            double delvgs = vgs - Vgs;
+            double delvds = vds - Vds;
+            double delvgd = vgd - vgdo;
 
             // these are needed for convergence testing
             if (Mode >= 0)
@@ -868,10 +917,10 @@ namespace SpiceSharp.Components.Mosfets.Level3
                 cdhat = Id - (Gbd - Gmbs) * delvbd -
                     Gm * delvgd + Gds * delvds;
             }
-            var cbhat = Ibs + Ibd + Gbd * delvbd + Gbs * delvbs;
+            double cbhat = Ibs + Ibd + Gbd * delvbd + Gbs * delvbs;
 
             // Check convergence
-            var tol = _config.RelativeTolerance * Math.Max(Math.Abs(cdhat), Math.Abs(Id)) + _config.AbsoluteTolerance;
+            double tol = _config.RelativeTolerance * Math.Max(Math.Abs(cdhat), Math.Abs(Id)) + _config.AbsoluteTolerance;
             if (Math.Abs(cdhat - Id) >= tol)
             {
                 _iteration.IsConvergent = false;

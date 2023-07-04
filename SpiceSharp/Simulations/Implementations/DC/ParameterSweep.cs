@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Behaviors;
-using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using SpiceSharp.Behaviors;
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations
 {
@@ -102,14 +103,18 @@ namespace SpiceSharp.Simulations
                 {
                     setter = ps.CreateParameterSetter<double>(Property);
                     if (setter != null)
+                    {
                         break;
+                    }
                 }
                 if (setter != null)
+                {
                     break;
+                }
             }
 
             // Enumerate the points
-            foreach (var pt in Points)
+            foreach (double pt in Points)
             {
                 setter(pt);
                 Update?.Invoke(behaviors);

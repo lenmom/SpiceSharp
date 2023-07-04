@@ -33,7 +33,7 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                 {
                     SpiceMethod parameters = _method.Parameters;
                     double tol, diff, tmp;
-                    var timetemp = double.PositiveInfinity;
+                    double timetemp = double.PositiveInfinity;
                     int index;
                     IBiasingSimulationState state = _method.State;
                     Algebra.IVector<double> prediction = _method.Prediction;
@@ -45,7 +45,10 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                             foreach (System.Collections.Generic.KeyValuePair<IVariable, int> node in state.Map)
                             {
                                 if (node.Key.Unit != Units.Volt)
+                                {
                                     continue;
+                                }
+
                                 index = node.Value;
 
                                 // Milne's estimate for the second-order derivative using a Forward Euler predictor and Backward Euler corrector
@@ -65,12 +68,15 @@ namespace SpiceSharp.Simulations.IntegrationMethods
                             foreach (System.Collections.Generic.KeyValuePair<IVariable, int> node in state.Map)
                             {
                                 if (node.Key.Unit != Units.Volt)
+                                {
                                     continue;
+                                }
+
                                 index = node.Value;
 
                                 // Milne's estimate for the third-order derivative using an Adams-Bashforth predictor and Trapezoidal corrector
                                 diff = state.Solution[index] - prediction[index];
-                                var deriv = _method.States.GetPreviousValue(1).Delta / _method.States.Value.Delta;
+                                double deriv = _method.States.GetPreviousValue(1).Delta / _method.States.Value.Delta;
                                 deriv = diff * 4.0 / (1 + deriv * deriv);
 
                                 // Avoid division by zero

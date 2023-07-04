@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -15,7 +16,13 @@ namespace SpiceSharp.Components.ParallelComponents
             IBiasingSimulationState
         {
             /// <inheritdoc/>
-            public IVector<double> OldSolution => Parent.OldSolution;
+            public IVector<double> OldSolution
+            {
+                get
+                {
+                    return Parent.OldSolution;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="BiasingSimulationState"/> class.

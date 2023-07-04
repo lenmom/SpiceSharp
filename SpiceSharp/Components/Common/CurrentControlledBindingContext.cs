@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.CommonBehaviors
 {
@@ -30,7 +31,9 @@ namespace SpiceSharp.Components.CommonBehaviors
         {
             // Gets the current controlling behaviors
             if (component.ControllingSource != null)
+            {
                 ControlBehaviors = simulation.EntityBehaviors[component.ControllingSource];
+            }
         }
     }
 }

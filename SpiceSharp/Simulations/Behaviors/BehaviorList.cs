@@ -20,7 +20,13 @@ namespace SpiceSharp.Behaviors
         /// <param name="index">The index.</param>
         /// <returns>The behavior at the specified index.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if the index exceeds the bounds of the list.</exception>
-        public T this[int index] => _behaviors[index];
+        public T this[int index]
+        {
+            get
+            {
+                return _behaviors[index];
+            }
+        }
 
         /// <summary>
         /// Gets the number of behaviors in the list.

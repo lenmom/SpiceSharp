@@ -1,5 +1,6 @@
-﻿using SpiceSharp.ParameterSets;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Simulations.Frequency
 {
@@ -19,7 +20,13 @@ namespace SpiceSharp.Simulations.Frequency
         /// The frequency parameters.
         /// </value>
         public RuleParameters FrequencyParameters { get; }
-        RuleParameters IParameterized<RuleParameters>.Parameters => FrequencyParameters;
+        RuleParameters IParameterized<RuleParameters>.Parameters
+        {
+            get
+            {
+                return FrequencyParameters;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Rules"/> class.

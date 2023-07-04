@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Attributes;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Simulations.Biasing
 {

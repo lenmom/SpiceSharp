@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Behaviors;
+﻿using System;
+
+using SpiceSharp.Behaviors;
 using SpiceSharp.Entities;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.ParallelComponents
 {
@@ -32,7 +33,7 @@ namespace SpiceSharp.Components.ParallelComponents
         public void AddLocalState<TState>(TState state)
             where TState : ISimulationState
         {
-            var localSim = (ParallelSimulation)Simulation;
+            ParallelSimulation localSim = (ParallelSimulation)Simulation;
             localSim.LocalStates.Add(state);
         }
 

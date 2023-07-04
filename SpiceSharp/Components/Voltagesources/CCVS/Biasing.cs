@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.CurrentControlledVoltageSources
 {
@@ -33,15 +34,33 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_r"), ParameterInfo("Output current")]
-        public double Current => Branch.Value;
+        public double Current
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_r"), ParameterInfo("Output voltage")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_r"), ParameterInfo("Power")]
-        public double Power => -Voltage * Current;
+        public double Power
+        {
+            get
+            {
+                return -Voltage * Current;
+            }
+        }
 
         /// <inheritdoc/>
         public IVariable<double> Branch { get; }
@@ -63,10 +82,10 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
             _control = context.ControlBehaviors.GetValue<IBranchedBehavior<double>>().Branch;
             Branch = _biasing.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
 
-            var pos = _biasing.Map[_variables.Positive];
-            var neg = _biasing.Map[_variables.Negative];
-            var cbr = _biasing.Map[_control];
-            var br = _biasing.Map[Branch];
+            int pos = _biasing.Map[_variables.Positive];
+            int neg = _biasing.Map[_variables.Negative];
+            int cbr = _biasing.Map[_control];
+            int br = _biasing.Map[Branch];
 
             _elements = new ElementSet<double>(_biasing.Solver,
                 new MatrixLocation(pos, br),

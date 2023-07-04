@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Inductors
 {
@@ -36,7 +37,13 @@ namespace SpiceSharp.Components.Inductors
         /// The flux of the inductor.
         /// </value>
         [ParameterName("flux"), ParameterInfo("The flux through the inductor.")]
-        public double Flux => _flux.Value;
+        public double Flux
+        {
+            get
+            {
+                return _flux.Value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Time"/> class.
@@ -47,7 +54,7 @@ namespace SpiceSharp.Components.Inductors
             : base(context)
         {
             IBiasingSimulationState state = context.GetState<IBiasingSimulationState>();
-            var br = state.Map[Branch];
+            int br = state.Map[Branch];
             _time = context.GetState<ITimeSimulationState>();
             _elements = new ElementSet<double>(state.Solver, new[] {
                 new MatrixLocation(br, br)
@@ -62,9 +69,13 @@ namespace SpiceSharp.Components.Inductors
         {
             // Get the current through
             if (_time.UseIc && Parameters.InitialCondition.Given)
+            {
                 _flux.Value = Parameters.InitialCondition * Inductance;
+            }
             else
+            {
                 _flux.Value = Branch.Value * Inductance;
+            }
         }
 
         /// <inheritdoc/>
@@ -72,7 +83,9 @@ namespace SpiceSharp.Components.Inductors
         {
             base.Load();
             if (_time.UseDc)
+            {
                 return;
+            }
 
             // Initialize
             _flux.Value = Inductance * Branch.Value;
@@ -80,7 +93,7 @@ namespace SpiceSharp.Components.Inductors
             // Allow alterations of the flux
             if (UpdateFlux != null)
             {
-                var args = new UpdateFluxEventArgs(Inductance, Branch.Value, _flux);
+                UpdateFluxEventArgs args = new UpdateFluxEventArgs(Inductance, Branch.Value, _flux);
                 UpdateFlux.Invoke(this, args);
             }
 

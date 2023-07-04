@@ -70,7 +70,9 @@ namespace SpiceSharp.Simulations
                 {
                     IVariable<double> posNode = node;
                     if (NegNode == null)
+                    {
                         Extractor = () => posNode.Value;
+                    }
                     else if (sim.Solved.TryGetValue(NegNode, out node))
                     {
                         IVariable<double> negNode = node;

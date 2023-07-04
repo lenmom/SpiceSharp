@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
-using SpiceSharp.Simulations;
-using System;
+﻿using System;
 using System.Numerics;
+
+using SpiceSharp.Algebra;
+using SpiceSharp.Simulations;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -24,7 +25,13 @@ namespace SpiceSharp.Components.Subcircuits
             public bool IsConvergent { get; set; }
 
             /// <inheritdoc/>
-            public Complex Laplace => Parent.Laplace;
+            public Complex Laplace
+            {
+                get
+                {
+                    return Parent.Laplace;
+                }
+            }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="LocalSimulationState"/> class.

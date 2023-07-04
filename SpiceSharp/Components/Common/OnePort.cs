@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.CommonBehaviors
 {
@@ -58,8 +59,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>An array of matrix locations.</returns>
         public MatrixLocation[] GetMatrixLocations(IVariableMap map)
         {
-            var pos = map[Positive];
-            var neg = map[Negative];
+            int pos = map[Positive];
+            int neg = map[Negative];
             return new[]
             {
                 new MatrixLocation(pos, pos),
@@ -76,8 +77,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// <returns>An array with indices.</returns>
         public int[] GetRhsIndices(IVariableMap map)
         {
-            var pos = map[Positive];
-            var neg = map[Negative];
+            int pos = map[Positive];
+            int neg = map[Negative];
             return new[] { pos, neg };
         }
 
@@ -93,9 +94,15 @@ namespace SpiceSharp.Components.CommonBehaviors
             if (obj is OnePort<T> op)
             {
                 if (!Positive.Equals(op.Positive))
+                {
                     return false;
+                }
+
                 if (!Negative.Equals(op.Negative))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;

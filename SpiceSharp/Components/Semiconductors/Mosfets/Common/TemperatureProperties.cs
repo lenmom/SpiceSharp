@@ -52,29 +52,35 @@ namespace SpiceSharp.Components.Mosfets
         public void Update(string name, Parameters p, ModelParameters mp, ModelProperties mprp)
         {
             if (!mp.Transconductance.Given)
+            {
                 mp.Transconductance = new GivenParameter<double>(mp.SurfaceMobility * mprp.OxideCapFactor * 1e-4, false);
+            }
+
             TempVt = p.Temperature * Constants.KOverQ;
-            var ratio = p.Temperature / mp.NominalTemperature;
-            var fact2 = p.Temperature / Constants.ReferenceTemperature;
-            var kt = p.Temperature * Constants.Boltzmann;
-            var egfet = 1.16 - (7.02e-4 * p.Temperature * p.Temperature) /
+            double ratio = p.Temperature / mp.NominalTemperature;
+            double fact2 = p.Temperature / Constants.ReferenceTemperature;
+            double kt = p.Temperature * Constants.Boltzmann;
+            double egfet = 1.16 - (7.02e-4 * p.Temperature * p.Temperature) /
                     (p.Temperature + 1108);
-            var arg = -egfet / (kt + kt) + 1.1150877 / (Constants.Boltzmann * (Constants.ReferenceTemperature + Constants.ReferenceTemperature));
-            var pbfact = -2 * TempVt * (1.5 * Math.Log(fact2) + Constants.Charge * arg);
+            double arg = -egfet / (kt + kt) + 1.1150877 / (Constants.Boltzmann * (Constants.ReferenceTemperature + Constants.ReferenceTemperature));
+            double pbfact = -2 * TempVt * (1.5 * Math.Log(fact2) + Constants.Charge * arg);
             OxideCap = mprp.OxideCapFactor * EffectiveLength * p.ParallelMultiplier * p.Width;
 
             if (p.Length - 2 * mp.LateralDiffusion <= 0)
+            {
                 SpiceSharpWarning.Warning(this, "{0}: effective channel length less than zero".FormatString(name));
-            var ratio4 = ratio * Math.Sqrt(ratio);
+            }
+
+            double ratio4 = ratio * Math.Sqrt(ratio);
             TempTransconductance = mp.Transconductance / ratio4;
             TempSurfaceMobility = mp.SurfaceMobility / ratio4;
-            var phio = (mp.Phi - mprp.PbFactor1) / mprp.Factor1;
+            double phio = (mp.Phi - mprp.PbFactor1) / mprp.Factor1;
             TempPhi = fact2 * phio + pbfact;
             TempVbi = mp.Vt0 - mp.MosfetType * (mp.Gamma * Math.Sqrt(mp.Phi)) + .5 * (mprp.EgFet1 - egfet) + mp.MosfetType * .5 * (TempPhi - mp.Phi);
             TempVt0 = TempVbi + mp.MosfetType * mp.Gamma * Math.Sqrt(TempPhi);
-            var TempSaturationCurrent = mp.JunctionSatCur * Math.Exp(-egfet / TempVt + mprp.EgFet1 / mprp.Vtnom);
-            var TempSaturationCurrentDensity = mp.JunctionSatCurDensity * Math.Exp(-egfet / TempVt + mprp.EgFet1 / mprp.Vtnom);
-            var pbo = (mp.BulkJunctionPotential - mprp.PbFactor1) / mprp.Factor1;
+            double TempSaturationCurrent = mp.JunctionSatCur * Math.Exp(-egfet / TempVt + mprp.EgFet1 / mprp.Vtnom);
+            double TempSaturationCurrentDensity = mp.JunctionSatCurDensity * Math.Exp(-egfet / TempVt + mprp.EgFet1 / mprp.Vtnom);
+            double pbo = (mp.BulkJunctionPotential - mprp.PbFactor1) / mprp.Factor1;
             TempBulkPotential = fact2 * pbo + pbfact;
 
             if ((TempSaturationCurrentDensity == 0) ||
@@ -99,41 +105,61 @@ namespace SpiceSharp.Components.Mosfets
             if (mp.DrainResistance.Given)
             {
                 if (mp.DrainResistance != 0)
+                {
                     DrainConductance = p.ParallelMultiplier / mp.DrainResistance;
+                }
                 else
+                {
                     DrainConductance = 0;
+                }
             }
             else if (mp.SheetResistance.Given)
             {
                 if (mp.SheetResistance != 0)
+                {
                     DrainConductance = p.ParallelMultiplier / (mp.SheetResistance * p.DrainSquares);
+                }
                 else
+                {
                     DrainConductance = 0;
+                }
             }
             else
+            {
                 DrainConductance = 0;
+            }
 
             if (mp.SourceResistance.Given)
             {
                 if (mp.SourceResistance != 0)
+                {
                     SourceConductance = p.ParallelMultiplier / mp.SourceResistance;
+                }
                 else
+                {
                     SourceConductance = 0;
+                }
             }
             else if (mp.SheetResistance.Given)
             {
                 if ((mp.SheetResistance != 0) && (p.SourceSquares != 0))
+                {
                     SourceConductance = p.ParallelMultiplier / (mp.SheetResistance * p.SourceSquares);
+                }
                 else
+                {
                     SourceConductance = 0;
+                }
             }
             else
+            {
                 SourceConductance = 0;
+            }
 
             EffectiveLength = p.Length - (2 * mp.LateralDiffusion);
 
-            var gmaold = (mp.BulkJunctionPotential - pbo) / pbo;
-            var capfact = 1 / (1 + (mp.BulkJunctionBotGradingCoefficient *
+            double gmaold = (mp.BulkJunctionPotential - pbo) / pbo;
+            double capfact = 1 / (1 + (mp.BulkJunctionBotGradingCoefficient *
                     ((4e-4 * (mp.NominalTemperature - Constants.ReferenceTemperature)) - gmaold)));
             TempCbd = mp.CapBd * capfact;
             TempCbs = mp.CapBs * capfact;
@@ -142,7 +168,7 @@ namespace SpiceSharp.Components.Mosfets
                         ((4e-4 * (mp.NominalTemperature - Constants.ReferenceTemperature)) - gmaold)));
             TempCjsw = mp.SidewallCapFactor * capfact;
             TempBulkPotential = (fact2 * pbo) + pbfact;
-            var gmanew = (TempBulkPotential - pbo) / pbo;
+            double gmanew = (TempBulkPotential - pbo) / pbo;
             capfact = 1 + (mp.BulkJunctionBotGradingCoefficient *
                         ((4e-4 * (p.Temperature - Constants.ReferenceTemperature)) - gmanew));
             TempCbd *= capfact;
@@ -155,21 +181,32 @@ namespace SpiceSharp.Components.Mosfets
 
             double czbd, czbdsw;
             if (mp.CapBd.Given)
+            {
                 czbd = TempCbd * p.ParallelMultiplier;
+            }
             else
             {
                 if (mp.BulkCapFactor.Given)
+                {
                     czbd = TempCj * p.ParallelMultiplier * p.DrainArea;
+                }
                 else
+                {
                     czbd = 0;
+                }
             }
             if (mp.SidewallCapFactor.Given)
+            {
                 czbdsw = TempCjsw * p.DrainPerimeter * p.ParallelMultiplier;
+            }
             else
+            {
                 czbdsw = 0;
+            }
+
             arg = 1 - mp.ForwardCapDepletionCoefficient;
-            var sarg = Math.Exp((-mp.BulkJunctionBotGradingCoefficient) * Math.Log(arg));
-            var sargsw = Math.Exp((-mp.BulkJunctionSideGradingCoefficient) * Math.Log(arg));
+            double sarg = Math.Exp((-mp.BulkJunctionBotGradingCoefficient) * Math.Log(arg));
+            double sargsw = Math.Exp((-mp.BulkJunctionSideGradingCoefficient) * Math.Log(arg));
             Cbd = czbd;
             CbdSidewall = czbdsw;
             F2d = (czbd * (1 - (mp.ForwardCapDepletionCoefficient *
@@ -191,18 +228,29 @@ namespace SpiceSharp.Components.Mosfets
 
             double czbs, czbssw;
             if (mp.CapBs.Given)
+            {
                 czbs = TempCbs * p.ParallelMultiplier;
+            }
             else
             {
                 if (mp.BulkCapFactor.Given)
+                {
                     czbs = TempCj * p.SourceArea * p.ParallelMultiplier;
+                }
                 else
+                {
                     czbs = 0;
+                }
             }
             if (mp.SidewallCapFactor.Given)
+            {
                 czbssw = TempCjsw * p.SourcePerimeter * p.ParallelMultiplier;
+            }
             else
+            {
                 czbssw = 0;
+            }
+
             arg = 1 - mp.ForwardCapDepletionCoefficient;
             sarg = Math.Exp((-mp.BulkJunctionBotGradingCoefficient) * Math.Log(arg));
             sargsw = Math.Exp((-mp.BulkJunctionSideGradingCoefficient) * Math.Log(arg));

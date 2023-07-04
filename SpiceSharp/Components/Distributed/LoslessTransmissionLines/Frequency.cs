@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.LosslessTransmissionLines
 {
@@ -60,7 +61,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The voltage on side 1.
         /// </value>
         [ParameterName("v1"), ParameterName("v1_r"), ParameterInfo("Voltage 1")]
-        public Complex ComplexVoltage1 => _complex.Solution[_pos1] - _complex.Solution[_neg1];
+        public Complex ComplexVoltage1
+        {
+            get
+            {
+                return _complex.Solution[_pos1] - _complex.Solution[_neg1];
+            }
+        }
 
         /// <summary>
         /// Gets the voltage on side 2.
@@ -69,7 +76,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The voltage on side 2.
         /// </value>
         [ParameterName("v2"), ParameterName("v2_r"), ParameterInfo("Voltage 2")]
-        public Complex ComplexVoltage2 => _complex.Solution[_pos2] - _complex.Solution[_neg2];
+        public Complex ComplexVoltage2
+        {
+            get
+            {
+                return _complex.Solution[_pos2] - _complex.Solution[_neg2];
+            }
+        }
 
         /// <summary>
         /// Gets the current on side 1.
@@ -78,7 +91,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The current on side 1.
         /// </value>
         [ParameterName("i1"), ParameterName("c1"), ParameterName("i1_r"), ParameterInfo("Current 1")]
-        public Complex ComplexCurrent1 => _complex.Solution[_br1];
+        public Complex ComplexCurrent1
+        {
+            get
+            {
+                return _complex.Solution[_br1];
+            }
+        }
 
         /// <summary>
         /// Gets the current on side 2.
@@ -87,7 +106,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The current on side 2.
         /// </value>
         [ParameterName("i2"), ParameterName("c2"), ParameterName("i2_r"), ParameterInfo("Current 2")]
-        public Complex ComplexCurrent2 => _complex.Solution[_br2];
+        public Complex ComplexCurrent2
+        {
+            get
+            {
+                return _complex.Solution[_br2];
+            }
+        }
 
         /// <summary>
         /// Gets the power on side 1.
@@ -96,7 +121,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The power on side 1.
         /// </value>
         [ParameterName("p1"), ParameterName("p1_r"), ParameterInfo("Power 1")]
-        public Complex ComplexPower1 => -Voltage1 * Current1;
+        public Complex ComplexPower1
+        {
+            get
+            {
+                return -Voltage1 * Current1;
+            }
+        }
 
         /// <summary>
         /// Gets the power on side 2.
@@ -105,7 +136,13 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         /// The power on side 2.
         /// </value>
         [ParameterName("p2"), ParameterName("p2_r"), ParameterInfo("Power 2")]
-        public Complex ComplexPower2 => -Voltage1 * Current1;
+        public Complex ComplexPower2
+        {
+            get
+            {
+                return -Voltage1 * Current1;
+            }
+        }
 
 
         /// <summary>
@@ -167,8 +204,8 @@ namespace SpiceSharp.Components.LosslessTransmissionLines
         {
             Complex laplace = _complex.Laplace;
             Complex factor = Complex.Exp(-laplace * Parameters.Delay.Value);
-            var y = Parameters.Admittance * Parameters.ParallelMultiplier;
-            var z = Parameters.Impedance / Parameters.ParallelMultiplier;
+            double y = Parameters.Admittance * Parameters.ParallelMultiplier;
+            double z = Parameters.Impedance / Parameters.ParallelMultiplier;
             _elements.Add(
                 y, -y, -1, y, -1,
                 -y, y, 1, y, 1, -1, -factor,

@@ -1,9 +1,10 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+using System.Linq;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Components.Mosfets;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Validation;
-using System;
-using System.Linq;
 
 namespace SpiceSharp.Components
 {

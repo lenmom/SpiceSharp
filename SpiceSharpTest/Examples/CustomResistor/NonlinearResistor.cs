@@ -37,10 +37,13 @@ namespace SpiceSharp.Components
         /// <param name="simulation">The simulation.</param>
         public override void CreateBehaviors(ISimulation simulation)
         {
-            var behaviors = new BehaviorContainer(Name);
-            var context = new ComponentBindingContext(this, simulation, behaviors);
+            BehaviorContainer behaviors = new BehaviorContainer(Name);
+            ComponentBindingContext context = new ComponentBindingContext(this, simulation, behaviors);
             if (simulation.UsesBehaviors<IBiasingBehavior>())
+            {
                 behaviors.Add(new BiasingBehavior(Name, context));
+            }
+
             simulation.EntityBehaviors.Add(behaviors);
         }
     }

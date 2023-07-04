@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.Switches
 {
@@ -70,11 +71,23 @@ namespace SpiceSharp.Components.Switches
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         [ParameterName("v"), ParameterInfo("Switch voltage")]
-        public double Voltage => _variables.Positive.Value - _variables.Negative.Value;
+        public double Voltage
+        {
+            get
+            {
+                return _variables.Positive.Value - _variables.Negative.Value;
+            }
+        }
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterInfo("Switch current")]
-        public double Current => Voltage * Conductance;
+        public double Current
+        {
+            get
+            {
+                return Voltage * Conductance;
+            }
+        }
 
         /// <include file='../Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         [ParameterName("p"), ParameterInfo("Instantaneous power")]
@@ -82,7 +95,7 @@ namespace SpiceSharp.Components.Switches
         {
             get
             {
-                var v = Voltage;
+                double v = Voltage;
                 return v * v * Conductance;
             }
         }
@@ -131,16 +144,23 @@ namespace SpiceSharp.Components.Switches
             else
             {
                 // Get the previous state
-                var ctrl = _controller();
+                double ctrl = _controller();
                 if (UseOldState)
                 {
                     // Calculate the current state
                     if (ctrl > ModelTemperature.Parameters.Threshold + ModelTemperature.Hysteresis)
+                    {
                         currentState = true;
+                    }
                     else if (ctrl < ModelTemperature.Parameters.Threshold - ModelTemperature.Hysteresis)
+                    {
                         currentState = false;
+                    }
                     else
+                    {
                         currentState = PreviousState;
+                    }
+
                     CurrentState = currentState;
                     UseOldState = false;
                 }
@@ -160,11 +180,15 @@ namespace SpiceSharp.Components.Switches
                         currentState = false;
                     }
                     else
+                    {
                         currentState = PreviousState;
+                    }
 
                     // Ensure one more iteration
                     if (currentState != PreviousState)
+                    {
                         _iteration.IsConvergent = false;
+                    }
                 }
 
                 // Store the current state
@@ -172,11 +196,13 @@ namespace SpiceSharp.Components.Switches
 
                 // If the state changed, ensure one more iteration
                 if (currentState != PreviousState)
+                {
                     _iteration.IsConvergent = false;
+                }
             }
 
             // Get the current conduction
-            var gNow = currentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
+            double gNow = currentState ? ModelTemperature.OnConductance : ModelTemperature.OffConductance;
             gNow *= Parameters.ParallelMultiplier;
             Conductance = gNow;
 

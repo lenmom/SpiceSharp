@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Simulations;
+﻿using System.Collections.Generic;
+
+using SpiceSharp.Simulations;
 using SpiceSharp.Validation.Components;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Validation
 {
@@ -20,7 +21,13 @@ namespace SpiceSharp.Validation
         /// <value>
         /// The violation count.
         /// </value>
-        public int ViolationCount => _violations.Count;
+        public int ViolationCount
+        {
+            get
+            {
+                return _violations.Count;
+            }
+        }
 
         /// <summary>
         /// Gets the rule violations.
@@ -33,7 +40,9 @@ namespace SpiceSharp.Validation
             get
             {
                 foreach (VoltageLoopRuleViolation violation in _violations)
+                {
                     yield return violation;
+                }
             }
         }
 
@@ -55,16 +64,21 @@ namespace SpiceSharp.Validation
         public void Fix(IRuleSubject subject, IVariable a, IVariable b)
         {
             // If both variables are part of the same fixed-voltage group, then this rule is violated
-            var hasA = _groups.TryGetValue(a, out Group groupA);
-            var hasB = _groups.TryGetValue(b, out Group groupB);
+            bool hasA = _groups.TryGetValue(a, out Group groupA);
+            bool hasB = _groups.TryGetValue(b, out Group groupB);
             if (hasA && hasB)
             {
                 if (groupA == groupB)
+                {
                     _violations.Add(new VoltageLoopRuleViolation(this, subject, a, b));
+                }
                 else
                 {
                     foreach (IVariable variable in groupB)
+                    {
                         _groups[variable] = groupA;
+                    }
+
                     groupA.Join(groupB);
                 }
             }
@@ -80,7 +94,7 @@ namespace SpiceSharp.Validation
             }
             else
             {
-                var group = new Group(a, b);
+                Group group = new Group(a, b);
                 _groups.Add(a, group);
                 _groups.Add(b, group);
             }

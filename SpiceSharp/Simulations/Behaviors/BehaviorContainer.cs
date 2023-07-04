@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Diagnostics;
 using SpiceSharp.Entities;
 using SpiceSharp.General;
 using SpiceSharp.ParameterSets;
 using SpiceSharp.Simulations;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Behaviors
 {
@@ -47,9 +48,15 @@ namespace SpiceSharp.Behaviors
             {
                 factory.ThrowIfNull(nameof(factory));
                 if (!_simulation.UsesBehaviors<TBehavior>())
+                {
                     return this;
+                }
+
                 if (!_container.ContainsType<TBehavior>())
+                {
                     _container.Add(factory(_context));
+                }
+
                 return this;
             }
         }
@@ -73,7 +80,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetParameterSet(out P value))
+                {
                     return value;
+                }
             }
             throw new TypeNotFoundException(Properties.Resources.ParameterSets_NotDefined.FormatString(typeof(P).FullName));
         }
@@ -84,7 +93,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetParameterSet(out value))
+                {
                     return true;
+                }
             }
             value = default;
             return false;
@@ -98,7 +109,9 @@ namespace SpiceSharp.Behaviors
                 foreach (IBehavior behavior in this)
                 {
                     foreach (IParameterSet ps in behavior.ParameterSets)
+                    {
                         yield return ps;
+                    }
                 }
             }
         }
@@ -109,7 +122,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TrySetParameter(name, value))
+                {
                     return;
+                }
             }
             throw new ParameterNotFoundException(this, name, typeof(P));
         }
@@ -120,7 +135,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TrySetParameter(name, value))
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -132,7 +149,9 @@ namespace SpiceSharp.Behaviors
             {
                 Action<P> result = behavior.CreateParameterSetter<P>(name);
                 if (result != null)
+                {
                     return result;
+                }
             }
             return null;
         }
@@ -143,7 +162,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetProperty(name, out P value))
+                {
                     return value;
+                }
             }
             throw new ParameterNotFoundException(this, name, typeof(P));
         }
@@ -154,7 +175,9 @@ namespace SpiceSharp.Behaviors
             foreach (IBehavior behavior in this)
             {
                 if (behavior.TryGetProperty(name, out value))
+                {
                     return true;
+                }
             }
             value = default;
             return false;
@@ -167,7 +190,9 @@ namespace SpiceSharp.Behaviors
             {
                 Func<P> result = behavior.CreatePropertyGetter<P>(name);
                 if (result != null)
+                {
                     return result;
+                }
             }
             return null;
         }

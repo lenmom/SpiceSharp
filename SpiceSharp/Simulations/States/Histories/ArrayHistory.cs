@@ -18,8 +18,15 @@ namespace SpiceSharp.Simulations.Histories
         /// </summary>
         public T Value
         {
-            get => _history[0];
-            set => _history[0] = value;
+            get
+            {
+                return _history[0];
+            }
+
+            set
+            {
+                _history[0] = value;
+            }
         }
 
         /// <summary>
@@ -28,7 +35,13 @@ namespace SpiceSharp.Simulations.Histories
         /// <value>
         /// The length.
         /// </value>
-        public int Length => _history.Length;
+        public int Length
+        {
+            get
+            {
+                return _history.Length;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ArrayHistory{T}"/> class.
@@ -49,8 +62,10 @@ namespace SpiceSharp.Simulations.Histories
         {
             length = Math.Max(length, 1);
             _history = new T[length];
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
+            {
                 _history[i] = defaultValue;
+            }
         }
 
         /// <summary>
@@ -62,8 +77,10 @@ namespace SpiceSharp.Simulations.Histories
         {
             generator.ThrowIfNull(nameof(generator));
             length = Math.Max(length, 1);
-            for (var i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
+            {
                 _history[i] = generator(i);
+            }
         }
 
         /// <summary>
@@ -72,8 +89,11 @@ namespace SpiceSharp.Simulations.Histories
         public void Accept()
         {
             T tmp = _history[Length - 1];
-            for (var i = Length - 1; i > 0; i--)
+            for (int i = Length - 1; i > 0; i--)
+            {
                 _history[i] = _history[i - 1];
+            }
+
             _history[0] = tmp;
         }
 
@@ -88,7 +108,10 @@ namespace SpiceSharp.Simulations.Histories
         public T GetPreviousValue(int index)
         {
             if (index < 0 || index >= Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
             return _history[index];
         }
 
@@ -98,8 +121,10 @@ namespace SpiceSharp.Simulations.Histories
         /// <param name="value">The value.</param>
         public void Set(T value)
         {
-            for (var i = 0; i < _history.Length; i++)
+            for (int i = 0; i < _history.Length; i++)
+            {
                 _history[i] = value;
+            }
         }
 
         /// <summary>
@@ -109,8 +134,10 @@ namespace SpiceSharp.Simulations.Histories
         public void Set(Func<int, T> method)
         {
             method.ThrowIfNull(nameof(method));
-            for (var i = 0; i < _history.Length; i++)
+            for (int i = 0; i < _history.Length; i++)
+            {
                 _history[i] = method(i);
+            }
         }
 
         /// <summary>
@@ -121,8 +148,10 @@ namespace SpiceSharp.Simulations.Histories
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (var i = 0; i < _history.Length; i++)
+            for (int i = 0; i < _history.Length; i++)
+            {
                 yield return _history[i];
+            }
         }
 
         /// <summary>

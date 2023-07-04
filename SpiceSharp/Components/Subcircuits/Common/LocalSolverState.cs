@@ -1,8 +1,9 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Collections.Generic;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Simulations;
 using SpiceSharp.Simulations.Variables;
-using System;
-using System.Collections.Generic;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -29,10 +30,22 @@ namespace SpiceSharp.Components.Subcircuits
         public override ISparsePivotingSolver<T> Solver { get; }
 
         /// <inheritdoc/>
-        public override IVector<T> Solution => LocalSolution;
+        public override IVector<T> Solution
+        {
+            get
+            {
+                return LocalSolution;
+            }
+        }
 
         /// <inheritdoc/>
-        public override IVariableMap Map => _map;
+        public override IVariableMap Map
+        {
+            get
+            {
+                return _map;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="LocalSolverState{T,S}"/> has updated its solution.
@@ -93,12 +106,12 @@ namespace SpiceSharp.Components.Subcircuits
 
             Solver.Precondition((matrix, vector) =>
             {
-                for (var i = 0; i < _indices.Count; i++)
+                for (int i = 0; i < _indices.Count; i++)
                 {
                     // Let's move these variables to the back of the matrix
-                    var index = _indices[i].Local;
+                    int index = _indices[i].Local;
                     MatrixLocation location = Solver.ExternalToInternal(new MatrixLocation(index, index));
-                    var target = matrix.Size - i;
+                    int target = matrix.Size - i;
                     matrix.SwapColumns(location.Column, target);
                     matrix.SwapRows(location.Row, target);
                 }
@@ -115,7 +128,9 @@ namespace SpiceSharp.Components.Subcircuits
                 {
                     LinkElement(vector, row);
                     foreach (Bridge<int> col in _indices)
+                    {
                         LinkElement(matrix, row, col);
+                    }
                 }
             });
         }
@@ -136,11 +151,17 @@ namespace SpiceSharp.Components.Subcircuits
                 // Check if solving will result in an element
                 ISparseVectorElement<T> first = vector.GetFirstInVector();
                 if (first == null || first.Index > Solver.Size - Solver.Degeneracy)
+                {
                     return;
+                }
+
                 local_elt = vector.GetElement(loc.Row);
             }
             if (local_elt == null)
+            {
                 return;
+            }
+
             Element<T> parent_elt = Parent.Solver.GetElement(row.Global);
             _elements.Add(new Bridge<Element<T>>(local_elt, parent_elt));
         }
@@ -162,17 +183,24 @@ namespace SpiceSharp.Components.Subcircuits
                 // Check if solving will result in an element
                 ISparseMatrixElement<T> left = matrix.GetFirstInRow(loc.Row);
                 if (left == null || left.Column > Solver.Size - Solver.Degeneracy)
+                {
                     return;
+                }
 
                 ISparseMatrixElement<T> top = matrix.GetFirstInColumn(loc.Column);
                 if (top == null || top.Row > Solver.Size - Solver.Degeneracy)
+                {
                     return;
+                }
 
                 // Create the element because decomposition will cause these elements to be created
                 local_elt = matrix.GetElement(loc);
             }
             if (local_elt == null)
+            {
                 return;
+            }
+
             Element<T> parent_elt = Parent.Solver.GetElement(new MatrixLocation(row.Global, column.Global));
             _elements.Add(new Bridge<Element<T>>(local_elt, parent_elt));
         }
@@ -195,7 +223,10 @@ namespace SpiceSharp.Components.Subcircuits
             if (_shouldReorder)
             {
                 if (Solver.OrderAndFactor() < Solver.Size - Solver.Degeneracy)
+                {
                     throw new NoEquivalentSubcircuitException();
+                }
+
                 _shouldReorder = false;
             }
             else
@@ -209,7 +240,10 @@ namespace SpiceSharp.Components.Subcircuits
 
             // Copy the necessary elements
             foreach (Bridge<Element<T>> bridge in _elements)
+            {
                 bridge.Global.Add(bridge.Local.Value);
+            }
+
             Updated = false;
             return true;
         }
@@ -221,11 +255,16 @@ namespace SpiceSharp.Components.Subcircuits
         {
             // No need to update again
             if (Updated)
+            {
                 return;
+            }
 
             // Fill in the shared variables
             foreach (Bridge<int> pair in _indices)
+            {
                 Solution[pair.Local] = Parent.Solution[pair.Global];
+            }
+
             Solver.Solve(Solution);
             Solution[0] = default;
             Updated = true;
@@ -237,7 +276,7 @@ namespace SpiceSharp.Components.Subcircuits
             // Get the local node!
             if (!TryGetValue(name, out IVariable<T> result))
             {
-                var index = _map.Count;
+                int index = _map.Count;
                 result = new SolverVariable<T>(this, name, index, Units.Volt);
                 Add(name, result);
                 _map.Add(result, index);
@@ -248,8 +287,8 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         public override IVariable<T> CreatePrivateVariable(string name, IUnit unit)
         {
-            var index = _map.Count;
-            var result = new SolverVariable<T>(this, name, index, unit);
+            int index = _map.Count;
+            SolverVariable<T> result = new SolverVariable<T>(this, name, index, unit);
             _map.Add(result, index);
             return result;
         }

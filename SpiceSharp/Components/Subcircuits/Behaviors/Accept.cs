@@ -1,6 +1,7 @@
-﻿using SpiceSharp.Attributes;
+﻿using System;
+
+using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
-using System;
 
 namespace SpiceSharp.Components.Subcircuits
 {
@@ -27,14 +28,18 @@ namespace SpiceSharp.Components.Subcircuits
         void IAcceptBehavior.Accept()
         {
             foreach (IAcceptBehavior behavior in Behaviors)
+            {
                 behavior.Accept();
+            }
         }
 
         /// <inheritdoc/>
         void IAcceptBehavior.Probe()
         {
             foreach (IAcceptBehavior behavior in Behaviors)
+            {
                 behavior.Probe();
+            }
         }
     }
 }

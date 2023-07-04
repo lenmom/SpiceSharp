@@ -1,10 +1,11 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+using System.Numerics;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Attributes;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Components.CommonBehaviors;
 using SpiceSharp.Simulations;
-using System;
-using System.Numerics;
 
 namespace SpiceSharp.Components.VoltageControlledVoltageSources
 {
@@ -26,15 +27,33 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
         [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
-        public Complex ComplexVoltage => _variables.Right.Positive.Value - _variables.Right.Negative.Value;
+        public Complex ComplexVoltage
+        {
+            get
+            {
+                return _variables.Right.Positive.Value - _variables.Right.Negative.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
-        public Complex ComplexCurrent => Branch.Value;
+        public Complex ComplexCurrent
+        {
+            get
+            {
+                return Branch.Value;
+            }
+        }
 
         /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
         [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
-        public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+        public Complex ComplexPower
+        {
+            get
+            {
+                return -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
+            }
+        }
 
         /// <inheritdoc/>
         public new IVariable<Complex> Branch { get; }
@@ -50,11 +69,11 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
             _complex = context.GetState<IComplexSimulationState>();
             _variables = new TwoPort<Complex>(_complex, context);
             Branch = _complex.CreatePrivateVariable(Name.Combine("branch"), Units.Ampere);
-            var pos = _complex.Map[_variables.Right.Positive];
-            var neg = _complex.Map[_variables.Right.Negative];
-            var contPos = _complex.Map[_variables.Left.Positive];
-            var contNeg = _complex.Map[_variables.Left.Negative];
-            var br = _complex.Map[Branch];
+            int pos = _complex.Map[_variables.Right.Positive];
+            int neg = _complex.Map[_variables.Right.Negative];
+            int contPos = _complex.Map[_variables.Left.Positive];
+            int contNeg = _complex.Map[_variables.Left.Negative];
+            int br = _complex.Map[Branch];
 
             _elements = new ElementSet<Complex>(_complex.Solver,
                 new MatrixLocation(pos, br),
@@ -73,7 +92,7 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var value = Parameters.Coefficient;
+            double value = Parameters.Coefficient;
             _elements.Add(1, -1, 1, -1, -value, value);
         }
     }

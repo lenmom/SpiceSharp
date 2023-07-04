@@ -31,7 +31,7 @@ namespace SpiceSharp.Components.Subcircuits
         /// <inheritdoc/>
         public Parameters Clone()
         {
-            var clone = (Parameters)MemberwiseClone();
+            Parameters clone = (Parameters)MemberwiseClone();
             clone.Definition = Definition?.Clone();
             return clone;
         }

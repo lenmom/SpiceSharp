@@ -67,9 +67,15 @@ namespace SpiceSharp.Simulations
         public bool Equals(NoisePoint other)
         {
             if (!Frequency.Equals(other.Frequency))
+            {
                 return false;
+            }
+
             if (!InverseGainSquared.Equals(other.InverseGainSquared))
+            {
                 return false;
+            }
+
             return true;
         }
 
@@ -83,7 +89,10 @@ namespace SpiceSharp.Simulations
         public override bool Equals(object obj)
         {
             if (obj is NoisePoint np)
+            {
                 return Equals(np);
+            }
+
             return false;
         }
 

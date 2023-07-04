@@ -50,9 +50,15 @@ namespace SpiceSharp.Components.CommonBehaviors
             if (obj is TwoPort<T> op)
             {
                 if (!Left.Equals(op.Left))
+                {
                     return false;
+                }
+
                 if (!Right.Equals(op.Right))
+                {
                     return false;
+                }
+
                 return true;
             }
             return false;

@@ -28,7 +28,9 @@ namespace SpiceSharp.Components.Bipolars
         public void SetNpn(bool value)
         {
             if (value)
+            {
                 BipolarType = Npn;
+            }
         }
 
         /// <summary>
@@ -39,7 +41,9 @@ namespace SpiceSharp.Components.Bipolars
         public void SetPnp(bool value)
         {
             if (value)
+            {
                 BipolarType = Pnp;
+            }
         }
 
         /// <summary>
@@ -54,7 +58,10 @@ namespace SpiceSharp.Components.Bipolars
             get
             {
                 if (BipolarType > 0)
+                {
                     return "npn";
+                }
+
                 return "pnp";
             }
         }
@@ -77,8 +84,15 @@ namespace SpiceSharp.Components.Bipolars
         [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double NominalTemperatureCelsius
         {
-            get => NominalTemperature - Constants.CelsiusKelvin;
-            set => NominalTemperature = value + Constants.CelsiusKelvin;
+            get
+            {
+                return NominalTemperature - Constants.CelsiusKelvin;
+            }
+
+            set
+            {
+                NominalTemperature = value + Constants.CelsiusKelvin;
+            }
         }
 
         /// <summary>

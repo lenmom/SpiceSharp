@@ -70,10 +70,37 @@
                 Column = column;
             }
 
-            ISparseMatrixElement<T> ISparseMatrixElement<T>.Above => Above;
-            ISparseMatrixElement<T> ISparseMatrixElement<T>.Below => Below;
-            ISparseMatrixElement<T> ISparseMatrixElement<T>.Right => Right;
-            ISparseMatrixElement<T> ISparseMatrixElement<T>.Left => Left;
+            ISparseMatrixElement<T> ISparseMatrixElement<T>.Above
+            {
+                get
+                {
+                    return Above;
+                }
+            }
+
+            ISparseMatrixElement<T> ISparseMatrixElement<T>.Below
+            {
+                get
+                {
+                    return Below;
+                }
+            }
+
+            ISparseMatrixElement<T> ISparseMatrixElement<T>.Right
+            {
+                get
+                {
+                    return Right;
+                }
+            }
+
+            ISparseMatrixElement<T> ISparseMatrixElement<T>.Left
+            {
+                get
+                {
+                    return Left;
+                }
+            }
         }
     }
 }

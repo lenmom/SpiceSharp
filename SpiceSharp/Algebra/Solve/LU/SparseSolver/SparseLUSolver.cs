@@ -1,5 +1,6 @@
-﻿using SpiceSharp.ParameterSets;
-using System;
+﻿using System;
+
+using SpiceSharp.ParameterSets;
 
 namespace SpiceSharp.Algebra.Solve
 {
@@ -52,8 +53,8 @@ namespace SpiceSharp.Algebra.Solve
         /// <inheritdoc/>
         public override void Precondition(PreconditioningMethod<ISparseMatrix<T>, ISparseVector<T>, T> method)
         {
-            var reorderedMatrix = new ReorderedMatrix(this);
-            var reorderedVector = new ReorderedVector(this);
+            ReorderedMatrix reorderedMatrix = new ReorderedMatrix(this);
+            ReorderedVector reorderedVector = new ReorderedVector(this);
             method(reorderedMatrix, reorderedVector);
         }
 
@@ -61,14 +62,17 @@ namespace SpiceSharp.Algebra.Solve
         public override bool Factor()
         {
             IsFactored = false;
-            var order = Size - Degeneracy;
-            for (var step = 1; step <= order; step++)
+            int order = Size - Degeneracy;
+            for (int step = 1; step <= order; step++)
             {
                 ISparseMatrixElement<T> pivot = Matrix.FindDiagonalElement(step);
 
                 // We don't consult the pivoting strategy, we just need to know if we can eliminate this row
                 if (pivot == null || Parameters.Magnitude(pivot.Value).Equals(0.0))
+                {
                     return false;
+                }
+
                 Eliminate(Matrix.FindDiagonalElement(step));
             }
             IsFactored = true;
@@ -79,8 +83,8 @@ namespace SpiceSharp.Algebra.Solve
         public override int OrderAndFactor()
         {
             IsFactored = false;
-            var step = 1;
-            var order = Size - Degeneracy;
+            int step = 1;
+            int order = Size - Degeneracy;
             int max = Size - PivotSearchReduction;
 
             if (!NeedsReordering)
@@ -90,7 +94,9 @@ namespace SpiceSharp.Algebra.Solve
                 {
                     ISparseMatrixElement<T> pivot = Matrix.FindDiagonalElement(step);
                     if (Parameters.IsValidPivot(pivot, max))
+                    {
                         Eliminate(pivot);
+                    }
                     else
                     {
                         NeedsReordering = true;
@@ -112,14 +118,18 @@ namespace SpiceSharp.Algebra.Solve
             {
                 Pivot<ISparseMatrixElement<T>> pivot;
                 if (step <= max)
+                {
                     pivot = Parameters.FindPivot(Matrix, step, max);
+                }
                 else
                 {
                     ISparseMatrixElement<T> elt = Matrix.FindDiagonalElement(step);
                     pivot = new Pivot<ISparseMatrixElement<T>>(elt, elt != null ? PivotInfo.Good : PivotInfo.None);
                 }
                 if (pivot.Info == PivotInfo.None)
+                {
                     return step - 1;
+                }
                 else if (pivot.Info == PivotInfo.Bad)
                 {
                     MatrixLocation loc = InternalToExternal(new MatrixLocation(step, step));
@@ -156,9 +166,12 @@ namespace SpiceSharp.Algebra.Solve
         {
             index.GreaterThanOrEquals(nameof(index), 0);
             if (index > Size)
+            {
                 return null;
-            var row = Row[index];
-            var column = Column[index];
+            }
+
+            int row = Row[index];
+            int column = Column[index];
             return Matrix.FindElement(new MatrixLocation(row, column));
         }
 
@@ -185,9 +198,14 @@ namespace SpiceSharp.Algebra.Solve
             if (Degeneracy > 0 && Size - Degeneracy > 0)
             {
                 if (location.Row == Size)
+                {
                     SwapRows(Size, Size - Degeneracy);
+                }
+
                 if (location.Column == Size)
+                {
                     SwapColumns(Size, Size - Degeneracy);
+                }
             }
             return elt;
         }
@@ -203,7 +221,10 @@ namespace SpiceSharp.Algebra.Solve
         public Element<T> GetElement(int row)
         {
             if (row < 0)
+            {
                 throw new ArgumentOutOfRangeException(nameof(row));
+            }
+
             row = Row[row];
             Element<T> elt = Vector.GetElement(row);
 
@@ -211,7 +232,9 @@ namespace SpiceSharp.Algebra.Solve
             if (Degeneracy > 0)
             {
                 if (row == Size)
+                {
                     SwapRows(Size, Size - Degeneracy);
+                }
             }
             return elt;
         }
@@ -250,7 +273,7 @@ namespace SpiceSharp.Algebra.Solve
         /// <returns>The created fillin element.</returns>
         protected ISparseMatrixElement<T> CreateFillin(MatrixLocation location)
         {
-            var result = (ISparseMatrixElement<T>)Matrix.GetElement(location);
+            ISparseMatrixElement<T> result = (ISparseMatrixElement<T>)Matrix.GetElement(location);
             Parameters.CreateFillin(Matrix, result);
             Fillins++;
             return result;

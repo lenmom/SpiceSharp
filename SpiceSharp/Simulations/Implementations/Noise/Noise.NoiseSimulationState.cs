@@ -1,5 +1,6 @@
-﻿using SpiceSharp.Simulations.Histories;
-using System;
+﻿using System;
+
+using SpiceSharp.Simulations.Histories;
 
 namespace SpiceSharp.Simulations
 {
@@ -86,8 +87,10 @@ namespace SpiceSharp.Simulations
             public void Add(params INoiseSource[] sources)
             {
                 sources.ThrowIfNull(nameof(sources));
-                for (var i = 0; i < sources.Length; i++)
+                for (int i = 0; i < sources.Length; i++)
+                {
                     Add(sources[i]);
+                }
             }
         }
     }

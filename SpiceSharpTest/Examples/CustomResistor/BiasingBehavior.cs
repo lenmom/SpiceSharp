@@ -1,7 +1,8 @@
-﻿using SpiceSharp.Algebra;
+﻿using System;
+
+using SpiceSharp.Algebra;
 using SpiceSharp.Behaviors;
 using SpiceSharp.Simulations;
-using System;
 
 namespace SpiceSharp.Components.NonlinearResistorBehaviors
 {
@@ -22,7 +23,9 @@ namespace SpiceSharp.Components.NonlinearResistorBehaviors
         public BiasingBehavior(string name, ComponentBindingContext context) : base(name)
         {
             if (context == null)
+            {
                 throw new ArgumentNullException(nameof(context));
+            }
 
             // Get our resistor parameters (we want our A and B parameter values)
             _bp = context.GetParameterSet<BaseParameters>();
@@ -36,8 +39,8 @@ namespace SpiceSharp.Components.NonlinearResistorBehaviors
             _nodeB = state.GetSharedVariable(context.Nodes[1]);
 
             // We need 4 matrix elements and 2 RHS vector elements
-            var indexA = state.Map[_nodeA];
-            var indexB = state.Map[_nodeB];
+            int indexA = state.Map[_nodeA];
+            int indexB = state.Map[_nodeB];
             _elements = new ElementSet<double>(state.Solver, new[] {
                     new MatrixLocation(indexA, indexA),
                     new MatrixLocation(indexA, indexB),
@@ -52,25 +55,31 @@ namespace SpiceSharp.Components.NonlinearResistorBehaviors
         void IBiasingBehavior.Load()
         {
             // First get the current iteration voltage
-            var v = _nodeA.Value - _nodeB.Value;
+            double v = _nodeA.Value - _nodeB.Value;
 
             // Calculate the derivative w.r.t. one of the voltages
-            var isNegative = v < 0;
-            var c = Math.Pow(Math.Abs(v) / _bp.A, 1.0 / _bp.B);
+            bool isNegative = v < 0;
+            double c = Math.Pow(Math.Abs(v) / _bp.A, 1.0 / _bp.B);
             double g;
 
             // If v=0 the derivative is either 0 or infinity (avoid 0^(negative number) = not a number)
             if (v.Equals(0.0))
+            {
                 g = _bp.B < 1.0 / _bp.A ? double.PositiveInfinity : 0.0;
+            }
             else
+            {
                 g = Math.Pow(Math.Abs(v) / _bp.A, 1.0 / _bp.B - 1.0) / _bp.A;
+            }
 
             // In order to avoid having a singular matrix, we want to have at least a very small value here.
             g = Math.Max(g, _baseConfig.Gmin);
 
             // If the voltage was reversed, reverse the current back
             if (isNegative)
+            {
                 c = -c;
+            }
 
             // Load the RHS vector
             c -= g * v;
